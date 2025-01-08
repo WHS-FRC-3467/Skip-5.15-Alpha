@@ -26,8 +26,7 @@ class TalonFXSimProfile extends SimProfile {
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 constants.simMotorModelSupplier.get(), constants.simMOI, constants.simReduction),
-            constants.simMotorModelSupplier.get(),
-            constants.simMOI);
+            constants.simMotorModelSupplier.get());
   }
 
   /**

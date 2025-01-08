@@ -117,8 +117,7 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
                     constants.simMotorModelSupplier.get(),
                     constants.simMOI,
                     constants.simReduction),
-                constants.simMotorModelSupplier.get(),
-                constants.simMOI));
+                constants.simMotorModelSupplier.get()));
       }
     }
 
