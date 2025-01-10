@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SL1-ReefJ"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefJ-LCS"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LCS-ReefJ"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReefJ-LCS"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LCS-ReefJ"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
