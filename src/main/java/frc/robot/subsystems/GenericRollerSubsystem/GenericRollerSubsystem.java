@@ -20,6 +20,7 @@ public abstract class GenericRollerSubsystem<G extends GenericRollerSubsystem.Vo
   private final String name;
   private final int numRollers;
   private final GenericRollerSubsystemIO io;
+
   protected final GenericRollerIOInputsAutoLogged inputs = new GenericRollerIOInputsAutoLogged();
   private final List<Alert> disconnected = new ArrayList<Alert>();
 
