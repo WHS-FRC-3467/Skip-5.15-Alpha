@@ -101,14 +101,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new TalonFX(mConstants.kLeaderMotor.getDeviceNumber(), mConstants.kLeaderMotor.getBus());
 
     // Get the motor configuration group and configure the main motor
-    /*
-     * Note: We can use the kMotorcConfig constants here for both REAL and SIM,
-     * because
-     * after this class is instantiated, if needed, the Subsystem's constructor will
-     * pull
-     * the SIM constants into LoggedTunableNumbers and update this config.
-     */
-    mMainConfig = mConstants.kMotorConfig;
+    mMainConfig = mIsSim ? mConstants.kSimMotorConfig : mConstants.kMotorConfig;
     Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
 
     // If a follower motor has been specified, instantiate and configure it
@@ -117,7 +110,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
       // Instantiate a follower motor object ...
       mFollower =
           new TalonFX(mConstants.kFollowMotor.getDeviceNumber(), mConstants.kFollowMotor.getBus());
-      mFollowerConfig = mConstants.kFollowerConfig;
+      mFollowerConfig = mIsSim ? mConstants.kSimFollowerConfig : mConstants.kFollowerConfig;
 
       // ... configure it with the same settings as the main motor ...
       mFollowerConfig.deserialize(mMainConfig.serialize());
@@ -284,8 +277,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
               .isOK();
     }
 
-    // Due to an unfixed firmware error, certain closed-loop signals do not get
-    // refreshed by
+    // Due to an unfixed firmware error, certain closed-loop signals do not get refreshed by
     // refreshAll()
     // See: https://api.ctr-electronics.com/changelog#known-issues-20240209
     mMainClosedLoopError.refresh();
