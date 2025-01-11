@@ -27,8 +27,8 @@ public class SampleProfiledElevator
   @Getter @Setter private State state = State.HOME;
 
   /** Constructor */
-  public SampleProfiledElevator(SampleProfiledElevatorIO io) {
-    super(ProfileType.MM_POSITION, SampleProfiledElevatorConstants.kSubSysConstants, io);
+  public SampleProfiledElevator(SampleProfiledElevatorIO io, boolean isSim) {
+    super(ProfileType.MM_POSITION, SampleProfiledElevatorConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {

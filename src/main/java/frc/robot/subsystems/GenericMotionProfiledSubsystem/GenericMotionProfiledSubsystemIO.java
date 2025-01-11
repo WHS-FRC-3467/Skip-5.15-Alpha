@@ -50,8 +50,7 @@ public interface GenericMotionProfiledSubsystemIO {
   public default void stop() {}
 
   /* Configure PID constants */
-  public default void configurePID(
-      int slot, double kP, double kI, double kD, double kV, boolean check) {}
+  public default void configurePID(double kP, double kI, double kD, boolean check) {}
 
   /* Configure Closed Loop constants */
   public default void configureGSVA(double kG, double kS, double kV, double kA, boolean check) {}
@@ -66,6 +65,11 @@ public interface GenericMotionProfiledSubsystemIO {
 
   /* Get current mechanism position (in rotations) */
   public default double getPosition() {
+    return 0;
+  }
+
+  /* Get latest trajectory position (in rotations) */
+  public default double getCurrTrajPos() {
     return 0;
   }
 

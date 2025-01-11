@@ -18,6 +18,8 @@ public class GenericMotionProfiledSubsystemConstants {
 
   public TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
   public TalonFXConfiguration kFollowerConfig = new TalonFXConfiguration();
+  public TalonFXConfiguration kSimMotorConfig = new TalonFXConfiguration();
+  public TalonFXConfiguration kSimFollowerConfig = new TalonFXConfiguration();
   public boolean kFollowerOpposesMain = false;
 
   public CANcoderConfiguration kEncoderConfig = new CANcoderConfiguration();

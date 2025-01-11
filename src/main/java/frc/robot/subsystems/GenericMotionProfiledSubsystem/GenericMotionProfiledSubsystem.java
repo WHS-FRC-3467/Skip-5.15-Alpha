@@ -1,8 +1,9 @@
 package frc.robot.subsystems.GenericMotionProfiledSubsystem;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.Alert;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -11,16 +12,7 @@ public abstract class GenericMotionProfiledSubsystem<
     extends SubsystemBase {
 
   // Tunable numbers
-  private static LoggedTunableNumber kP,
-      kI,
-      kD,
-      kG,
-      kS,
-      kV,
-      kA,
-      kCruiseVelocity,
-      kAcceleration,
-      kJerk;
+  private LoggedTunableNumber kP, kI, kD, kG, kS, kV, kA, kCruiseVelocity, kAcceleration, kJerk;
 
   public enum ProfileType {
     POSITION,
@@ -44,52 +36,55 @@ public abstract class GenericMotionProfiledSubsystem<
   private final ProfileType mProType;
   private final GenericMotionProfiledSubsystemConstants mConstants;
   private final GenericMotionProfiledSubsystemIO io;
+  private boolean mIsSim = false;
+
   protected final GenericMotionProfiledIOInputsAutoLogged inputs =
       new GenericMotionProfiledIOInputsAutoLogged();
   private final Alert leaderMotorDisconnected;
   private final Alert followerMotorDisconnected;
   private final Alert CANcoderDisconnected;
 
-  private final boolean debug = true;
-
   public GenericMotionProfiledSubsystem(
       ProfileType pType,
       GenericMotionProfiledSubsystemConstants constants,
-      GenericMotionProfiledSubsystemIO io) {
+      GenericMotionProfiledSubsystemIO io,
+      boolean isSim) {
+
     this.mProType = pType;
     this.mConstants = constants;
     this.io = io;
+    this.mIsSim = isSim;
     this.mName = mConstants.kName;
 
     this.leaderMotorDisconnected =
-        new Alert(mName + " Leader motor disconnected!", Alert.AlertType.WARNING);
+        new Alert(mName + " Leader motor disconnected!", Alert.AlertType.kWarning);
     this.followerMotorDisconnected =
-        new Alert(mName + " Follower motor disconnected!", Alert.AlertType.WARNING);
+        new Alert(mName + " Follower motor disconnected!", Alert.AlertType.kWarning);
     this.CANcoderDisconnected =
-        new Alert(mName + " CANcoder disconnected!", Alert.AlertType.WARNING);
+        new Alert(mName + " CANcoder disconnected!", Alert.AlertType.kWarning);
+
+    // Make sure we use the correct profiling configs
+    TalonFXConfiguration fxConfig = mIsSim ? mConstants.kSimMotorConfig : mConstants.kMotorConfig;
 
     // Tunable numbers for PID and motion gain constants
-    kP = new LoggedTunableNumber(mName + "/Gains/kP", mConstants.kMotorConfig.Slot0.kP);
-    kI = new LoggedTunableNumber(mName + "/Gains/kI", mConstants.kMotorConfig.Slot0.kI);
-    kD = new LoggedTunableNumber(mName + "/Gains/kD", mConstants.kMotorConfig.Slot0.kD);
+    kP = new LoggedTunableNumber(mName + "/Gains/kP", fxConfig.Slot0.kP);
+    kI = new LoggedTunableNumber(mName + "/Gains/kI", fxConfig.Slot0.kI);
+    kD = new LoggedTunableNumber(mName + "/Gains/kD", fxConfig.Slot0.kD);
 
-    kG = new LoggedTunableNumber(mName + "/Gains/kG", mConstants.kMotorConfig.Slot0.kG);
-    kS = new LoggedTunableNumber(mName + "/Gains/kS", mConstants.kMotorConfig.Slot0.kS);
-    kV = new LoggedTunableNumber(mName + "/Gains/kV", mConstants.kMotorConfig.Slot0.kV);
-    kA = new LoggedTunableNumber(mName + "/Gains/kA", mConstants.kMotorConfig.Slot0.kA);
+    kG = new LoggedTunableNumber(mName + "/Gains/kG", fxConfig.Slot0.kG);
+    kS = new LoggedTunableNumber(mName + "/Gains/kS", fxConfig.Slot0.kS);
+    kV = new LoggedTunableNumber(mName + "/Gains/kV", fxConfig.Slot0.kV);
+    kA = new LoggedTunableNumber(mName + "/Gains/kA", fxConfig.Slot0.kA);
 
     kCruiseVelocity =
         new LoggedTunableNumber(
-            mName + "/CruiseVelocity",
-            mConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity);
+            mName + "/CruiseVelocity", fxConfig.MotionMagic.MotionMagicCruiseVelocity);
     kAcceleration =
         new LoggedTunableNumber(
-            mName + "/Acceleration", mConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration);
-    kJerk =
-        new LoggedTunableNumber(
-            mName + "/Jerk", mConstants.kMotorConfig.MotionMagic.MotionMagicJerk);
+            mName + "/Acceleration", fxConfig.MotionMagic.MotionMagicAcceleration);
+    kJerk = new LoggedTunableNumber(mName + "/Jerk", fxConfig.MotionMagic.MotionMagicJerk);
 
-    io.configurePID(0, kP.get(), kI.get(), kD.get(), 0.0, true);
+    io.configurePID(kP.get(), kI.get(), kD.get(), true);
     io.configureGSVA(kG.get(), kS.get(), kV.get(), kA.get(), true);
     io.configureMotion(kCruiseVelocity.get(), kAcceleration.get(), kJerk.get(), true);
   }
@@ -102,24 +97,25 @@ public abstract class GenericMotionProfiledSubsystem<
     // Check for disconnections
     leaderMotorDisconnected.set(!inputs.leaderMotorConnected);
     followerMotorDisconnected.set(!inputs.followerMotorConnected);
-    CANcoderDisconnected.set(!inputs.CANcoderConnected);
+    CANcoderDisconnected.set(mConstants.kCANcoder != null && !inputs.CANcoderConnected);
 
     // If changed, update controller constants from Tuneable Numbers
-    LoggedTunableNumber.ifChanged(
-        hashCode(), () -> io.configurePID(0, kP.get(), kI.get(), kD.get(), 0.0, false), kP, kI, kD);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> io.configureGSVA(kG.get(), kS.get(), kV.get(), kA.get(), false),
-        kG,
-        kS,
-        kV,
-        kA);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> io.configureMotion(kCruiseVelocity.get(), kAcceleration.get(), kJerk.get(), false),
-        kCruiseVelocity,
-        kAcceleration,
-        kJerk);
+    if (kP.hasChanged(hashCode()) || kI.hasChanged(hashCode()) || kD.hasChanged(hashCode())) {
+      io.configurePID(kP.get(), kI.get(), kD.get(), true);
+    }
+
+    if (kG.hasChanged(hashCode())
+        || kS.hasChanged(hashCode())
+        || kV.hasChanged(hashCode())
+        || kA.hasChanged(hashCode())) {
+      io.configureGSVA(kG.get(), kS.get(), kV.get(), kA.get(), true);
+    }
+
+    if (kCruiseVelocity.hasChanged(hashCode())
+        || kAcceleration.hasChanged(hashCode())
+        || kJerk.hasChanged(hashCode())) {
+      io.configureMotion(kCruiseVelocity.get(), kAcceleration.get(), kJerk.get(), true);
+    }
 
     // Run system based on Profile Type
     switch (mProType) {
@@ -150,15 +146,20 @@ public abstract class GenericMotionProfiledSubsystem<
         break;
     }
 
-    Logger.recordOutput(mName + "/Goal", getState().toString());
-
-    displayInfo(debug);
+    displayInfo();
   }
 
-  private void displayInfo(boolean debug) {
-    if (debug) {
-      SmartDashboard.putNumber(mName + " Output", inputs.appliedVoltage[0]);
-      SmartDashboard.putNumber(mName + " Current Draw", inputs.supplyCurrentAmps[0]);
+  private void displayInfo() {
+
+    Logger.recordOutput(mName + "/Goal State", getState().toString());
+
+    if (Constants.tuningMode) {
+      Logger.recordOutput(mName + "/Setpoint", io.getSetpoint());
+      Logger.recordOutput(mName + "/Position", io.getPosition());
+      Logger.recordOutput(mName + "/CurrTrajPos", io.getCurrTrajPos());
+
+      Logger.recordOutput(mName + "/Appl Volt", inputs.appliedVoltage[0]);
+      Logger.recordOutput(mName + "/Supply Current", inputs.supplyCurrentAmps[0]);
     }
   }
 }

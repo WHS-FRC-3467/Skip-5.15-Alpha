@@ -20,7 +20,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Phoenix6Util;
-import frc.robot.util.drivers.TalonUtil;
 import frc.robot.util.sim.PhysicsSim;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,8 +101,8 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new TalonFX(mConstants.kLeaderMotor.getDeviceNumber(), mConstants.kLeaderMotor.getBus());
 
     // Get the motor configuration group and configure the main motor
-    mMainConfig = mConstants.kMotorConfig;
-    TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+    mMainConfig = mIsSim ? mConstants.kSimMotorConfig : mConstants.kMotorConfig;
+    Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
 
     // If a follower motor has been specified, instantiate and configure it
     if (mConstants.kFollowMotor != null) {
@@ -111,7 +110,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
       // Instantiate a follower motor object ...
       mFollower =
           new TalonFX(mConstants.kFollowMotor.getDeviceNumber(), mConstants.kFollowMotor.getBus());
-      mFollowerConfig = mConstants.kFollowerConfig;
+      mFollowerConfig = mIsSim ? mConstants.kSimFollowerConfig : mConstants.kFollowerConfig;
 
       // ... configure it with the same settings as the main motor ...
       mFollowerConfig.deserialize(mMainConfig.serialize());
@@ -119,7 +118,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
       mFollowerConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
       mFollowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
-      TalonUtil.applyAndCheckConfiguration(mFollower, mFollowerConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mFollower, mFollowerConfig);
 
       // ...and tie it to the main motor
       mFollower.setControl(
@@ -370,20 +369,13 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
   /* Configure PID constants */
   @Override
-  public void configurePID(int slot, double kP, double kI, double kD, double kV, boolean check) {
-    if (slot == 0) {
-      mMainConfig.Slot0.kP = kP;
-      mMainConfig.Slot0.kI = kI;
-      mMainConfig.Slot0.kD = kD;
-      mMainConfig.Slot0.kV = kV;
-    } else {
-      mMainConfig.Slot1.kP = kP;
-      mMainConfig.Slot1.kI = kI;
-      mMainConfig.Slot1.kD = kD;
-      mMainConfig.Slot1.kV = kV;
-    }
+  public void configurePID(double kP, double kI, double kD, boolean check) {
+    mMainConfig.Slot0.kP = kP;
+    mMainConfig.Slot0.kI = kI;
+    mMainConfig.Slot0.kD = kD;
+
     if (check) {
-      TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
     } else {
       mMainMotor.getConfigurator().apply(mMainConfig, mConstants.kCANTimeout);
     }
@@ -392,13 +384,13 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   /* Configure Closed Loop constants */
   @Override
   public void configureGSVA(double kG, double kS, double kV, double kA, boolean check) {
-    mMainConfig.Slot1.kG = kG;
-    mMainConfig.Slot1.kS = kS;
-    mMainConfig.Slot1.kV = kV;
-    mMainConfig.Slot1.kA = kA;
+    mMainConfig.Slot0.kG = kG;
+    mMainConfig.Slot0.kS = kS;
+    mMainConfig.Slot0.kV = kV;
+    mMainConfig.Slot0.kA = kA;
 
     if (check) {
-      TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
     } else {
       mMainMotor.getConfigurator().apply(mMainConfig, mConstants.kCANTimeout);
     }
@@ -412,7 +404,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mMainConfig.MotionMagic.MotionMagicJerk = kJerk;
 
     if (check) {
-      TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
     } else {
       mMainMotor.getConfigurator().apply(mMainConfig, mConstants.kCANTimeout);
     }
@@ -428,6 +420,12 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   @Override
   public double getPosition() {
     return mCurrPosition;
+  }
+
+  // Return latest trajectory position
+  @Override
+  public double getCurrTrajPos() {
+    return mCurrTrajectoryPosition;
   }
 
   // Return latest rotor velocity
@@ -463,21 +461,21 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     if (mConstants.kFollowMotor != null) {
       mFollowerConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
       mFollowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
-      TalonUtil.applyAndCheckConfiguration(mFollower, mFollowerConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mFollower, mFollowerConfig);
     }
 
     mMainConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = enable;
     mMainConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = enable;
-    TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+    Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
   }
 
   public void setNeutralMode(NeutralModeValue mode) {
     if (mConstants.kFollowMotor != null) {
       mFollowerConfig.MotorOutput.NeutralMode = mode;
-      TalonUtil.applyAndCheckConfiguration(mFollower, mFollowerConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mFollower, mFollowerConfig);
     }
     mMainConfig.MotorOutput.NeutralMode = mode;
-    TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+    Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
   }
 
   public synchronized void setSupplyCurrentLimit(double value, boolean enable, boolean check) {
@@ -485,7 +483,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mMainConfig.CurrentLimits.SupplyCurrentLimitEnable = enable;
 
     if (check) {
-      TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
     } else {
       mMainMotor.getConfigurator().apply(mMainConfig);
     }
@@ -496,18 +494,18 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mMainConfig.CurrentLimits.StatorCurrentLimitEnable = enable;
 
     if (check) {
-      TalonUtil.applyAndCheckConfiguration(mMainMotor, mMainConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
     } else {
       mMainMotor.getConfigurator().apply(mMainConfig);
     }
   }
 
   public boolean checkDeviceConfiguration() {
-    if (!TalonUtil.readAndVerifyConfiguration(mMainMotor, mMainConfig)) {
+    if (!Phoenix6Util.readAndVerifyConfiguration(mMainMotor, mMainConfig)) {
       return false;
     }
     if (mConstants.kFollowMotor != null) {
-      if (!TalonUtil.readAndVerifyConfiguration(mFollower, mFollowerConfig)) {
+      if (!Phoenix6Util.readAndVerifyConfiguration(mFollower, mFollowerConfig)) {
         return false;
       }
     }

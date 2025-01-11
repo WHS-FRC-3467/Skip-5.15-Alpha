@@ -47,28 +47,36 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
     kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
-    kSubSysConstants.kMotorConfig.Slot0.kP =
-        700; // output per unit of error in position (output/rotation)
-    kSubSysConstants.kMotorConfig.Slot0.kI =
-        0; // output per unit of integrated error in position (output/(rotation*s))
-    kSubSysConstants.kMotorConfig.Slot0.kD =
-        100; // output per unit of error derivative in position (output/rps)
-
-    kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    kSubSysConstants.kMotorConfig.Slot0.kG = 10; // output to overcome gravity (output)
-    kSubSysConstants.kMotorConfig.Slot0.kS = 0; // output to overcome static friction (output)
-    kSubSysConstants.kMotorConfig.Slot0.kV =
-        0.19; // output per unit of requested velocity (output/rps)
-    kSubSysConstants.kMotorConfig.Slot0.kA = 0; // unused, as there is no target acceleration
-
-    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 500;
-    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 50;
-    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
-
     kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 20;
     kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
     kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    /* REAL system profile constants */
+    kSubSysConstants.kMotorConfig.Slot0.kP = 0;
+    kSubSysConstants.kMotorConfig.Slot0.kI = 0;
+    kSubSysConstants.kMotorConfig.Slot0.kD = 0;
+    kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    kSubSysConstants.kMotorConfig.Slot0.kG = 0;
+    kSubSysConstants.kMotorConfig.Slot0.kS = 0;
+    kSubSysConstants.kMotorConfig.Slot0.kV = 0;
+    kSubSysConstants.kMotorConfig.Slot0.kA = 0;
+    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0;
+    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 0;
+    kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
+
+    /* SIM system profile constants */
+    kSubSysConstants.kSimMotorConfig.Slot0.kP = 700;
+    kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
+    kSubSysConstants.kSimMotorConfig.Slot0.kD = 100;
+    kSubSysConstants.kSimMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    kSubSysConstants.kSimMotorConfig.Slot0.kG = 10;
+    kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
+    kSubSysConstants.kSimMotorConfig.Slot0.kV = 0.19;
+    kSubSysConstants.kSimMotorConfig.Slot0.kA = 0;
+    kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 500;
+    kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicAcceleration = 50;
+    kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
     // Simulation Type
     kSubSysConstants.SimType = simType.ARM;

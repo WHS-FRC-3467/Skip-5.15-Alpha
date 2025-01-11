@@ -18,6 +18,9 @@ public class Constants {
 
   public static double loopPeriodSecs = 0.02;
 
+  // Use LoggedTunableNumbers
+  public static final boolean tuningMode = true;
+
   /**
    * This enum defines the runtime mode used by AdvantageKit. The mode is always "real" when running
    * on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and "replay"

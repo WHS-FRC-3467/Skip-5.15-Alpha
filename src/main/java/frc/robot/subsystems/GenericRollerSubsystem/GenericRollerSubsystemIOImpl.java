@@ -14,7 +14,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.util.drivers.Phoenix6Util;
-import frc.robot.util.drivers.TalonUtil;
 import frc.robot.util.sim.PhysicsSim;
 import frc.robot.util.sim.mechanisms.GenericRollerSimMechanism;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
 
       // Get the motor configuration group and configure the motor
       mConfig = mConst.kMotorConfig;
-      TalonUtil.applyAndCheckConfiguration(mMotor, mConfig);
+      Phoenix6Util.applyAndCheckConfiguration(mMotor, mConfig);
 
       // Assign StatusSignals to our local variables
       mPositionRot.add(mMotor.getPosition());

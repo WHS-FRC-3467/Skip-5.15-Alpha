@@ -10,14 +10,16 @@ package frc.robot.util.drivers;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.EnumMap;
 import java.util.function.Supplier;
 
 public class Phoenix6Util {
 
   private static boolean configResult = true;
+  private static Alert m_configAlert = new Alert("Talon Config", null, AlertType.kWarning);
 
   /**
    * checks the specified error code for issues
@@ -123,12 +125,9 @@ public class Phoenix6Util {
   public static boolean applyAndCheckConfiguration(TalonFX talon, TalonFXConfiguration config) {
     boolean result = applyAndCheckConfiguration(talon, config, 5);
 
-    //        if (!result) {
-    //            LED.getInstance().setConfigureFault(true);
-    //        }
-
     configResult &= result;
-    SmartDashboard.putBoolean("Talon Configuration state", configResult);
+    m_configAlert.setText(talon.getDescription() + " failed to configure correctly");
+    m_configAlert.set(!configResult);
 
     return result;
   }

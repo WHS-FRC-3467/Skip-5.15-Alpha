@@ -1,8 +1,8 @@
 package frc.robot.subsystems.GenericRollerSubsystem;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.Alert;
+import frc.robot.Constants;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +23,6 @@ public abstract class GenericRollerSubsystem<G extends GenericRollerSubsystem.Vo
   protected final GenericRollerIOInputsAutoLogged inputs = new GenericRollerIOInputsAutoLogged();
   private final List<Alert> disconnected = new ArrayList<Alert>();
 
-  private final boolean debug = true;
-
   public GenericRollerSubsystem(String name, int numRollers, GenericRollerSubsystemIO io) {
     this.name = name;
     this.numRollers = numRollers;
@@ -33,7 +31,7 @@ public abstract class GenericRollerSubsystem<G extends GenericRollerSubsystem.Vo
     // Set up a disconnection Alert for each roller motor
     for (int i = 0; i < numRollers; i++) {
       this.disconnected.add(
-          new Alert(name + " motor " + i + " disconnected!", Alert.AlertType.WARNING));
+          new Alert(name + " motor " + i + " disconnected!", Alert.AlertType.kWarning));
     }
   }
 
@@ -50,19 +48,18 @@ public abstract class GenericRollerSubsystem<G extends GenericRollerSubsystem.Vo
       io.runVolts(i, getState().getOutput(i));
     }
 
-    Logger.recordOutput("Rollers/" + name + "Goal", getState().toString());
-
-    displayInfo(debug);
+    displayInfo();
   }
 
-  private void displayInfo(boolean debug) {
-    if (debug) {
-      SmartDashboard.putString(this.name + " State ", getState().toString());
+  private void displayInfo() {
+
+    if (Constants.tuningMode) {
+      Logger.recordOutput(this.name + "/Goal State", getState().toString());
 
       for (int i = 0; i < numRollers; i++) {
-        SmartDashboard.putNumber(this.name + " Setpoint " + i, getState().getOutput(i));
-        SmartDashboard.putNumber(this.name + " Output " + i, inputs.appliedVoltage[i]);
-        SmartDashboard.putNumber(this.name + " Current Draw" + i, inputs.supplyCurrentAmps[i]);
+        Logger.recordOutput(this.name + "/Setpoint " + i, getState().getOutput(i));
+        Logger.recordOutput(this.name + "/Appl Volt " + i, inputs.appliedVoltage[i]);
+        Logger.recordOutput(this.name + "/Supply Current" + i, inputs.supplyCurrentAmps[i]);
       }
     }
   }

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.SampleProfiledArm;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
@@ -30,22 +29,11 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
   private final boolean debug = true;
 
   /** Constructor */
-  public SampleProfiledArm(SampleProfiledArmIO io) {
-    super(ProfileType.MM_POSITION, SampleProfiledArmConstants.kSubSysConstants, io);
+  public SampleProfiledArm(SampleProfiledArmIO io, boolean isSim) {
+    super(ProfileType.MM_POSITION, SampleProfiledArmConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {
-    displayInfo(debug);
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
-  }
-
-  private void displayInfo(boolean debug) {
-    if (debug) {
-      SmartDashboard.putString("SampleProfiledArm State ", getState().toString());
-      SmartDashboard.putNumber(
-          "SampleProfiledArm Setpoint", Units.rotationsToDegrees(getState().getOutput()));
-      SmartDashboard.putNumber("SampleProfiledArm Output", inputs.appliedVoltage[0]);
-      SmartDashboard.putNumber("SampleProfiledArm Current Draw", inputs.supplyCurrentAmps[0]);
-    }
   }
 }

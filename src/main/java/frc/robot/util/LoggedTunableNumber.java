@@ -7,10 +7,12 @@
 
 package frc.robot.util;
 
+import frc.robot.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
@@ -18,7 +20,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  * value not in dashboard.
  */
 @SuppressWarnings("UnusedVariable")
-public class LoggedTunableNumber {
+public class LoggedTunableNumber implements DoubleSupplier {
   private static final String tableKey = "TunableNumbers";
 
   private final String key;
@@ -50,13 +52,15 @@ public class LoggedTunableNumber {
   /**
    * Set the default value of the number. The default value can only be set once.
    *
-   * @param defValue The default value
+   * @param defaultValue The default value
    */
-  public void initDefault(double defValue) {
+  public void initDefault(double defaultValue) {
     if (!hasDefault) {
       hasDefault = true;
-      this.defaultValue = defValue;
-      dashboardNumber = new LoggedNetworkNumber("/SmartDashboard/" + key, defaultValue);
+      this.defaultValue = defaultValue;
+      if (Constants.tuningMode) {
+        dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
+      }
     }
   }
 
@@ -69,7 +73,7 @@ public class LoggedTunableNumber {
     if (!hasDefault) {
       return 0.0;
     } else {
-      return dashboardNumber.get();
+      return Constants.tuningMode ? dashboardNumber.get() : defaultValue;
     }
   }
 
@@ -111,5 +115,10 @@ public class LoggedTunableNumber {
   /** Runs action if any of the tunableNumbers have changed */
   public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
     ifChanged(id, values -> action.run(), tunableNumbers);
+  }
+
+  @Override
+  public double getAsDouble() {
+    return get();
   }
 }

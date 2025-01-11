@@ -76,9 +76,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
-        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX());
+        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
         m_sampleElevatorSubsystem =
-            new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX());
+            new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX(), false);
         break;
 
       case SIM:
@@ -92,8 +92,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
-        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim());
-        m_sampleElevatorSubsystem = new SampleProfiledElevator(new SampleProfiledElevatorIOSim());
+        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
+        m_sampleElevatorSubsystem =
+            new SampleProfiledElevator(new SampleProfiledElevatorIOSim(), true);
         break;
 
       default:
@@ -106,8 +107,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {});
-        m_sampleElevatorSubsystem = new SampleProfiledElevator(new SampleProfiledElevatorIO() {});
+        m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
+        m_sampleElevatorSubsystem =
+            new SampleProfiledElevator(new SampleProfiledElevatorIO() {}, true);
         break;
     }
 
