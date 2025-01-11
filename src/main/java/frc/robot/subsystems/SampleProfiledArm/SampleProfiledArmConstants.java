@@ -13,8 +13,7 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 /** Add your docs here. */
 public final class SampleProfiledArmConstants {
 
-  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
-      new GenericMotionProfiledSubsystemConstants();
+  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants = new GenericMotionProfiledSubsystemConstants();
 
   static {
     kSubSysConstants.kName = "SampleProfiledArm";
@@ -26,21 +25,23 @@ public final class SampleProfiledArmConstants {
     // Using TalonFX internal encoder
 
     kSubSysConstants.kCANcoder = null;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-        FeedbackSensorSourceValue.RotorSensor;
+    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
     kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Using a remote CANcoder
     /*
-          kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
-    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-          */
+     * kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
+     * kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
+     * FeedbackSensorSourceValue.FusedCANcoder;
+     * kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
+     * kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
+     * SensorDirectionValue.Clockwise_Positive;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
+     * AbsoluteSensorRangeValue.Unsigned_0To1;
+     */
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     kSubSysConstants.kMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -70,7 +71,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kD = 100;
     kSubSysConstants.kSimMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    kSubSysConstants.kSimMotorConfig.Slot0.kG = 10;
+    kSubSysConstants.kSimMotorConfig.Slot0.kG = 13;
     kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kV = 0.19;
     kSubSysConstants.kSimMotorConfig.Slot0.kA = 0;
@@ -90,8 +91,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
     kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
     kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-    kSubSysConstants.kArmSimConfig.kArmReduction =
-        54.4; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kArmSimConfig.kArmReduction = 54.4; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
   }
 }
