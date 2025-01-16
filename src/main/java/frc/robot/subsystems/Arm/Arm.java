@@ -1,5 +1,6 @@
-package frc.robot.subsystems.SampleProfiledArm;
+package frc.robot.subsystems.Arm;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
@@ -10,7 +11,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProfiledArm.State> {
+public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
   @RequiredArgsConstructor
   @Getter
@@ -32,11 +33,17 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
   private final boolean debug = true;
 
   /** Constructor */
-  public SampleProfiledArm(SampleProfiledArmIO io, boolean isSim) {
-    super(ProfileType.MM_POSITION, SampleProfiledArmConstants.kSubSysConstants, io, isSim);
+  public Arm(ArmIO io, boolean isSim) {
+    super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
   }
+
+  // public boolean atGoal() {
+  // return MathUtil.isNear(state.getOutput(),
+  // m_motor.getPosition().getValueAsDouble(), arm.tolerance);
+  // }
+
 }
