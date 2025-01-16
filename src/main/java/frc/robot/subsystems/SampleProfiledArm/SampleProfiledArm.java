@@ -18,13 +18,16 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
     HOME(0.0, 0.0),
     LEVEL_1(Units.degreesToRotations(90.0), 0.0),
     LEVEL_2(Units.degreesToRotations(135.0), 0.0),
-    LEVEL_3(Units.degreesToRotations(200.0), 0.0);
+    LEVEL_3(Units.degreesToRotations(135.0), 0.0),
+    LEVEL_4(Units.degreesToRotations(200.0), 0.0);
 
     private final double output;
     private final double feedFwd;
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   private final boolean debug = true;
 
