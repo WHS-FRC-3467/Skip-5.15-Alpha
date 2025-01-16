@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ComplexSubsystem;
+import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
+import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArm;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIO;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIOSim;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIOTalonFX;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevator;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIO;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOSim;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOTalonFX;
 import frc.robot.subsystems.SampleRollers.SampleRollers;
 import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
@@ -57,7 +57,7 @@ public class RobotContainer {
   private final Drive m_drive;
   private final SampleRollers m_sampleRollersSubsystem;
   private final SampleProfiledArm m_sampleArmSubsystem;
-  private final SampleProfiledElevator m_sampleElevatorSubsystem;
+  private final Elevator m_sampleElevatorSubsystem;
 
   // Non-AK-enabled Subsystems
   private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
@@ -79,8 +79,7 @@ public class RobotContainer {
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
-        m_sampleElevatorSubsystem =
-            new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX(), false);
+        m_sampleElevatorSubsystem = new Elevator(new ElevatorIOTalonFX(), false);
         break;
 
       case SIM:
@@ -95,8 +94,7 @@ public class RobotContainer {
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
-        m_sampleElevatorSubsystem =
-            new SampleProfiledElevator(new SampleProfiledElevatorIOSim(), true);
+        m_sampleElevatorSubsystem = new Elevator(new ElevatorIOSim(), true);
         break;
 
       default:
@@ -110,8 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
-        m_sampleElevatorSubsystem =
-            new SampleProfiledElevator(new SampleProfiledElevatorIO() {}, true);
+        m_sampleElevatorSubsystem = new Elevator(new ElevatorIO() {}, true);
         break;
     }
 
@@ -187,7 +184,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.HOME),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.HOME)));
+                m_sampleElevatorSubsystem.setStateCommand(Elevator.State.HOME)));
 
     // Driver POV Left: Send Arm and Elevator to LEVEL_1
     m_driver
@@ -195,7 +192,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_1),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_1)));
+                m_sampleElevatorSubsystem.setStateCommand(Elevator.State.LEVEL_1)));
 
     // Driver POV Up: Send Arm and Elevator to LEVEL_2
     m_driver
@@ -203,7 +200,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_2),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_2)));
+                m_sampleElevatorSubsystem.setStateCommand(Elevator.State.LEVEL_2)));
 
     // Driver POV Right: Send Arm and Elevator to LEVEL_3
     m_driver
@@ -211,7 +208,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_3),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_3)));
+                m_sampleElevatorSubsystem.setStateCommand(Elevator.State.LEVEL_3)));
 
     // Operator Buttons A & B run the Complex and Simple subsystems when held
     m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
