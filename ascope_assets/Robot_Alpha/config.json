@@ -1,0 +1,22 @@
+{
+  "name": "Alpha",
+  "sourceUrl": "https://cad.onshape.com/documents/9e44d50c5c8bff033b0ce0d1/w/af344c71a29ba8dfa8032272/e/0bcc622c0d518e1f737f949d",
+  "disableSimplification": false,
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": -90
+    }
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "cameras": [],
+  "components": []
+}
