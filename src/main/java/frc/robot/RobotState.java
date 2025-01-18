@@ -21,13 +21,9 @@ import lombok.Setter;
 public class RobotState {
   private static RobotState instance;
 
-  @Getter
-  @Setter
-  private Pose2d robotPose = new Pose2d();
+  @Getter @Setter private Pose2d robotPose = new Pose2d();
 
-  @Getter
-  @Setter
-  private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
+  @Getter @Setter private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
   @RequiredArgsConstructor
   @Getter
@@ -41,15 +37,12 @@ public class RobotState {
     private final Pose2d redTargetPose;
   }
 
-  @Getter
-  @Setter
-  private TARGET target = TARGET.NONE;
+  @Getter @Setter private TARGET target = TARGET.NONE;
 
   private double deltaT = .15;
 
   public static RobotState getInstance() {
-    if (instance == null)
-      instance = new RobotState();
+    if (instance == null) instance = new RobotState();
     return instance;
   }
 
@@ -93,7 +86,8 @@ public class RobotState {
                 : target.redTargetPose.getTranslation());
   }
 
-  private static final InterpolatingDoubleTreeMap speakerArmAngleMap = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap speakerArmAngleMap =
+      new InterpolatingDoubleTreeMap();
 
   static {
     speakerArmAngleMap.put(1.5, 12.71);
@@ -106,7 +100,8 @@ public class RobotState {
     speakerArmAngleMap.put(5.0, 35.00);
   }
 
-  private static final InterpolatingDoubleTreeMap feedArmAngleMap = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap feedArmAngleMap =
+      new InterpolatingDoubleTreeMap();
 
   static {
     feedArmAngleMap.put(5.0, 0.0);
