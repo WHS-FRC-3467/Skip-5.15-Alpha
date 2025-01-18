@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Arm;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
@@ -26,11 +25,12 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     private final double feedFwd;
   }
 
-  @Getter
-  @Setter
-  private State state = State.HOME;
+  @Getter @Setter private State state = State.HOME;
 
   private final boolean debug = true;
+
+  @Override
+  public void periodic() {}
 
   /** Constructor */
   public Arm(ArmIO io, boolean isSim) {
@@ -40,10 +40,4 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
   public Command setStateCommand(State state) {
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
   }
-
-  // public boolean atGoal() {
-  // return MathUtil.isNear(state.getOutput(),
-  // m_motor.getPosition().getValueAsDouble(), arm.tolerance);
-  // }
-
 }
