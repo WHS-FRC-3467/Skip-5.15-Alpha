@@ -25,9 +25,7 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
     private final ProfileType profileType;
   }
 
-  @Getter
-  @Setter
-  private State state = State.HOME;
+  @Getter @Setter private State state = State.HOME;
 
   private final boolean debug = true;
 
