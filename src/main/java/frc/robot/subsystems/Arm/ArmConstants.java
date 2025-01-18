@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledArm;
+package frc.robot.subsystems.Arm;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -11,10 +11,9 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledArmConstants {
+public final class ArmConstants {
 
-  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
-      new GenericMotionProfiledSubsystemConstants();
+  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants = new GenericMotionProfiledSubsystemConstants();
 
   static {
     kSubSysConstants.kName = "SampleProfiledArm";
@@ -26,8 +25,7 @@ public final class SampleProfiledArmConstants {
     // Using TalonFX internal encoder
 
     kSubSysConstants.kCANcoder = null;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-        FeedbackSensorSourceValue.RotorSensor;
+    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
     kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
@@ -93,8 +91,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
     kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
     kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-    kSubSysConstants.kArmSimConfig.kArmReduction =
-        54.4; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kArmSimConfig.kArmReduction = 54.4; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
   }
 }

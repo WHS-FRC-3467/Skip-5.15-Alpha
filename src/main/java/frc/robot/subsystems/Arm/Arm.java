@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledArm;
+package frc.robot.subsystems.Arm;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProfiledArm.State> {
+public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
   @RequiredArgsConstructor
   @Getter
@@ -18,20 +18,23 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
     HOME(0.0, 0.0, ProfileType.MM_POSITION),
     LEVEL_1(Units.degreesToRotations(90.0), 0.0, ProfileType.MM_POSITION),
     LEVEL_2(Units.degreesToRotations(135.0), 0.0, ProfileType.MM_POSITION),
-    LEVEL_3(Units.degreesToRotations(200.0), 0.0, ProfileType.MM_POSITION);
+    LEVEL_3(Units.degreesToRotations(135.0), 0.0, ProfileType.MM_POSITION),
+    LEVEL_4(Units.degreesToRotations(200.0), 0.0, ProfileType.MM_POSITION);
 
     private final double output;
     private final double feedFwd;
     private final ProfileType profileType;
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   private final boolean debug = true;
 
   /** Constructor */
-  public SampleProfiledArm(SampleProfiledArmIO io, boolean isSim) {
-    super(ProfileType.MM_POSITION, SampleProfiledArmConstants.kSubSysConstants, io, isSim);
+  public Arm(ArmIO io, boolean isSim) {
+    super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {
