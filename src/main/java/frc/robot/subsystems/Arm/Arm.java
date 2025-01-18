@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Arm;
+package frc.robot.subsystems.SampleProfiledArm;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
+public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProfiledArm.State> {
 
   @RequiredArgsConstructor
   @Getter
@@ -18,23 +18,21 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     HOME(0.0, 0.0),
     LEVEL_1(Units.degreesToRotations(90.0), 0.0),
     LEVEL_2(Units.degreesToRotations(135.0), 0.0),
-    LEVEL_3(Units.degreesToRotations(135.0), 0.0),
-    LEVEL_4(Units.degreesToRotations(200.0), 0.0);
+    LEVEL_3(Units.degreesToRotations(200.0), 0.0);
 
     private final double output;
     private final double feedFwd;
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   private final boolean debug = true;
 
-  @Override
-  public void periodic() {}
-
   /** Constructor */
-  public Arm(ArmIO io, boolean isSim) {
-    super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
+  public SampleProfiledArm(SampleProfiledArmIO io, boolean isSim) {
+    super(ProfileType.MM_POSITION, SampleProfiledArmConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {
