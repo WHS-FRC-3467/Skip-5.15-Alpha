@@ -48,8 +48,6 @@ public class RobotContainer {
   private final CommandXboxController m_driver = new CommandXboxController(0);
   private final CommandXboxController m_operator = new CommandXboxController(1);
 
-  private final TunedJoystick m_joystick_driver = new TunedJoystick(m_driver);
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> m_autoChooser;
 
@@ -145,9 +143,9 @@ public class RobotContainer {
     m_drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             m_drive,
-            () -> -m_joystick_driver.getLeftY(),
-            () -> -m_joystick_driver.getLeftX(),
-            () -> -m_joystick_driver.getRightX()));
+            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getRightX()));
 
     // Driver A Button: Lock to 0°
     m_driver
@@ -155,8 +153,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 m_drive,
-                () -> -m_joystick_driver.getLeftY(),
-                () -> -m_joystick_driver.getLeftX(),
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
                 () -> new Rotation2d()));
 
     // Driver X Button: Switch wheel modules to X pattern
