@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.TARGET;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -64,6 +65,7 @@ public class RobotContainer {
   // Non-AK-enabled Subsystems
   // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
   // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
+  public RobotState m_RobotState = RobotState.getInstance();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -156,6 +158,31 @@ public class RobotContainer {
             () -> -m_driver.getLeftY(),
             () -> -m_driver.getLeftX(),
             () -> -m_driver.getRightX()));
+
+    // Driver Back Button: Lock to REEF AB
+    m_driver
+        .back()
+        .whileTrue(
+            Commands.parallel(
+                m_RobotState.setTargetCommand(TARGET.REEF_AB),
+                DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> RobotState.getInstance().getAngleToTarget())));
+
+    // Eventually for CARDINAL
+    m_driver
+        .povUpRight()
+        .whileTrue(
+            m_RobotState
+                .setTargetCommand(TARGET.REEF_AB)
+                .andThen(
+                    DriveCommands.joystickDriveAtAngle(
+                        m_drive,
+                        () -> -m_driver.getLeftY(),
+                        () -> -m_driver.getLeftX(),
+                        () -> RobotState.getInstance().getAngleToTarget())));
 
     // Driver A Button: Lock to 0°
     m_driver

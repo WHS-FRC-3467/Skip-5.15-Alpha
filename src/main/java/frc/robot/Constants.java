@@ -132,29 +132,159 @@ public class Constants {
 
   public static class FieldConstants {
 
-    public static final Pose2d BLUE_SPEAKER =
+    // BLUE SIDE
+    public static final Pose2d BLUE_REEF_AB =
         new Pose2d(
-            Units.inchesToMeters(-1.5 + 12), Units.inchesToMeters(218.42), new Rotation2d(0));
-    public static final Pose2d RED_SPEAKER =
+            Units.inchesToMeters(144.00), // X Pose 
+            Units.inchesToMeters(158.50), // Y Pose  
+                //Rotation - Do a 180 from the direction the april tag faces to get the direction the robot should face
+            new Rotation2d(Units.degreesToRadians(0))); // Rotation (degrees to radians)
+    public static final Pose2d BLUE_REEF_CD =
         new Pose2d(
-            Units.inchesToMeters(652.73 - 12),
-            Units.inchesToMeters(218.42),
-            new Rotation2d(Math.PI));
-    public static final Pose2d BLUE_FEED = new Pose2d(1.25, 6.62, new Rotation2d(0));
-    public static final Pose2d RED_FEED = new Pose2d(15.250, 6.62, new Rotation2d(0));
-    public static final Pose2d BLUE_AMP =
+            Units.inchesToMeters(160.39), // X Pose
+            Units.inchesToMeters(130.17), // Y Pose
+            new Rotation2d(Units.degreesToRadians(60))); // Rotation
+    public static final Pose2d BLUE_REEF_EF =
         new Pose2d(
-            Units.inchesToMeters(72.5), Units.inchesToMeters(323.00), new Rotation2d(Math.PI / 2));
-    public static final Pose2d RED_AMP =
+            Units.inchesToMeters(193.1), // X Pose
+            Units.inchesToMeters(130.17), // Y Pose
+            new Rotation2d(Units.degreesToRadians(120))); // Rotation
+    public static final Pose2d BLUE_REEF_GH =
         new Pose2d(
-            Units.inchesToMeters(578.77),
-            Units.inchesToMeters(323.00),
-            new Rotation2d(-Math.PI / 2));
-    public static final double BLUE_AUTO_PENALTY_LINE =
-        9; // X distance from origin to center of the robot almost fully crossing the midline
-    public static final double RED_AUTO_PENALTY_LINE =
-        7.4; // X distance from origin to center of the robot almost fully crossing the midline
+            Units.inchesToMeters(209.49), // X Pose
+            Units.inchesToMeters(158.50), // Y Pose
+            new Rotation2d(Units.degreesToRadians(180))); // Rotation
+    public static final Pose2d BLUE_REEF_IJ =
+        new Pose2d(
+            Units.inchesToMeters(193.1), // X Pose
+            Units.inchesToMeters(180.83), // Y Pose
+            new Rotation2d(Units.degreesToRadians(-120))); // Rotation
+    public static final Pose2d BLUE_REEF_KL =
+        new Pose2d(
+            Units.inchesToMeters(160.39), // X Pose
+            Units.inchesToMeters(186.83), // Y Pose
+            new Rotation2d(Units.degreesToRadians(-60))); // Rotation
+    public static final Pose2d BLUE_SUBSTATION_LEFT =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_SUBSTATION_RIGHT =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_PROCESSOR =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_NET =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_BARGE =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
 
-    public static final Rotation2d ampAngle = new Rotation2d(Math.PI / 2);
+    // RED SIDE
+    public static final Pose2d RED_REEF_AB =
+        new Pose2d(
+            Units.inchesToMeters(546.87), // X Pose
+            Units.inchesToMeters(158.50), // Y Pose
+            new Rotation2d(Units.degreesToRadians(180))); // Rotation (degrees to radians). 
+            //Rotation - Do a 180 from the direction the april tag faces to get the direction the robot should face
+    public static final Pose2d RED_REEF_CD =
+        new Pose2d(
+            Units.inchesToMeters(530.49), // X Pose
+            Units.inchesToMeters(186.83), // Y Pose
+            new Rotation2d(Units.degreesToRadians(-120))); // Rotation
+    public static final Pose2d RED_REEF_EF =
+        new Pose2d(
+            Units.inchesToMeters(497.77), // X Pose
+            Units.inchesToMeters(186.83), // Y Pose
+            new Rotation2d(Units.degreesToRadians(-60))); // Rotation
+    public static final Pose2d RED_REEF_GH =
+        new Pose2d(
+            Units.inchesToMeters(481.39), // X Pose
+            Units.inchesToMeters(158.50), // Y Pose
+            new Rotation2d(Units.degreesToRadians(0))); // Rotation
+    public static final Pose2d RED_REEF_IJ =
+        new Pose2d(
+            Units.inchesToMeters(497.77), // X Pose
+            Units.inchesToMeters(130.37), // Y Pose 
+            new Rotation2d(Units.degreesToRadians(60))); // Rotation
+    public static final Pose2d RED_REEF_KL =
+        new Pose2d(
+            Units.inchesToMeters(530.49), // X Pose
+            Units.inchesToMeters(130.17), // Y Pose
+            new Rotation2d(Units.degreesToRadians(120))); // Rotation
+    public static final Pose2d RED_SUBSTATION_LEFT =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_SUBSTATION_RIGHT =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_PROCESSOR =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_NET =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_BARGE =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+
+    public static final Pose2d BLUE_REEF_CENTER = 
+      new Pose2d(
+        Units.inchesToMeters(196.75), Units.inchesToMeters(158.5), 
+        new Rotation2d());
+
+    public static final Pose2d RED_REEF_CENTER = 
+      new Pose2d(
+          Units.inchesToMeters(514.13), Units.inchesToMeters(158.5), 
+          new Rotation2d());
+
+    public static final double FIELD_X_LENGTH = Units.inchesToMeters(690.875);
+    public static final double FIELD_Y_LENGTH = Units.inchesToMeters(317.0);
+
+    /* public static final Pose2d BLUE_SPEAKER =
+          new Pose2d(
+              Units.inchesToMeters(-1.5 + 12), Units.inchesToMeters(218.42), new Rotation2d(0));
+      public static final Pose2d RED_SPEAKER =
+          new Pose2d(
+              Units.inchesToMeters(652.73 - 12),
+              Units.inchesToMeters(218.42),
+              new Rotation2d(Math.PI));
+      public static final Pose2d BLUE_FEED = new Pose2d(1.25, 6.62, new Rotation2d(0));
+      public static final Pose2d RED_FEED = new Pose2d(15.250, 6.62, new Rotation2d(0));
+      public static final Pose2d BLUE_AMP =
+          new Pose2d(
+              Units.inchesToMeters(72.5), Units.inchesToMeters(323.00), new Rotation2d(Math.PI / 2));
+      public static final Pose2d RED_AMP =
+          new Pose2d(
+              Units.inchesToMeters(578.77),
+              Units.inchesToMeters(323.00),
+              new Rotation2d(-Math.PI / 2));
+      public static final double BLUE_AUTO_PENALTY_LINE =
+          9; // X distance from origin to center of the robot almost fully crossing the midline
+      public static final double RED_AUTO_PENALTY_LINE =
+          7.4; // X distance from origin to center of the robot almost fully crossing the midline
+
+      public static final Rotation2d ampAngle = new Rotation2d(Math.PI / 2);
+    } */
   }
 }
