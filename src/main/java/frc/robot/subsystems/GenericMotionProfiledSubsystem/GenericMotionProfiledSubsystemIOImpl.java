@@ -237,6 +237,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
               mConstants.kMotorSimConfig,
               mConstants.kElevSimConfig);
           break;
+        case ROLLER:
+          mSim.addRollerSim(mConstants.kName, mMainMotor, mConstants.kMotorSimConfig);
+          break;
         case NONE:
         default:
           break;
