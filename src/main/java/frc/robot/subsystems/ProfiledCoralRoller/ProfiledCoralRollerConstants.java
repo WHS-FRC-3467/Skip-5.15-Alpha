@@ -1,26 +1,24 @@
-package frc.robot.subsystems.SampleProfiledArm;
+package frc.robot.subsystems.ProfiledCoralRoller;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Ports;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledArmConstants {
+public final class ProfiledCoralRollerConstants {
 
   public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
       new GenericMotionProfiledSubsystemConstants();
 
   static {
-    kSubSysConstants.kName = "SampleProfiledArm";
+    kSubSysConstants.kName = "ProfiledCoralRoller";
 
-    kSubSysConstants.kLeaderMotor = Ports.ARM_MAIN;
-    kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
+    kSubSysConstants.kLeaderMotor = Ports.CORAL_ROLLER;
+    kSubSysConstants.kFollowMotor = null;
     kSubSysConstants.kFollowerOpposesMain = true;
 
     // Using TalonFX internal encoder
@@ -28,7 +26,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kCANcoder = null;
     kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
         FeedbackSensorSourceValue.RotorSensor;
-    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
+    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
     kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Using a remote CANcoder
@@ -50,7 +48,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
     kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
-    kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 20;
+    kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
     kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
     kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -59,7 +57,6 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kMotorConfig.Slot0.kP = 0;
     kSubSysConstants.kMotorConfig.Slot0.kI = 0;
     kSubSysConstants.kMotorConfig.Slot0.kD = 0;
-    kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     kSubSysConstants.kMotorConfig.Slot0.kG = 0;
     kSubSysConstants.kMotorConfig.Slot0.kS = 0;
     kSubSysConstants.kMotorConfig.Slot0.kV = 0;
@@ -72,7 +69,6 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kSimMotorConfig.Slot0.kP = 700;
     kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kD = 100;
-    kSubSysConstants.kSimMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     kSubSysConstants.kSimMotorConfig.Slot0.kG = 13;
     kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kV = 0.19;
@@ -82,20 +78,10 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
     // Simulation Type
-    kSubSysConstants.SimType = simType.ARM;
+    kSubSysConstants.SimType = simType.ROLLER;
 
     // Motor simulation
-    kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
-
-    // Arm Simulation
-    kSubSysConstants.kArmSimConfig.kIsComboSim = true;
-    kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
-    kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
-    kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
-    kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
-    kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-    kSubSysConstants.kArmSimConfig.kArmReduction = 54.4; // RotorToSensorRatio *
-                                                         // SensorToMechanismRatio
-    kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
+    kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
+    kSubSysConstants.kMotorSimConfig.simReduction = 1;
   }
 }

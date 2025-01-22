@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledRoller;
+package frc.robot.subsystems.ProfiledCoralRoller;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
@@ -9,14 +9,13 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SampleProfiledRoller
-    extends GenericMotionProfiledSubsystem<SampleProfiledRoller.State> {
+public class ProfiledCoralRoller extends GenericMotionProfiledSubsystem<ProfiledCoralRoller.State> {
 
   @RequiredArgsConstructor
   @Getter
   public enum State implements TargetState {
-    OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE), EJECT(-6.0,
-        0.0, ProfileType.OPEN_VOLTAGE), POSITION(90.0, 0.0, ProfileType.MM_POSITION);
+    OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE), EJECT(6.0,
+        0.0, ProfileType.OPEN_VOLTAGE);
 
     private final double output;
     private final double feedFwd;
@@ -30,8 +29,8 @@ public class SampleProfiledRoller
   private final boolean debug = true;
 
   /** Constructor */
-  public SampleProfiledRoller(SampleProfiledRollerIO io, boolean isSim) {
-    super(ProfileType.OPEN_VOLTAGE, SampleProfiledRollerConstants.kSubSysConstants, io, isSim);
+  public ProfiledCoralRoller(ProfiledCoralRollerIO io, boolean isSim) {
+    super(ProfileType.OPEN_VOLTAGE, ProfiledCoralRollerConstants.kSubSysConstants, io, isSim);
   }
 
   public Command setStateCommand(State state) {

@@ -1,11 +1,11 @@
-package frc.robot.subsystems.SampleProfiledRoller;
+package frc.robot.subsystems.ProfiledCoralRoller;
 
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemIOImpl;
 
 public class SampleProfiledRollerIOTalonFX extends GenericMotionProfiledSubsystemIOImpl
-    implements SampleProfiledRollerIO {
+    implements ProfiledCoralRollerIO {
 
   public SampleProfiledRollerIOTalonFX() {
-    super(SampleProfiledRollerConstants.kSubSysConstants, false);
+    super(ProfiledCoralRollerConstants.kSubSysConstants, false);
   }
 }

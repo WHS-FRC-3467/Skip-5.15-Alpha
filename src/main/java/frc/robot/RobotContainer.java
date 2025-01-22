@@ -13,25 +13,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArm;
-import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIO;
-import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIOSim;
-import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIOTalonFX;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevator;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIO;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOSim;
-import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOTalonFX;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
+import frc.robot.subsystems.ProfiledCoralRoller.ProfiledCoralRoller;
+import frc.robot.subsystems.ProfiledCoralRoller.ProfiledCoralRollerIO;
+import frc.robot.subsystems.ProfiledCoralRoller.ProfiledCoralRollerIOSim;
+import frc.robot.subsystems.ProfiledCoralRoller.SampleProfiledRollerIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.util.sensors.LaserCanSensor;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -42,171 +36,115 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
-    // Controllers
-    private final CommandXboxController m_driver = new CommandXboxController(0);
-    // private final CommandXboxController m_operator = new
-    // CommandXboxController(1);
+  // Controllers
+  private final CommandXboxController m_driver = new CommandXboxController(0);
 
-    // Dashboard inputs
-    private final LoggedDashboardChooser<Command> m_autoChooser;
+  // Dashboard inputs
+  private final LoggedDashboardChooser<Command> m_autoChooser;
 
-    // AK-enabled Subsystems
-    private final Drive m_drive;
-    // private final SampleRollers m_sampleRollersSubsystem;
-    private final SampleProfiledArm m_sampleArmSubsystem;
-    private final SampleProfiledElevator m_sampleElevatorSubsystem;
-    private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
+  // AK-enabled Subsystems
+  private final Drive m_drive;
 
-    // Non-AK-enabled Subsystems
-    // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
-    // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
+  private final ProfiledCoralRoller m_sampleProfiledRollerSubsystem;
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
+  private final LaserCanSensor m_laserCanSensor;
 
-        switch (Constants.currentMode) {
-            case REAL:
-                // Real robot, instantiate hardware IO implementations
-                m_drive = new Drive(new GyroIOPigeon2(),
-                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFX(TunerConstants.FrontRight),
-                        new ModuleIOTalonFX(TunerConstants.BackLeft),
-                        new ModuleIOTalonFX(TunerConstants.BackRight));
+  // The container for the robot. Contains subsystems, OI devices, and commands.
+  public RobotContainer() {
 
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
-                m_sampleArmSubsystem =
-                        new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
-                m_sampleElevatorSubsystem =
-                        new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX(), false);
-                m_sampleProfiledRollerSubsystem =
-                        new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
-                break;
+    switch (Constants.currentMode) {
+      // Real robot, instantiate hardware IO implementations
+      case REAL:
+        m_drive = new Drive(new GyroIOPigeon2(), new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight));
 
-            case SIM:
-                // Sim robot, instantiate physics sim IO implementations
-                m_drive = new Drive(new GyroIO() {}, new ModuleIOSim(TunerConstants.FrontLeft),
-                        new ModuleIOSim(TunerConstants.FrontRight),
-                        new ModuleIOSim(TunerConstants.BackLeft),
-                        new ModuleIOSim(TunerConstants.BackRight));
+        m_sampleProfiledRollerSubsystem =
+            new ProfiledCoralRoller(new SampleProfiledRollerIOTalonFX(), false);
 
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
-                m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
-                m_sampleElevatorSubsystem =
-                        new SampleProfiledElevator(new SampleProfiledElevatorIOSim(), true);
-                m_sampleProfiledRollerSubsystem =
-                        new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
-                break;
+        m_laserCanSensor = new LaserCanSensor(Ports.INTAKE_LASERCAN.getDeviceNumber(), 180);
+        break;
 
-            default:
-                // Replayed robot, disable IO implementations
-                m_drive = new Drive(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
-                        new ModuleIO() {}, new ModuleIO() {});
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-                m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
-                m_sampleElevatorSubsystem =
-                        new SampleProfiledElevator(new SampleProfiledElevatorIO() {}, true);
-                m_sampleProfiledRollerSubsystem =
-                        new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+      // Sim robot, instantiate physics sim IO implementations
+      case SIM:
+        m_drive = new Drive(new GyroIO() {}, new ModuleIOSim(TunerConstants.FrontLeft),
+            new ModuleIOSim(TunerConstants.FrontRight), new ModuleIOSim(TunerConstants.BackLeft),
+            new ModuleIOSim(TunerConstants.BackRight));
 
-                break;
-        }
+        m_sampleProfiledRollerSubsystem =
+            new ProfiledCoralRoller(new ProfiledCoralRollerIOSim(), true);
 
-        // Set up auto routines
-        m_autoChooser =
-                new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        m_laserCanSensor = null; // TODO
 
-        // Set up SysId routines
-        m_autoChooser.addOption("Drive Wheel Radius Characterization",
-                DriveCommands.wheelRadiusCharacterization(m_drive));
-        m_autoChooser.addOption("Drive Simple FF Characterization",
-                DriveCommands.feedforwardCharacterization(m_drive));
-        m_autoChooser.addOption("Drive SysId (Quasistatic Forward)",
-                m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption("Drive SysId (Quasistatic Reverse)",
-                m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        m_autoChooser.addOption("Drive SysId (Dynamic Forward)",
-                m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption("Drive SysId (Dynamic Reverse)",
-                m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        break;
 
-        // Configure the controller button and joystick bindings
-        configureControllerBindings();
+      // Replayed robot, disable IO implementations
+      default:
+        m_drive = new Drive(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
+            new ModuleIO() {}, new ModuleIO() {});
 
-        // Detect if controllers are missing / Stop multiple warnings
-        DriverStation.silenceJoystickConnectionWarning(true);
+        m_sampleProfiledRollerSubsystem =
+            new ProfiledCoralRoller(new ProfiledCoralRollerIO() {}, false);
+
+        m_laserCanSensor = null; // TODO
+        break;
     }
 
-    /** Use this method to define your joystick and button -> command mappings. */
-    private void configureControllerBindings() {
+    // Set up auto routines
+    m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-        // Default command, normal field-relative drive
-        m_drive.setDefaultCommand(DriveCommands.joystickDrive(m_drive, () -> -m_driver.getLeftY(),
-                () -> -m_driver.getLeftX(), () -> -m_driver.getRightX()));
+    // Set up SysId routines
+    m_autoChooser.addOption("Drive Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(m_drive));
+    m_autoChooser.addOption("Drive Simple FF Characterization",
+        DriveCommands.feedforwardCharacterization(m_drive));
+    m_autoChooser.addOption("Drive SysId (Quasistatic Forward)",
+        m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_autoChooser.addOption("Drive SysId (Quasistatic Reverse)",
+        m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_autoChooser.addOption("Drive SysId (Dynamic Forward)",
+        m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_autoChooser.addOption("Drive SysId (Dynamic Reverse)",
+        m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        // Driver A Button: Lock to 0°
-        m_driver.a().whileTrue(DriveCommands.joystickDriveAtAngle(m_drive,
-                () -> -m_driver.getLeftY(), () -> -m_driver.getLeftX(), () -> new Rotation2d()));
+    // Configure the controller button and joystick bindings
+    configureControllerBindings();
 
-        // Driver X Button: Switch wheel modules to X pattern
-        m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
+    // Detect if controllers are missing / Stop multiple warnings
+    DriverStation.silenceJoystickConnectionWarning(true);
+  }
 
-        // Driver B Button: Reset gyro to 0°
-        m_driver.b()
-                .onTrue(Commands.runOnce(
-                        () -> m_drive.setPose(
-                                new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-                        m_drive).ignoringDisable(true));
+  /** Use this method to define your joystick and button -> command mappings. */
+  private void configureControllerBindings() {
 
-        // // Driver X Button: Run the Sample Roller in Eject direction when held
-        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-        // // Driver Y Button: Run the Sample Roller in Intake direction when held
-        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+    // Default command, normal field-relative drive
+    m_drive.setDefaultCommand(DriveCommands.joystickDrive(m_drive, () -> -m_driver.getLeftY(),
+        () -> -m_driver.getLeftX(), () -> -m_driver.getRightX()));
 
-        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-        // held
-        m_driver.leftBumper().whileTrue(
-                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
-        m_driver.rightBumper().whileTrue(
-                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
+    // Driver A Button: Lock to 0°
+    m_driver.a().whileTrue(DriveCommands.joystickDriveAtAngle(m_drive, () -> -m_driver.getLeftY(),
+        () -> -m_driver.getLeftX(), () -> new Rotation2d()));
 
-        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-        // position
-        m_driver.rightTrigger().whileTrue(m_sampleProfiledRollerSubsystem
-                .setStateCommand(SampleProfiledRoller.State.POSITION));
+    // Driver X Button: Switch wheel modules to X pattern
+    m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
 
-        // Driver POV Down: Bring Arm and Elevator to Home position
-        m_driver.povDown().onTrue(Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.HOME),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.HOME)));
+    // Driver B Button: Reset gyro to 0°
+    m_driver.b()
+        .onTrue(Commands.runOnce(
+            () -> m_drive.setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
+            m_drive).ignoringDisable(true));
 
-        // Driver POV Left: Send Arm and Elevator to LEVEL_1
-        m_driver.povLeft().onTrue(Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_1),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_1)));
+    // Driver Y Button: Intake Coral
+    m_driver.y().onTrue(new IntakeCommand(m_sampleProfiledRollerSubsystem, m_laserCanSensor));
+  }
 
-        // Driver POV Up: Send Arm and Elevator to LEVEL_2
-        m_driver.povUp().onTrue(Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_2),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_2)));
-
-        // Driver POV Right: Send Arm and Elevator to LEVEL_3
-        m_driver.povRight().onTrue(Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_3),
-                m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.LEVEL_3)));
-
-        // Operator Buttons A & B run the Complex and Simple subsystems when held
-        // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-        // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
-    }
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return m_autoChooser.get();
-    }
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return m_autoChooser.get();
+  }
 }
