@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +24,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -67,6 +72,8 @@ public class RobotContainer {
   // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
   public RobotState m_RobotState = RobotState.getInstance();
 
+  public final Vision m_vision;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -86,6 +93,12 @@ public class RobotContainer {
         // SampleProfiledArmIOTalonFX(), false);
         // m_sampleElevatorSubsystem =
         // new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX(), false);
+
+        m_vision =
+            new Vision(
+                m_drive::addVisionMeasurement,
+                new VisionIOPhotonVision(camera0Name, robotToCamera0));
+
         break;
 
       case SIM:
@@ -97,6 +110,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+
+        m_vision = null;
 
         // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
         // m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(),
@@ -114,6 +129,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        m_vision = null;
         // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
         // m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {},
         // true);

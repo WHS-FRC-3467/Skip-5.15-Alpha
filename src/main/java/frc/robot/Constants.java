@@ -135,9 +135,10 @@ public class Constants {
     // BLUE SIDE
     public static final Pose2d BLUE_REEF_AB =
         new Pose2d(
-            Units.inchesToMeters(144.00), // X Pose 
-            Units.inchesToMeters(158.50), // Y Pose  
-                //Rotation - Do a 180 from the direction the april tag faces to get the direction the robot should face
+            Units.inchesToMeters(144.00), // X Pose
+            Units.inchesToMeters(158.50), // Y Pose
+            // Rotation - Do a 180 from the direction the april tag faces to get the direction the
+            // robot should face
             new Rotation2d(Units.degreesToRadians(0))); // Rotation (degrees to radians)
     public static final Pose2d BLUE_REEF_CD =
         new Pose2d(
@@ -195,8 +196,9 @@ public class Constants {
         new Pose2d(
             Units.inchesToMeters(546.87), // X Pose
             Units.inchesToMeters(158.50), // Y Pose
-            new Rotation2d(Units.degreesToRadians(180))); // Rotation (degrees to radians). 
-            //Rotation - Do a 180 from the direction the april tag faces to get the direction the robot should face
+            new Rotation2d(Units.degreesToRadians(180))); // Rotation (degrees to radians).
+    // Rotation - Do a 180 from the direction the april tag faces to get the direction the robot
+    // should face
     public static final Pose2d RED_REEF_CD =
         new Pose2d(
             Units.inchesToMeters(530.49), // X Pose
@@ -215,7 +217,7 @@ public class Constants {
     public static final Pose2d RED_REEF_IJ =
         new Pose2d(
             Units.inchesToMeters(497.77), // X Pose
-            Units.inchesToMeters(130.37), // Y Pose 
+            Units.inchesToMeters(130.37), // Y Pose
             new Rotation2d(Units.degreesToRadians(60))); // Rotation
     public static final Pose2d RED_REEF_KL =
         new Pose2d(
@@ -248,15 +250,11 @@ public class Constants {
             Units.inchesToMeters(0.0), // Y Pose
             new Rotation2d()); // Rotation
 
-    public static final Pose2d BLUE_REEF_CENTER = 
-      new Pose2d(
-        Units.inchesToMeters(196.75), Units.inchesToMeters(158.5), 
-        new Rotation2d());
+    public static final Pose2d BLUE_REEF_CENTER =
+        new Pose2d(Units.inchesToMeters(196.75), Units.inchesToMeters(158.5), new Rotation2d());
 
-    public static final Pose2d RED_REEF_CENTER = 
-      new Pose2d(
-          Units.inchesToMeters(514.13), Units.inchesToMeters(158.5), 
-          new Rotation2d());
+    public static final Pose2d RED_REEF_CENTER =
+        new Pose2d(Units.inchesToMeters(514.13), Units.inchesToMeters(158.5), new Rotation2d());
 
     public static final double FIELD_X_LENGTH = Units.inchesToMeters(690.875);
     public static final double FIELD_Y_LENGTH = Units.inchesToMeters(317.0);

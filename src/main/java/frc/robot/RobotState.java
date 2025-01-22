@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.lang.annotation.Target;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -35,8 +33,12 @@ public class RobotState {
     REEF_GH(Constants.FieldConstants.BLUE_REEF_GH, Constants.FieldConstants.RED_REEF_GH),
     REEF_IJ(Constants.FieldConstants.BLUE_REEF_IJ, Constants.FieldConstants.RED_REEF_IJ),
     REEF_KL(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
-    SUBSTATION_LEFT(Constants.FieldConstants.BLUE_SUBSTATION_LEFT, Constants.FieldConstants.RED_SUBSTATION_LEFT),
-    SUBSTATION_RIGHT(Constants.FieldConstants.BLUE_SUBSTATION_RIGHT, Constants.FieldConstants.RED_SUBSTATION_RIGHT),
+    SUBSTATION_LEFT(
+        Constants.FieldConstants.BLUE_SUBSTATION_LEFT,
+        Constants.FieldConstants.RED_SUBSTATION_LEFT),
+    SUBSTATION_RIGHT(
+        Constants.FieldConstants.BLUE_SUBSTATION_RIGHT,
+        Constants.FieldConstants.RED_SUBSTATION_RIGHT),
     PROCESSOR(Constants.FieldConstants.BLUE_PROCESSOR, Constants.FieldConstants.RED_PROCESSOR),
     NET(Constants.FieldConstants.BLUE_NET, Constants.FieldConstants.RED_NET),
     BARGE(Constants.FieldConstants.BLUE_BARGE, Constants.FieldConstants.RED_BARGE);
@@ -65,11 +67,17 @@ public class RobotState {
   public Rotation2d getAngleToTarget() {
 
     // Get the angle of the vector from the robot to the reef
-    double angle = robotPose.getTranslation().minus(
-      (DriverStation.getAlliance().get() == Alliance.Blue)
-      ? Constants.FieldConstants.BLUE_REEF_CENTER.getTranslation()
-      : Constants.FieldConstants.RED_REEF_CENTER.getTranslation()) // Get the vector from the robot to the reef. Robotpose - reef center
-    .getAngle().getDegrees();
+    double angle =
+        robotPose
+            .getTranslation()
+            .minus(
+                (DriverStation.getAlliance().get() == Alliance.Blue)
+                    ? Constants.FieldConstants.BLUE_REEF_CENTER.getTranslation()
+                    : Constants.FieldConstants.RED_REEF_CENTER
+                        .getTranslation()) // Get the vector from the robot to the reef.
+            // Robotpose - reef center
+            .getAngle()
+            .getDegrees();
 
     // Now get the angle of the nearest target
     if (((angle >= -30) && (angle < 30))) {
@@ -84,35 +92,39 @@ public class RobotState {
         setTarget(TARGET.REEF_IJ);
       } else {
         setTarget(TARGET.REEF_CD);
-      }      return getAngleOfTarget();
+      }
+      return getAngleOfTarget();
     } else if ((angle >= 90) && (angle < 150)) {
       if (DriverStation.getAlliance().get() == Alliance.Blue) {
         setTarget(TARGET.REEF_KL);
       } else {
         setTarget(TARGET.REEF_EF);
-      }      return getAngleOfTarget();
+      }
+      return getAngleOfTarget();
     } else if (((angle >= 150) && (angle < 180)) || ((angle >= -180) && (angle < -150))) {
       if (DriverStation.getAlliance().get() == Alliance.Blue) {
         setTarget(TARGET.REEF_AB);
       } else {
         setTarget(TARGET.REEF_GH);
-      }      return getAngleOfTarget();
+      }
+      return getAngleOfTarget();
     } else if ((angle >= -150) && (angle < -90)) {
       if (DriverStation.getAlliance().get() == Alliance.Blue) {
         setTarget(TARGET.REEF_CD);
       } else {
         setTarget(TARGET.REEF_IJ);
-      }      return getAngleOfTarget();
+      }
+      return getAngleOfTarget();
     } else if ((angle >= -90) && (angle < -30)) {
       if (DriverStation.getAlliance().get() == Alliance.Blue) {
         setTarget(TARGET.REEF_EF);
       } else {
         setTarget(TARGET.REEF_KL);
-      }      return getAngleOfTarget();
+      }
+      return getAngleOfTarget();
     } else {
       return getAngleOfTarget();
     }
-
   }
 
   private double getDistanceToTarget() {
@@ -125,26 +137,26 @@ public class RobotState {
   }
 
   // private static final InterpolatingDoubleTreeMap speakerArmAngleMap =
-  //     new InterpolatingDoubleTreeMap();
+  // new InterpolatingDoubleTreeMap();
 
   // static {
-  //   speakerArmAngleMap.put(1.5, 12.71);
-  //   speakerArmAngleMap.put(2.0, 21.00);
-  //   speakerArmAngleMap.put(2.5, 24.89);
-  //   speakerArmAngleMap.put(3.0, 29.00);
-  //   speakerArmAngleMap.put(3.5, 31.20);
-  //   speakerArmAngleMap.put(4.0, 32.50);
-  //   speakerArmAngleMap.put(4.5, 34.00);
-  //   speakerArmAngleMap.put(5.0, 35.00);
+  // speakerArmAngleMap.put(1.5, 12.71);
+  // speakerArmAngleMap.put(2.0, 21.00);
+  // speakerArmAngleMap.put(2.5, 24.89);
+  // speakerArmAngleMap.put(3.0, 29.00);
+  // speakerArmAngleMap.put(3.5, 31.20);
+  // speakerArmAngleMap.put(4.0, 32.50);
+  // speakerArmAngleMap.put(4.5, 34.00);
+  // speakerArmAngleMap.put(5.0, 35.00);
   // }
 
   // private static final InterpolatingDoubleTreeMap feedArmAngleMap =
-  //     new InterpolatingDoubleTreeMap();
+  // new InterpolatingDoubleTreeMap();
 
   // static {
-  //   feedArmAngleMap.put(5.0, 0.0);
-  //   feedArmAngleMap.put(6.0, -10.0);
-  //   feedArmAngleMap.put(7.0, -19.0);
+  // feedArmAngleMap.put(5.0, 0.0);
+  // feedArmAngleMap.put(6.0, -10.0);
+  // feedArmAngleMap.put(7.0, -19.0);
   // }
 
   public Command setTargetCommand(TARGET target) {
