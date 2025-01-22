@@ -60,6 +60,7 @@ public class RobotContainer {
   // Non-AK-enabled Subsystems
   private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
   private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
+  private final RobotState m_RobotState = new RobotState();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -159,6 +160,18 @@ public class RobotContainer {
                 () -> -m_driver.getLeftY(),
                 () -> -m_driver.getLeftX(),
                 () -> new Rotation2d()));
+
+    // Driver Back Button: Lock to REEF AB
+    m_driver
+        .back()
+        .whileTrue(
+            Commands.sequence(
+                m_RobotState.setTargetCommand(RobotState.TARGET.REEF_AB),
+                DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> RobotState.getInstance().getAngleOfTarget())));
 
     // Driver X Button: Switch wheel modules to X pattern
     m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));

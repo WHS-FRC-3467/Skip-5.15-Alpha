@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -29,9 +27,21 @@ public class RobotState {
   @Getter
   public enum TARGET {
     NONE(null, null),
-    SPEAKER(Constants.FieldConstants.BLUE_SPEAKER, Constants.FieldConstants.RED_SPEAKER),
-    AMP(Constants.FieldConstants.BLUE_AMP, Constants.FieldConstants.RED_AMP),
-    FEED(Constants.FieldConstants.BLUE_FEED, Constants.FieldConstants.RED_FEED);
+    REEF_AB(Constants.FieldConstants.BLUE_REEF_AB, Constants.FieldConstants.RED_REEF_AB),
+    REEF_CD(Constants.FieldConstants.BLUE_REEF_CD, Constants.FieldConstants.RED_REEF_CD),
+    REEF_EF(Constants.FieldConstants.BLUE_REEF_EF, Constants.FieldConstants.RED_REEF_EF),
+    REEF_GF(Constants.FieldConstants.BLUE_REEF_GH, Constants.FieldConstants.RED_REEF_GH),
+    REEF_IJ(Constants.FieldConstants.BLUE_REEF_IJ, Constants.FieldConstants.RED_REEF_IJ),
+    REEF_JK(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
+    SUBSTATION(Constants.FieldConstants.BLUE_SUBSTATION, Constants.FieldConstants.RED_SUBSTATION),
+    PROCESSOR(Constants.FieldConstants.BLUE_PROCESSOR, Constants.FieldConstants.RED_PROCESSOR),
+    NET(Constants.FieldConstants.BLUE_NET, Constants.FieldConstants.RED_NET),
+    BARGE(Constants.FieldConstants.BLUE_BARGE, Constants.FieldConstants.RED_BARGE);
+
+    // SPEAKER(Constants.FieldConstants.BLUE_SPEAKER,
+    // Constants.FieldConstants.RED_SPEAKER),
+    // AMP(Constants.FieldConstants.BLUE_AMP, Constants.FieldConstants.RED_AMP),
+    // FEED(Constants.FieldConstants.BLUE_FEED, Constants.FieldConstants.RED_FEED);
 
     private final Pose2d blueTargetPose;
     private final Pose2d redTargetPose;
@@ -46,19 +56,21 @@ public class RobotState {
     return instance;
   }
 
-  private Translation2d getFuturePose() {
-    // If magnitude of velocity is low enough, use current pose
-    if (Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond) < .25) {
-      return robotPose.getTranslation();
-    } else {
-      // Add translation based on current speed and time in the future deltaT
-      return robotPose
-          .getTranslation()
-          .plus(
-              new Translation2d(
-                  deltaT * robotSpeeds.vxMetersPerSecond, deltaT * robotSpeeds.vyMetersPerSecond));
-    }
-  }
+  // private Translation2d getFuturePose() {
+  // // If magnitude of velocity is low enough, use current pose
+  // if (Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond)
+  // < .25) {
+  // return robotPose.getTranslation();
+  // } else {
+  // // Add translation based on current speed and time in the future deltaT
+  // return robotPose
+  // .getTranslation()
+  // .plus(
+  // new Translation2d(
+  // deltaT * robotSpeeds.vxMetersPerSecond, deltaT *
+  // robotSpeeds.vyMetersPerSecond));
+  // }
+  // }
 
   public Rotation2d getAngleOfTarget() {
     // Return the angle to allign to target
@@ -68,57 +80,66 @@ public class RobotState {
   }
 
   // todo: need to invert
-  public Rotation2d getAngleToTarget() {
-    return getFuturePose()
-        .minus(
-            (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? target.blueTargetPose.getTranslation()
-                : target.redTargetPose.getTranslation())
-        .getAngle()
-        .unaryMinus(); // todo: Test if unaryMinus fixed it
-  }
+  // public Rotation2d getAngleToTarget() {
+  // return getFuturePose()
+  // .minus(
+  // (DriverStation.getAlliance().get() == Alliance.Blue)
+  // ? target.blueTargetPose.getTranslation()
+  // : target.redTargetPose.getTranslation())
+  // .getAngle()
+  // .unaryMinus(); // todo: Test if unaryMinus fixed it
+  // }
+
+  // private double getDistanceToTarget() {
+  // return getFuturePose()
+  // .getDistance(
+  // (DriverStation.getAlliance().get() == Alliance.Blue)
+  // ? target.blueTargetPose.getTranslation()
+  // : target.redTargetPose.getTranslation());
+  // }
 
   private double getDistanceToTarget() {
-    return getFuturePose()
+    return robotPose
+        .getTranslation()
         .getDistance(
             (DriverStation.getAlliance().get() == Alliance.Blue)
                 ? target.blueTargetPose.getTranslation()
                 : target.redTargetPose.getTranslation());
   }
 
-  private static final InterpolatingDoubleTreeMap speakerArmAngleMap =
-      new InterpolatingDoubleTreeMap();
+  // private static final InterpolatingDoubleTreeMap speakerArmAngleMap = new
+  // InterpolatingDoubleTreeMap();
 
-  static {
-    speakerArmAngleMap.put(1.5, 12.71);
-    speakerArmAngleMap.put(2.0, 21.00);
-    speakerArmAngleMap.put(2.5, 24.89);
-    speakerArmAngleMap.put(3.0, 29.00);
-    speakerArmAngleMap.put(3.5, 31.20);
-    speakerArmAngleMap.put(4.0, 32.50);
-    speakerArmAngleMap.put(4.5, 34.00);
-    speakerArmAngleMap.put(5.0, 35.00);
-  }
+  // static {
+  // speakerArmAngleMap.put(1.5, 12.71);
+  // speakerArmAngleMap.put(2.0, 21.00);
+  // speakerArmAngleMap.put(2.5, 24.89);
+  // speakerArmAngleMap.put(3.0, 29.00);
+  // speakerArmAngleMap.put(3.5, 31.20);
+  // speakerArmAngleMap.put(4.0, 32.50);
+  // speakerArmAngleMap.put(4.5, 34.00);
+  // speakerArmAngleMap.put(5.0, 35.00);
+  // }
 
-  private static final InterpolatingDoubleTreeMap feedArmAngleMap =
-      new InterpolatingDoubleTreeMap();
+  // private static final InterpolatingDoubleTreeMap feedArmAngleMap = new
+  // InterpolatingDoubleTreeMap();
 
-  static {
-    feedArmAngleMap.put(5.0, 0.0);
-    feedArmAngleMap.put(6.0, -10.0);
-    feedArmAngleMap.put(7.0, -19.0);
-  }
+  // static {
+  // feedArmAngleMap.put(5.0, 0.0);
+  // feedArmAngleMap.put(6.0, -10.0);
+  // feedArmAngleMap.put(7.0, -19.0);
+  // }
 
-  public double getShotAngle() {
-    switch (target) {
-      case SPEAKER:
-        return speakerArmAngleMap.get(getDistanceToTarget());
-      case FEED:
-        return feedArmAngleMap.get(getDistanceToTarget());
-      default:
-        return 0.0;
-    }
-  }
+  // public double getShotAngle() {
+  // switch (target) {
+  // case SPEAKER:
+  // return speakerArmAngleMap.get(getDistanceToTarget());
+  // case FEED:
+  // return feedArmAngleMap.get(getDistanceToTarget());
+  // default:
+  // return 0.0;
+  // }
+  // }
 
   public Command setTargetCommand(TARGET target) {
     return Commands.startEnd(() -> setTarget(target), () -> setTarget(TARGET.NONE))

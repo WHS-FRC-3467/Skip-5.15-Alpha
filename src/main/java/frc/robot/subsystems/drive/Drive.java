@@ -52,10 +52,29 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+
+  @RequiredArgsConstructor
+  @Getter
+  public enum State {
+    TELEOP,
+    HEADING,
+    CARDINAL,
+    RELATIVE;
+  }
+
+  @Setter private State state = State.TELEOP;
+
+  public State getDrivetrainState() {
+    return state;
+  }
+
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
@@ -215,6 +234,10 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+    // MJW 1/18/2025
+    // Provide the settings for the desired state
+    // MJW 1/18/2025
   }
 
   /**

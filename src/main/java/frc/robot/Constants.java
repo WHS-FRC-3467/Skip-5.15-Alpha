@@ -104,57 +104,165 @@ public class Constants {
   }
 
   /*
-      public static final class DriveConstants {
-      public static final double headingAngleTolerance = 2.0;
-      public static final double MaxSpeed = 4.70;
-      //        TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-      public static final double MaxAngularRate =
-          1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-
-      public static TalonFXConfiguration motorConfig() {
-        TalonFXConfiguration m_configuration = new TalonFXConfiguration();
-
-        m_configuration.CurrentLimits.SupplyCurrentLimit = 30;
-        m_configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
-        m_configuration.CurrentLimits.StatorCurrentLimit = 80;
-        m_configuration.CurrentLimits.StatorCurrentLimitEnable = true;
-
-        return m_configuration;
-      }
-
-      public static TalonFXConfiguration motor2Config() {
-        TalonFXConfiguration m_configuration = motorConfig();
-        m_configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        return m_configuration;
-      }
-    }
-  */
+   * public static final class DriveConstants {
+   * public static final double headingAngleTolerance = 2.0;
+   * public static final double MaxSpeed = 4.70;
+   * // TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+   * public static final double MaxAngularRate =
+   * 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+   *
+   * public static TalonFXConfiguration motorConfig() {
+   * TalonFXConfiguration m_configuration = new TalonFXConfiguration();
+   *
+   * m_configuration.CurrentLimits.SupplyCurrentLimit = 30;
+   * m_configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
+   * m_configuration.CurrentLimits.StatorCurrentLimit = 80;
+   * m_configuration.CurrentLimits.StatorCurrentLimitEnable = true;
+   *
+   * return m_configuration;
+   * }
+   *
+   * public static TalonFXConfiguration motor2Config() {
+   * TalonFXConfiguration m_configuration = motorConfig();
+   * m_configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+   * return m_configuration;
+   * }
+   * }
+   */
 
   public static class FieldConstants {
 
-    public static final Pose2d BLUE_SPEAKER =
+    // BLUE SIDE
+    public static final Pose2d BLUE_REEF_AB =
         new Pose2d(
-            Units.inchesToMeters(-1.5 + 12), Units.inchesToMeters(218.42), new Rotation2d(0));
-    public static final Pose2d RED_SPEAKER =
+            Units.inchesToMeters(12.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation (degrees to radians)
+    public static final Pose2d BLUE_REEF_CD =
         new Pose2d(
-            Units.inchesToMeters(652.73 - 12),
-            Units.inchesToMeters(218.42),
-            new Rotation2d(Math.PI));
-    public static final Pose2d BLUE_FEED = new Pose2d(1.25, 6.62, new Rotation2d(0));
-    public static final Pose2d RED_FEED = new Pose2d(15.250, 6.62, new Rotation2d(0));
-    public static final Pose2d BLUE_AMP =
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_REEF_EF =
         new Pose2d(
-            Units.inchesToMeters(72.5), Units.inchesToMeters(323.00), new Rotation2d(Math.PI / 2));
-    public static final Pose2d RED_AMP =
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_REEF_GH =
         new Pose2d(
-            Units.inchesToMeters(578.77),
-            Units.inchesToMeters(323.00),
-            new Rotation2d(-Math.PI / 2));
-    public static final double BLUE_AUTO_PENALTY_LINE =
-        9; // X distance from origin to center of the robot almost fully crossing the midline
-    public static final double RED_AUTO_PENALTY_LINE =
-        7.4; // X distance from origin to center of the robot almost fully crossing the midline
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_REEF_IJ =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_REEF_KL =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_SUBSTATION =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_PROCESSOR =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_NET =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d BLUE_BARGE =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    // RED SIDE
+    public static final Pose2d RED_REEF_AB =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation (degrees to radians)
+    public static final Pose2d RED_REEF_CD =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_REEF_EF =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_REEF_GH =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_REEF_IJ =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_REEF_KL =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_SUBSTATION =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_PROCESSOR =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_NET =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_BARGE =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    // public static final Pose2d BLUE_SPEAKER =
+    // new Pose2d(
+    // Units.inchesToMeters(-1.5 + 12), Units.inchesToMeters(218.42), new
+    // Rotation2d(0));
+    // public static final Pose2d RED_SPEAKER =
+    // new Pose2d(
+    // Units.inchesToMeters(652.73 - 12),
+    // Units.inchesToMeters(218.42),
+    // new Rotation2d(Math.PI));
+    // public static final Pose2d BLUE_FEED = new Pose2d(1.25, 6.62, new
+    // Rotation2d(0));
+    // public static final Pose2d RED_FEED = new Pose2d(15.250, 6.62, new
+    // Rotation2d(0));
+    // public static final Pose2d BLUE_AMP =
+    // new Pose2d(
+    // Units.inchesToMeters(72.5), Units.inchesToMeters(323.00), new
+    // Rotation2d(Math.PI / 2));
+    // public static final Pose2d RED_AMP =
+    // new Pose2d(
+    // Units.inchesToMeters(578.77),
+    // Units.inchesToMeters(323.00),
+    // new Rotation2d(-Math.PI / 2));
+    // public static final double BLUE_AUTO_PENALTY_LINE =
+    // 9; // X distance from origin to center of the robot almost fully crossing the
+    // midline
+    // public static final double RED_AUTO_PENALTY_LINE =
+    // 7.4; // X distance from origin to center of the robot almost fully crossing
+    // the midline
 
-    public static final Rotation2d ampAngle = new Rotation2d(Math.PI / 2);
+    // public static final Rotation2d ampAngle = new Rotation2d(Math.PI / 2);
   }
 }
