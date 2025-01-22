@@ -93,14 +93,20 @@ public abstract class GenericMotionProfiledSubsystem<
 
   public void periodic() {
 
-    m_proType = getState().getProfileType();
+    // If Profile Type has changed, reset the encoder(s)
+    ProfileType newProfType = getState().getProfileType();
+    if (m_proType != newProfType) {
+      io.zeroSensors();
+      m_proType = newProfType;
+    }
 
     io.updateInputs(inputs);
     Logger.processInputs(m_name, inputs);
 
     // Check for disconnections
     leaderMotorDisconnected.set(!inputs.leaderMotorConnected);
-    followerMotorDisconnected.set(!inputs.followerMotorConnected);
+    followerMotorDisconnected.set(
+        m_constants.kFollowMotor != null && !inputs.followerMotorConnected);
     CANcoderDisconnected.set(m_constants.kCANcoder != null && !inputs.CANcoderConnected);
 
     // If changed, update controller constants from Tuneable Numbers
@@ -141,11 +147,11 @@ public abstract class GenericMotionProfiledSubsystem<
         io.runMotionMagicVelocity(getState().getOutput(), getState().getFeedFwd());
         break;
       case OPEN_VOLTAGE:
-        /* Run Open Loop to velocity in rotations/second */
+        /* Run Open Loop using specified voltage in volts */
         io.runVoltage(getState().getOutput());
         break;
       case OPEN_CURRENT:
-        /* Run Open Loop to current in amps */
+        /* Run Open Loop using specified current in amps */
         io.runCurrent(getState().getOutput());
         break;
     }
@@ -156,6 +162,7 @@ public abstract class GenericMotionProfiledSubsystem<
   private void displayInfo() {
 
     Logger.recordOutput(m_name + "/Goal State", getState().toString());
+    Logger.recordOutput(m_name + "/Profile Type", getState().getProfileType().toString());
 
     if (Constants.tuningMode) {
       Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());

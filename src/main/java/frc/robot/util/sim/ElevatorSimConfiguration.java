@@ -4,9 +4,9 @@
 
 package frc.robot.util.sim;
 
-/** Add your docs here. */
 public class ElevatorSimConfiguration {
 
+  public boolean kIsComboSim = false;
   public double kDefaultSetpoint = 0.0; // Meters
   public double kCarriageMass = 0.0; // Kilograms
   public double kElevatorDrumRadius = 0.0; // Meters

@@ -82,4 +82,11 @@ public interface GenericMotionProfiledSubsystemIO {
   public default boolean hasFinishedTrajectory(double tolerance) {
     return false;
   }
+
+  /* Encoder homing and reset */
+  public default void zeroSensors() {}
+
+  public default boolean hasBeenZeroed() {
+    return false;
+  }
 }

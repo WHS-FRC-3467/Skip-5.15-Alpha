@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Class to draw a simulated Elevator mechanism controlled by motion profiling */
-public class MotionProfiledElevatorMechanism {
+public class MotionProfiledElevatorMechanism implements MotionProfiledMechanism {
 
   String mSimName;
   Mechanism2d mMech;
@@ -30,7 +30,7 @@ public class MotionProfiledElevatorMechanism {
   }
 
   /** Runs the mech2d widget in GUI. */
-  public void update(double position) {
+  public void updateElevator(double position) {
 
     mElevator.setLength(position);
     SmartDashboard.putData(mSimName, mMech); // Creates mech2d in SmartDashboard
