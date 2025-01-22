@@ -42,12 +42,8 @@ public class Phoenix6Util {
       tries++;
     }
     if (code != StatusCode.OK) {
-      DriverStation.reportError(
-          "Failed to execute phoenix 6 api call after "
-              + numTries
-              + " attempts. "
-              + code.getDescription(),
-          false);
+      DriverStation.reportError("Failed to execute phoenix 6 api call after " + numTries
+          + " attempts. " + code.getDescription(), false);
       return false;
     }
     return true;
@@ -69,38 +65,24 @@ public class Phoenix6Util {
     return checkErrorAndRetry(function, 5);
   }
 
-  public static boolean applyAndCheckConfiguration(
-      TalonFX talon, TalonFXConfiguration config, int numTries) {
+  public static boolean applyAndCheckConfiguration(TalonFX talon, TalonFXConfiguration config,
+      int numTries) {
     for (int i = 0; i < numTries; i++) {
       if (checkErrorAndRetry(() -> talon.getConfigurator().apply(config))) {
         // API says we applied config, lets make sure it's right
         if (readAndVerifyConfiguration(talon, config)) {
           return true;
         } else {
-          DriverStation.reportWarning(
-              "Failed to verify config for talon ["
-                  + talon.getDescription()
-                  + "] (attempt "
-                  + (i + 1)
-                  + " of "
-                  + numTries
-                  + ")",
-              false);
+          DriverStation.reportWarning("Failed to verify config for talon [" + talon.getDescription()
+              + "] (attempt " + (i + 1) + " of " + numTries + ")", false);
         }
       } else {
-        DriverStation.reportWarning(
-            "Failed to apply config for talon ["
-                + talon.getDescription()
-                + "] (attempt "
-                + (i + 1)
-                + " of "
-                + numTries
-                + ")",
-            false);
+        DriverStation.reportWarning("Failed to apply config for talon [" + talon.getDescription()
+            + "] (attempt " + (i + 1) + " of " + numTries + ")", false);
       }
     }
-    DriverStation.reportError(
-        "Failed to apply config for talon after " + numTries + " attempts", false);
+    DriverStation.reportError("Failed to apply config for talon after " + numTries + " attempts",
+        false);
     return false;
   }
 
@@ -108,8 +90,8 @@ public class Phoenix6Util {
     TalonFXConfiguration readConfig = new TalonFXConfiguration();
     if (!checkErrorAndRetry(() -> talon.getConfigurator().refresh(readConfig))) {
       // could not get config!
-      DriverStation.reportWarning(
-          "Failed to read config for talon [" + talon.getDescription() + "]", false);
+      DriverStation
+          .reportWarning("Failed to read config for talon [" + talon.getDescription() + "]", false);
       return false;
     } else if (!TalonFXConfigEquality.isEqual(config, readConfig)) {
       // configs did not match
@@ -133,26 +115,7 @@ public class Phoenix6Util {
   }
 
   public enum Fault {
-    Hardware,
-    OverSupplyV,
-    Undervoltage,
-    UnstableSupplyV,
-    StatorCurrLimit,
-    SupplyCurrLimit,
-    UnlicensedFeatureInUse,
-    BridgeBrownout,
-    RemoteSensorReset,
-    RemoteSensorPosOverflow,
-    RemoteSensorDataInvalid,
-    FusedSensorOutOfSync,
-    UsingFusedCANcoderWhileUnlicensed,
-    MissingDifferentialFX,
-    ReverseHardLimit,
-    ForwardHardLimit,
-    ReverseSoftLimit,
-    ForwardSoftLimit,
-    ProcTemp,
-    DeviceTemp,
+    Hardware, OverSupplyV, Undervoltage, UnstableSupplyV, StatorCurrLimit, SupplyCurrLimit, UnlicensedFeatureInUse, BridgeBrownout, RemoteSensorReset, RemoteSensorPosOverflow, RemoteSensorDataInvalid, FusedSensorOutOfSync, UsingFusedCANcoderWhileUnlicensed, MissingDifferentialFX, ReverseHardLimit, ForwardHardLimit, ReverseSoftLimit, ForwardSoftLimit, ProcTemp, DeviceTemp,
   }
 
   public static void checkFaults(String subsystemName, TalonFX talon) {
@@ -170,8 +133,7 @@ public class Phoenix6Util {
     faults.put(Fault.RemoteSensorPosOverflow, talon.getFault_RemoteSensorPosOverflow().getValue());
     faults.put(Fault.RemoteSensorDataInvalid, talon.getFault_RemoteSensorDataInvalid().getValue());
     faults.put(Fault.FusedSensorOutOfSync, talon.getFault_FusedSensorOutOfSync().getValue());
-    faults.put(
-        Fault.UsingFusedCANcoderWhileUnlicensed,
+    faults.put(Fault.UsingFusedCANcoderWhileUnlicensed,
         talon.getFault_UsingFusedCANcoderWhileUnlicensed().getValue());
     faults.put(Fault.MissingDifferentialFX, talon.getFault_MissingDifferentialFX().getValue());
     faults.put(Fault.ReverseHardLimit, talon.getFault_ReverseHardLimit().getValue());
@@ -191,20 +153,7 @@ public class Phoenix6Util {
   }
 
   public enum StickyFault {
-    BootDuringEnable,
-    BridgeBrownout,
-    DeviceTemp,
-    ForwardHardLimit,
-    ForwardSoftLimit,
-    Hardware,
-    OverSupplyV,
-    ProcTemp,
-    ReverseHardLimit,
-    ReverseSoftLimit,
-    RemoteSensorReset,
-    Undervoltage,
-    UnstableSupplyV,
-    UnlicensedFeatureInUse
+    BootDuringEnable, BridgeBrownout, DeviceTemp, ForwardHardLimit, ForwardSoftLimit, Hardware, OverSupplyV, ProcTemp, ReverseHardLimit, ReverseSoftLimit, RemoteSensorReset, Undervoltage, UnstableSupplyV, UnlicensedFeatureInUse
   }
 
   public static void checkStickyFaults(String subsystemName, TalonFX talon) {
@@ -222,8 +171,7 @@ public class Phoenix6Util {
     faults.put(StickyFault.ReverseSoftLimit, talon.getStickyFault_ReverseSoftLimit().getValue());
     faults.put(StickyFault.Undervoltage, talon.getStickyFault_Undervoltage().getValue());
     faults.put(StickyFault.UnstableSupplyV, talon.getStickyFault_UnstableSupplyV().getValue());
-    faults.put(
-        StickyFault.UnlicensedFeatureInUse,
+    faults.put(StickyFault.UnlicensedFeatureInUse,
         talon.getStickyFault_UnlicensedFeatureInUse().getValue());
     faults.put(StickyFault.RemoteSensorReset, talon.getStickyFault_RemoteSensorReset().getValue());
 

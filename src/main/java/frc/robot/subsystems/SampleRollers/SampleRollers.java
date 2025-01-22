@@ -19,9 +19,8 @@ public class SampleRollers extends GenericRollerSubsystem<SampleRollers.State> {
   @RequiredArgsConstructor
   @Getter
   public enum State implements VoltageState {
-    OFF(new double[] {0.0, 0.0}),
-    INTAKE(new double[] {10.0, -5.0}),
-    EJECT(new double[] {-8.0, 4.0});
+    OFF(new double[] {0.0, 0.0}), INTAKE(new double[] {10.0, -5.0}), EJECT(
+        new double[] {-8.0, 4.0});
 
     private final double[] output;
 
@@ -30,7 +29,9 @@ public class SampleRollers extends GenericRollerSubsystem<SampleRollers.State> {
     }
   }
 
-  @Getter @Setter private State state = State.OFF;
+  @Getter
+  @Setter
+  private State state = State.OFF;
 
   /** Constructor */
   public SampleRollers(SampleRollersIO io) {

@@ -21,28 +21,35 @@ import lombok.Setter;
 public class RobotState {
   private static RobotState instance;
 
-  @Getter @Setter private Pose2d robotPose = new Pose2d();
+  @Getter
+  @Setter
+  private Pose2d robotPose = new Pose2d();
 
-  @Getter @Setter private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
+  @Getter
+  @Setter
+  private ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
   @RequiredArgsConstructor
   @Getter
   public enum TARGET {
-    NONE(null, null),
-    SPEAKER(Constants.FieldConstants.BLUE_SPEAKER, Constants.FieldConstants.RED_SPEAKER),
-    AMP(Constants.FieldConstants.BLUE_AMP, Constants.FieldConstants.RED_AMP),
-    FEED(Constants.FieldConstants.BLUE_FEED, Constants.FieldConstants.RED_FEED);
+    NONE(null, null), SPEAKER(Constants.FieldConstants.BLUE_SPEAKER,
+        Constants.FieldConstants.RED_SPEAKER), AMP(Constants.FieldConstants.BLUE_AMP,
+            Constants.FieldConstants.RED_AMP), FEED(Constants.FieldConstants.BLUE_FEED,
+                Constants.FieldConstants.RED_FEED);
 
     private final Pose2d blueTargetPose;
     private final Pose2d redTargetPose;
   }
 
-  @Getter @Setter private TARGET target = TARGET.NONE;
+  @Getter
+  @Setter
+  private TARGET target = TARGET.NONE;
 
   private double deltaT = .15;
 
   public static RobotState getInstance() {
-    if (instance == null) instance = new RobotState();
+    if (instance == null)
+      instance = new RobotState();
     return instance;
   }
 
@@ -52,11 +59,8 @@ public class RobotState {
       return robotPose.getTranslation();
     } else {
       // Add translation based on current speed and time in the future deltaT
-      return robotPose
-          .getTranslation()
-          .plus(
-              new Translation2d(
-                  deltaT * robotSpeeds.vxMetersPerSecond, deltaT * robotSpeeds.vyMetersPerSecond));
+      return robotPose.getTranslation().plus(new Translation2d(
+          deltaT * robotSpeeds.vxMetersPerSecond, deltaT * robotSpeeds.vyMetersPerSecond));
     }
   }
 
@@ -69,21 +73,16 @@ public class RobotState {
 
   // todo: need to invert
   public Rotation2d getAngleToTarget() {
-    return getFuturePose()
-        .minus(
-            (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? target.blueTargetPose.getTranslation()
-                : target.redTargetPose.getTranslation())
-        .getAngle()
-        .unaryMinus(); // todo: Test if unaryMinus fixed it
+    return getFuturePose().minus((DriverStation.getAlliance().get() == Alliance.Blue)
+        ? target.blueTargetPose.getTranslation()
+        : target.redTargetPose.getTranslation()).getAngle().unaryMinus(); // todo: Test if
+                                                                          // unaryMinus fixed it
   }
 
   private double getDistanceToTarget() {
-    return getFuturePose()
-        .getDistance(
-            (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? target.blueTargetPose.getTranslation()
-                : target.redTargetPose.getTranslation());
+    return getFuturePose().getDistance((DriverStation.getAlliance().get() == Alliance.Blue)
+        ? target.blueTargetPose.getTranslation()
+        : target.redTargetPose.getTranslation());
   }
 
   private static final InterpolatingDoubleTreeMap speakerArmAngleMap =

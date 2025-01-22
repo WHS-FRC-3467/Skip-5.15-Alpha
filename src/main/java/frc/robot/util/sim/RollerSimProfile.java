@@ -23,20 +23,17 @@ class RollerSimProfile extends SimProfile {
    * @param talon The TalonFX device
    * @param motorModel A DCMotorSim
    */
-  public RollerSimProfile(
-      final String simName, final TalonFX talon, final MotorSimConfiguration motorConst) {
+  public RollerSimProfile(final String simName, final TalonFX talon,
+      final MotorSimConfiguration motorConst) {
 
     this.m_Name = simName;
     this.m_Talon = talon;
     this.m_MotorConst = motorConst;
 
-    this.m_MotorSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                m_MotorConst.simMotorModelSupplier.get(),
-                m_MotorConst.simMOI,
-                m_MotorConst.simReduction),
-            m_MotorConst.simMotorModelSupplier.get());
+    this.m_MotorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(m_MotorConst.simMotorModelSupplier.get(),
+            m_MotorConst.simMOI, m_MotorConst.simReduction),
+        m_MotorConst.simMotorModelSupplier.get());
 
     this.m_Mechanism = new GenericRollerSimMechanism(m_Name, 1);
   }
@@ -44,9 +41,10 @@ class RollerSimProfile extends SimProfile {
   /**
    * Runs the simulation profile.
    *
-   * <p>This uses very rudimentary physics simulation and exists to allow users to test features of
-   * our products in simulation using our examples out of the box. Users may modify this to utilize
-   * more accurate physics simulation.
+   * <p>
+   * This uses very rudimentary physics simulation and exists to allow users to test features of our
+   * products in simulation using our examples out of the box. Users may modify this to utilize more
+   * accurate physics simulation.
    */
   public void run() {
 

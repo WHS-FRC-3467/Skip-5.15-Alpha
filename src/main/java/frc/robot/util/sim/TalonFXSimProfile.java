@@ -23,10 +23,8 @@ class TalonFXSimProfile extends SimProfile {
   public TalonFXSimProfile(final TalonFX talon, final MotorSimConfiguration constants) {
     this.mTalon = talon;
     this.mMotorSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                constants.simMotorModelSupplier.get(), constants.simMOI, constants.simReduction),
-            constants.simMotorModelSupplier.get());
+        new DCMotorSim(LinearSystemId.createDCMotorSystem(constants.simMotorModelSupplier.get(),
+            constants.simMOI, constants.simReduction), constants.simMotorModelSupplier.get());
   }
 
   /**
@@ -43,9 +41,10 @@ class TalonFXSimProfile extends SimProfile {
   /**
    * Runs the simulation profile.
    *
-   * <p>This uses very rudimentary physics simulation and exists to allow users to test features of
-   * our products in simulation using our examples out of the box. Users may modify this to utilize
-   * more accurate physics simulation.
+   * <p>
+   * This uses very rudimentary physics simulation and exists to allow users to test features of our
+   * products in simulation using our examples out of the box. Users may modify this to utilize more
+   * accurate physics simulation.
    */
   public void run() {
 

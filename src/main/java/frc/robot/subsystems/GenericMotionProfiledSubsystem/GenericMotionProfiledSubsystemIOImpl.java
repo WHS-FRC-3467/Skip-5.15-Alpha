@@ -88,8 +88,8 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   /*
    * Constructor
    */
-  public GenericMotionProfiledSubsystemIOImpl(
-      GenericMotionProfiledSubsystemConstants constants, boolean isSim) {
+  public GenericMotionProfiledSubsystemIOImpl(GenericMotionProfiledSubsystemConstants constants,
+      boolean isSim) {
 
     mIsSim = isSim;
 
@@ -102,11 +102,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Get the motor configuration group and configure the main motor
     /*
-     * Note: We can use the kMotorcConfig constants here for both REAL and SIM,
-     * because
-     * after this class is instantiated, if needed, the Subsystem's constructor will
-     * pull
-     * the SIM constants into LoggedTunableNumbers and update this config.
+     * Note: We can use the kMotorcConfig constants here for both REAL and SIM, because after this
+     * class is instantiated, if needed, the Subsystem's constructor will pull the SIM constants
+     * into LoggedTunableNumbers and update this config.
      */
     mMainConfig = mConstants.kMotorConfig;
     Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
@@ -137,15 +135,15 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
       mCancoder =
           new CANcoder(mConstants.kCANcoder.getDeviceNumber(), mConstants.kCANcoder.getBus());
-      Phoenix6Util.checkErrorAndRetry(
-          () -> mCancoder.getConfigurator().apply(mConstants.kEncoderConfig));
+      Phoenix6Util
+          .checkErrorAndRetry(() -> mCancoder.getConfigurator().apply(mConstants.kEncoderConfig));
     }
 
     // Set update frequencies for some basic output signals
-    Phoenix6Util.checkErrorAndRetry(
-        () -> mMainMotor.getBridgeOutput().setUpdateFrequency(200, 0.05));
-    Phoenix6Util.checkErrorAndRetry(
-        () -> mMainMotor.getFault_Hardware().setUpdateFrequency(4, 0.05));
+    Phoenix6Util
+        .checkErrorAndRetry(() -> mMainMotor.getBridgeOutput().setUpdateFrequency(200, 0.05));
+    Phoenix6Util
+        .checkErrorAndRetry(() -> mMainMotor.getFault_Hardware().setUpdateFrequency(4, 0.05));
 
     // Assign StatusSignals to our local variables
     mInternalPositionRotations = mMainMotor.getPosition();
@@ -175,43 +173,24 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     }
 
     // Set update frequencies for the StatusSignals of interest
-    Phoenix6Util.checkErrorAndRetry(
-        () ->
-            BaseStatusSignal.setUpdateFrequencyForAll(
-                100,
-                mInternalPositionRotations,
-                mVelocityRps,
-                mAppliedVoltage.get(0),
-                mSupplyCurrent.get(0),
-                mTorqueCurrent.get(0),
-                mTempCelsius.get(0)));
+    Phoenix6Util.checkErrorAndRetry(() -> BaseStatusSignal.setUpdateFrequencyForAll(100,
+        mInternalPositionRotations, mVelocityRps, mAppliedVoltage.get(0), mSupplyCurrent.get(0),
+        mTorqueCurrent.get(0), mTempCelsius.get(0)));
     mMainMotor.optimizeBusUtilization(0, 1.0);
 
     if (mConstants.kFollowMotor != null) {
       Phoenix6Util.checkErrorAndRetry(
-          () ->
-              BaseStatusSignal.setUpdateFrequencyForAll(
-                  100,
-                  mAppliedVoltage.get(1),
-                  mSupplyCurrent.get(1),
-                  mTorqueCurrent.get(1),
-                  mTempCelsius.get(1)));
+          () -> BaseStatusSignal.setUpdateFrequencyForAll(100, mAppliedVoltage.get(1),
+              mSupplyCurrent.get(1), mTorqueCurrent.get(1), mTempCelsius.get(1)));
       mFollower.optimizeBusUtilization(0, 1.0);
     }
 
-    Phoenix6Util.checkErrorAndRetry(
-        () ->
-            BaseStatusSignal.setUpdateFrequencyForAll(
-                200,
-                mMainClosedLoopError,
-                mMainClosedLoopReference,
-                mMainClosedLoopReferenceSlope));
+    Phoenix6Util.checkErrorAndRetry(() -> BaseStatusSignal.setUpdateFrequencyForAll(200,
+        mMainClosedLoopError, mMainClosedLoopReference, mMainClosedLoopReferenceSlope));
 
     if (mConstants.kCANcoder != null) {
-      Phoenix6Util.checkErrorAndRetry(
-          () ->
-              BaseStatusSignal.setUpdateFrequencyForAll(
-                  500, mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations));
+      Phoenix6Util.checkErrorAndRetry(() -> BaseStatusSignal.setUpdateFrequencyForAll(500,
+          mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations));
       mCancoder.optimizeBusUtilization(0, 1.0);
     }
 
@@ -222,19 +201,11 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
       // Create the appropriate sim profile
       switch (mConstants.SimType) {
         case ARM:
-          mSim.addArmSim(
-              mConstants.kName,
-              mMainMotor,
-              mCancoder,
-              mConstants.kMotorSimConfig,
+          mSim.addArmSim(mConstants.kName, mMainMotor, mCancoder, mConstants.kMotorSimConfig,
               mConstants.kArmSimConfig);
           break;
         case ELEVATOR:
-          mSim.addElevatorSim(
-              mConstants.kName,
-              mMainMotor,
-              mCancoder,
-              mConstants.kMotorSimConfig,
+          mSim.addElevatorSim(mConstants.kName, mMainMotor, mCancoder, mConstants.kMotorSimConfig,
               mConstants.kElevSimConfig);
           break;
         case ROLLER:
@@ -260,31 +231,19 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Refresh all StatusSignals and signal result
     // refreshAll() is more efficient than doing each one individually
-    inputs.leaderMotorConnected =
-        BaseStatusSignal.refreshAll(
-                mInternalPositionRotations,
-                mVelocityRps,
-                mAppliedVoltage.get(0),
-                mSupplyCurrent.get(0),
-                mTorqueCurrent.get(0),
-                mTempCelsius.get(0))
-            .isOK();
+    inputs.leaderMotorConnected = BaseStatusSignal
+        .refreshAll(mInternalPositionRotations, mVelocityRps, mAppliedVoltage.get(0),
+            mSupplyCurrent.get(0), mTorqueCurrent.get(0), mTempCelsius.get(0))
+        .isOK();
 
     if (mConstants.kFollowMotor != null) {
-      inputs.followerMotorConnected =
-          BaseStatusSignal.refreshAll(
-                  mAppliedVoltage.get(1),
-                  mSupplyCurrent.get(1),
-                  mTorqueCurrent.get(1),
-                  mTempCelsius.get(1))
-              .isOK();
+      inputs.followerMotorConnected = BaseStatusSignal.refreshAll(mAppliedVoltage.get(1),
+          mSupplyCurrent.get(1), mTorqueCurrent.get(1), mTempCelsius.get(1)).isOK();
     }
 
     if (mConstants.kCANcoder != null) {
-      inputs.CANcoderConnected =
-          BaseStatusSignal.refreshAll(
-                  mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
-              .isOK();
+      inputs.CANcoderConnected = BaseStatusSignal
+          .refreshAll(mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations).isOK();
     }
 
     // Due to an unfixed firmware error, certain closed-loop signals do not get
@@ -359,16 +318,16 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   /** Run Motion Magic to the specified setpoint */
   @Override
   public void runMotionMagicPosition(double setpoint, double feedFwd) {
-    mMainMotor.setControl(
-        motionMagicPositionControl.withPosition(setpoint).withFeedForward(feedFwd));
+    mMainMotor
+        .setControl(motionMagicPositionControl.withPosition(setpoint).withFeedForward(feedFwd));
     mOpSetpoint = setpoint;
   }
 
   /** Run Motion Magic Velocity to the specified velocity */
   @Override
   public void runMotionMagicVelocity(double velocity, double feedFwd) {
-    mMainMotor.setControl(
-        motionMagicVelocityControl.withVelocity(velocity).withFeedForward(feedFwd));
+    mMainMotor
+        .setControl(motionMagicVelocityControl.withVelocity(velocity).withFeedForward(feedFwd));
   }
 
   /* Stop in Open Loop */

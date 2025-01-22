@@ -22,8 +22,7 @@ public class ComplexSubsystem extends SubsystemBase {
   @RequiredArgsConstructor
   @Getter
   public enum State {
-    HOME(0.0),
-    SCORE(90.0);
+    HOME(0.0), SCORE(90.0);
 
     private final double output;
 
@@ -32,7 +31,9 @@ public class ComplexSubsystem extends SubsystemBase {
     }
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   TalonFX m_motor = new TalonFX(ExampleComplexSubsystemConstants.ID_Motor);
   private final PositionVoltage m_position = new PositionVoltage(state.getStateOutput());
@@ -48,11 +49,8 @@ public class ComplexSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    goalAngle =
-        MathUtil.clamp(
-            state.getStateOutput(),
-            ExampleComplexSubsystemConstants.lowerLimit,
-            ExampleComplexSubsystemConstants.upperLimit);
+    goalAngle = MathUtil.clamp(state.getStateOutput(), ExampleComplexSubsystemConstants.lowerLimit,
+        ExampleComplexSubsystemConstants.upperLimit);
 
     if (state == State.HOME && atGoal()) {
       m_motor.setControl(m_neutral);
@@ -64,8 +62,8 @@ public class ComplexSubsystem extends SubsystemBase {
   }
 
   public boolean atGoal() {
-    return Math.abs(state.getStateOutput() - m_motor.getPosition().getValueAsDouble())
-        < ExampleComplexSubsystemConstants.tolerance;
+    return Math.abs(state.getStateOutput()
+        - m_motor.getPosition().getValueAsDouble()) < ExampleComplexSubsystemConstants.tolerance;
   }
 
   public Command setStateCommand(State state) {
@@ -75,13 +73,11 @@ public class ComplexSubsystem extends SubsystemBase {
   private void displayInfo(boolean debug) {
     if (debug) {
       SmartDashboard.putString(this.getClass().getSimpleName() + " State ", state.toString());
-      SmartDashboard.putNumber(
-          this.getClass().getSimpleName() + " Setpoint ", state.getStateOutput());
-      SmartDashboard.putNumber(
-          this.getClass().getSimpleName() + " Output ",
+      SmartDashboard.putNumber(this.getClass().getSimpleName() + " Setpoint ",
+          state.getStateOutput());
+      SmartDashboard.putNumber(this.getClass().getSimpleName() + " Output ",
           m_motor.getMotorVoltage().getValueAsDouble());
-      SmartDashboard.putNumber(
-          this.getClass().getSimpleName() + " Current Draw",
+      SmartDashboard.putNumber(this.getClass().getSimpleName() + " Current Draw",
           m_motor.getSupplyCurrent().getValueAsDouble());
       SmartDashboard.putBoolean(this.getClass().getSimpleName() + " atGoal", atGoal());
     }

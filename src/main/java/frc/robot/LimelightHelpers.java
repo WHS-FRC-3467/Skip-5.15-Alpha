@@ -200,7 +200,8 @@ public class LimelightHelpers {
     }
   }
 
-  public static class LimelightTarget_Barcode {}
+  public static class LimelightTarget_Barcode {
+  }
 
   public static class LimelightTarget_Classifier {
 
@@ -373,11 +374,8 @@ public class LimelightHelpers {
       System.err.println("Bad LL 3D Pose Data!");
       return new Pose3d();
     }
-    return new Pose3d(
-        new Translation3d(inData[0], inData[1], inData[2]),
-        new Rotation3d(
-            Units.degreesToRadians(inData[3]),
-            Units.degreesToRadians(inData[4]),
+    return new Pose3d(new Translation3d(inData[0], inData[1], inData[2]),
+        new Rotation3d(Units.degreesToRadians(inData[3]), Units.degreesToRadians(inData[4]),
             Units.degreesToRadians(inData[5])));
   }
 
@@ -665,8 +663,8 @@ public class LimelightHelpers {
    * Sets the crop window. The crop window in the UI must be completely open for dynamic cropping to
    * work.
    */
-  public static void setCropWindow(
-      String limelightName, double cropXMin, double cropXMax, double cropYMin, double cropYMax) {
+  public static void setCropWindow(String limelightName, double cropXMin, double cropXMax,
+      double cropYMin, double cropYMax) {
     double[] entries = new double[4];
     entries[0] = cropXMin;
     entries[1] = cropXMax;
@@ -675,14 +673,8 @@ public class LimelightHelpers {
     setLimelightNTDoubleArray(limelightName, "crop", entries);
   }
 
-  public static void setCameraPose_RobotSpace(
-      String limelightName,
-      double forward,
-      double side,
-      double up,
-      double roll,
-      double pitch,
-      double yaw) {
+  public static void setCameraPose_RobotSpace(String limelightName, double forward, double side,
+      double up, double roll, double pitch, double yaw) {
     double[] entries = new double[6];
     entries[0] = forward;
     entries[1] = side;
@@ -709,10 +701,9 @@ public class LimelightHelpers {
 
   /** Asynchronously take snapshot. */
   public static CompletableFuture<Boolean> takeSnapshot(String tableName, String snapshotName) {
-    return CompletableFuture.supplyAsync(
-        () -> {
-          return SYNCH_TAKESNAPSHOT(tableName, snapshotName);
-        });
+    return CompletableFuture.supplyAsync(() -> {
+      return SYNCH_TAKESNAPSHOT(tableName, snapshotName);
+    });
   }
 
   private static boolean SYNCH_TAKESNAPSHOT(String tableName, String snapshotName) {

@@ -94,8 +94,8 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
     kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
     kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-    kSubSysConstants.kArmSimConfig.kArmReduction =
-        54.4; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kArmSimConfig.kArmReduction = 54.4; // RotorToSensorRatio *
+                                                         // SensorToMechanismRatio
     kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
   }
 }

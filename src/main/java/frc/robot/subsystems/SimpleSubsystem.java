@@ -20,13 +20,14 @@ public class SimpleSubsystem extends SubsystemBase {
   @RequiredArgsConstructor
   @Getter
   public enum State {
-    OFF(0.0),
-    ON(1.0);
+    OFF(0.0), ON(1.0);
 
     private final double output;
   }
 
-  @Getter @Setter private State state = State.OFF;
+  @Getter
+  @Setter
+  private State state = State.OFF;
 
   private boolean debug = true;
 
@@ -59,11 +60,9 @@ public class SimpleSubsystem extends SubsystemBase {
     if (debug) {
       SmartDashboard.putString(this.getClass().getSimpleName() + " State ", state.toString());
       SmartDashboard.putNumber(this.getClass().getSimpleName() + " Setpoint ", state.getOutput());
-      SmartDashboard.putNumber(
-          this.getClass().getSimpleName() + " Output ",
+      SmartDashboard.putNumber(this.getClass().getSimpleName() + " Output ",
           m_motor.getMotorVoltage().getValueAsDouble());
-      SmartDashboard.putNumber(
-          this.getClass().getSimpleName() + " Current Draw",
+      SmartDashboard.putNumber(this.getClass().getSimpleName() + " Current Draw",
           m_motor.getSupplyCurrent().getValueAsDouble());
     }
   }

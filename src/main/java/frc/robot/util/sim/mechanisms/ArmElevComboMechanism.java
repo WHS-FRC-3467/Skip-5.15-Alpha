@@ -47,13 +47,11 @@ public class ArmElevComboMechanism implements MotionProfiledMechanism {
     // Color8Bit(Color.kBlack)));
 
     MechanismRoot2d elevRoot = m_Mech.getRoot("Elevator Root", 30, 0);
-    m_Elevator =
-        elevRoot.append(
-            new MechanismLigament2d("Elevator", 0.0, 90, 3, new Color8Bit(Color.kBlack)));
+    m_Elevator = elevRoot
+        .append(new MechanismLigament2d("Elevator", 0.0, 90, 3, new Color8Bit(Color.kBlack)));
 
-    MechanismLigament2d staticArm =
-        m_Elevator.append(
-            new MechanismLigament2d("Static Arm", .1, 30, 3, new Color8Bit(Color.kYellow)));
+    MechanismLigament2d staticArm = m_Elevator
+        .append(new MechanismLigament2d("Static Arm", .1, 30, 3, new Color8Bit(Color.kYellow)));
     m_Arm =
         staticArm.append(new MechanismLigament2d("Arm", .3, 90, 3, new Color8Bit(Color.kYellow)));
   }

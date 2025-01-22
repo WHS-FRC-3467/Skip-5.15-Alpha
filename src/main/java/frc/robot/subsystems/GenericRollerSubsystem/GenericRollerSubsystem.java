@@ -30,8 +30,8 @@ public abstract class GenericRollerSubsystem<G extends GenericRollerSubsystem.Vo
 
     // Set up a disconnection Alert for each roller motor
     for (int i = 0; i < numRollers; i++) {
-      this.disconnected.add(
-          new Alert(name + " motor " + i + " disconnected!", Alert.AlertType.kWarning));
+      this.disconnected
+          .add(new Alert(name + " motor " + i + " disconnected!", Alert.AlertType.kWarning));
     }
   }
 

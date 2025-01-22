@@ -95,8 +95,8 @@ public final class SampleProfiledElevatorConstants {
     kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(4.0); // Meters
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = 50; // Meters
-    kSubSysConstants.kElevSimConfig.kElevatorGearing =
-        10.0; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kElevSimConfig.kElevatorGearing = 10.0; // RotorToSensorRatio *
+                                                             // SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
   }
 }

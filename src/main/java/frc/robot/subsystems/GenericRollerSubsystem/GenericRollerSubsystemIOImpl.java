@@ -94,28 +94,18 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
 
       // Set update frequencies for the StatusSignals of interest
       final int index = i;
-      Phoenix6Util.checkErrorAndRetry(
-          () ->
-              BaseStatusSignal.setUpdateFrequencyForAll(
-                  100,
-                  mPositionRot.get(index),
-                  mVelocityRps.get(index),
-                  mAppliedVoltage.get(index),
-                  mSupplyCurrent.get(index),
-                  mTorqueCurrent.get(index),
-                  mTempCelsius.get(index)));
+      Phoenix6Util.checkErrorAndRetry(() -> BaseStatusSignal.setUpdateFrequencyForAll(100,
+          mPositionRot.get(index), mVelocityRps.get(index), mAppliedVoltage.get(index),
+          mSupplyCurrent.get(index), mTorqueCurrent.get(index), mTempCelsius.get(index)));
 
       mMotor.optimizeBusUtilization(0, 1.0);
 
       if (mIsSim) {
         // Add the motor object to the Physics Sim
-        mSim.addTalonFX(
-            mMotor,
+        mSim.addTalonFX(mMotor,
             new DCMotorSim(
-                LinearSystemId.createDCMotorSystem(
-                    constants.simMotorModelSupplier.get(),
-                    constants.simMOI,
-                    constants.simReduction),
+                LinearSystemId.createDCMotorSystem(constants.simMotorModelSupplier.get(),
+                    constants.simMOI, constants.simReduction),
                 constants.simMotorModelSupplier.get()));
       }
     }
@@ -128,8 +118,8 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
   public void updateInputs(GenericRollerIOInputs inputs) {
 
     /*
-     * Because this code supports a configurable number of motors, we must wait
-     * until the first time this method is called to instantiate arrays of the proper size
+     * Because this code supports a configurable number of motors, we must wait until the first time
+     * this method is called to instantiate arrays of the proper size
      */
     if (!mInitialized) {
       inputs.connected = new boolean[mNumMotors];
@@ -155,15 +145,9 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
       }
 
       // Check & Refresh all signals of interest
-      inputs.connected[i] =
-          BaseStatusSignal.refreshAll(
-                  mPositionRot.get(i),
-                  mVelocityRps.get(i),
-                  mAppliedVoltage.get(i),
-                  mSupplyCurrent.get(i),
-                  mTorqueCurrent.get(i),
-                  mTempCelsius.get(i))
-              .isOK();
+      inputs.connected[i] = BaseStatusSignal.refreshAll(mPositionRot.get(i), mVelocityRps.get(i),
+          mAppliedVoltage.get(i), mSupplyCurrent.get(i), mTorqueCurrent.get(i), mTempCelsius.get(i))
+          .isOK();
 
       // Get velocity, voltage, currents, and temperature for the motor
       inputs.positionRot[i] = mPositionRot.get(i).getValueAsDouble();

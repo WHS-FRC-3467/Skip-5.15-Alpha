@@ -33,12 +33,8 @@ public class ArmSimProfile extends SimProfile {
    * @param motorConst Motor Sim configuration values
    * @param armConst Arm Sim configuration values
    */
-  public ArmSimProfile(
-      final String simName,
-      final TalonFX talon,
-      final CANcoder cancoder,
-      final MotorSimConfiguration motorConst,
-      final ArmSimConfiguration armConst) {
+  public ArmSimProfile(final String simName, final TalonFX talon, final CANcoder cancoder,
+      final MotorSimConfiguration motorConst, final ArmSimConfiguration armConst) {
 
     this.m_Name = simName;
     this.m_Talon = talon;
@@ -49,16 +45,11 @@ public class ArmSimProfile extends SimProfile {
     DCMotor m_armGearbox = m_MotorConst.simMotorModelSupplier.get();
 
     // Create sim object
-    this.m_ArmSim =
-        new SingleJointedArmSim(
-            m_armGearbox,
-            m_ArmConst.kArmReduction,
-            SingleJointedArmSim.estimateMOI(m_ArmConst.kArmLength, m_ArmConst.kArmMass),
-            m_ArmConst.kArmLength,
-            Units.degreesToRadians(m_ArmConst.kMinAngleDegrees),
-            Units.degreesToRadians(m_ArmConst.kMaxAngleDegrees),
-            true,
-            Units.degreesToRadians(m_ArmConst.kDefaultArmSetpointDegrees));
+    this.m_ArmSim = new SingleJointedArmSim(m_armGearbox, m_ArmConst.kArmReduction,
+        SingleJointedArmSim.estimateMOI(m_ArmConst.kArmLength, m_ArmConst.kArmMass),
+        m_ArmConst.kArmLength, Units.degreesToRadians(m_ArmConst.kMinAngleDegrees),
+        Units.degreesToRadians(m_ArmConst.kMaxAngleDegrees), true,
+        Units.degreesToRadians(m_ArmConst.kDefaultArmSetpointDegrees));
 
     // Create sim mechanism
     if (m_ArmConst.kIsComboSim) {

@@ -29,8 +29,8 @@ public class PhysicsSim {
   }
 
   /** Adds a Roller sim controller to the simulator */
-  public void addRollerSim(
-      final String simName, final TalonFX talon, final MotorSimConfiguration motorConst) {
+  public void addRollerSim(final String simName, final TalonFX talon,
+      final MotorSimConfiguration motorConst) {
     if (talon != null) {
       RollerSimProfile simArm = new RollerSimProfile(simName, talon, motorConst);
       _simProfiles.add(simArm);
@@ -38,12 +38,8 @@ public class PhysicsSim {
   }
 
   /** Adds an Arm sim controller to the simulator */
-  public void addArmSim(
-      final String simName,
-      final TalonFX talon,
-      final CANcoder cancoder,
-      final MotorSimConfiguration motorConst,
-      final ArmSimConfiguration armConst) {
+  public void addArmSim(final String simName, final TalonFX talon, final CANcoder cancoder,
+      final MotorSimConfiguration motorConst, final ArmSimConfiguration armConst) {
     if (talon != null) {
       ArmSimProfile simArm = new ArmSimProfile(simName, talon, cancoder, motorConst, armConst);
       _simProfiles.add(simArm);
@@ -51,12 +47,8 @@ public class PhysicsSim {
   }
 
   /** Adds an Elevator sim controller to the simulator */
-  public void addElevatorSim(
-      final String simName,
-      final TalonFX talon,
-      final CANcoder cancoder,
-      final MotorSimConfiguration motorConst,
-      final ElevatorSimConfiguration elevConst) {
+  public void addElevatorSim(final String simName, final TalonFX talon, final CANcoder cancoder,
+      final MotorSimConfiguration motorConst, final ElevatorSimConfiguration elevConst) {
     if (talon != null) {
       ElevatorSimProfile simElevator =
           new ElevatorSimProfile(simName, talon, cancoder, motorConst, elevConst);
