@@ -30,7 +30,10 @@ public class GenericMotionProfiledSubsystemConstants {
 
   // Simulation Type
   public enum simType {
-    ARM, ELEVATOR, ROLLER, NONE
+    ARM,
+    ELEVATOR,
+    ROLLER,
+    NONE
   }
 
   public simType SimType = simType.NONE;

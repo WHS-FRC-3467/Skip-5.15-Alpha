@@ -7,14 +7,20 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProfiledSubsystem.TargetState>
+public abstract class GenericMotionProfiledSubsystem<
+        G extends GenericMotionProfiledSubsystem.TargetState>
     extends SubsystemBase {
 
   // Tunable numbers
   private LoggedTunableNumber kP, kI, kD, kG, kS, kV, kA, kCruiseVelocity, kAcceleration, kJerk;
 
   public enum ProfileType {
-    POSITION, VELOCITY, MM_POSITION, MM_VELOCITY, OPEN_VOLTAGE, OPEN_CURRENT
+    POSITION,
+    VELOCITY,
+    MM_POSITION,
+    MM_VELOCITY,
+    OPEN_VOLTAGE,
+    OPEN_CURRENT
   }
 
   public interface TargetState {
@@ -40,8 +46,10 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
   private final Alert followerMotorDisconnected;
   private final Alert CANcoderDisconnected;
 
-  public GenericMotionProfiledSubsystem(ProfileType defaultProfileType,
-      GenericMotionProfiledSubsystemConstants constants, GenericMotionProfiledSubsystemIO io,
+  public GenericMotionProfiledSubsystem(
+      ProfileType defaultProfileType,
+      GenericMotionProfiledSubsystemConstants constants,
+      GenericMotionProfiledSubsystemIO io,
       boolean isSim) {
 
     this.m_proType = defaultProfileType;
@@ -70,10 +78,12 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
     kV = new LoggedTunableNumber(m_name + "/Gains/kV", fxConfig.Slot0.kV);
     kA = new LoggedTunableNumber(m_name + "/Gains/kA", fxConfig.Slot0.kA);
 
-    kCruiseVelocity = new LoggedTunableNumber(m_name + "/CruiseVelocity",
-        fxConfig.MotionMagic.MotionMagicCruiseVelocity);
-    kAcceleration = new LoggedTunableNumber(m_name + "/Acceleration",
-        fxConfig.MotionMagic.MotionMagicAcceleration);
+    kCruiseVelocity =
+        new LoggedTunableNumber(
+            m_name + "/CruiseVelocity", fxConfig.MotionMagic.MotionMagicCruiseVelocity);
+    kAcceleration =
+        new LoggedTunableNumber(
+            m_name + "/Acceleration", fxConfig.MotionMagic.MotionMagicAcceleration);
     kJerk = new LoggedTunableNumber(m_name + "/Jerk", fxConfig.MotionMagic.MotionMagicJerk);
 
     io.configurePID(kP.get(), kI.get(), kD.get(), true);
@@ -95,8 +105,8 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
 
     // Check for disconnections
     leaderMotorDisconnected.set(!inputs.leaderMotorConnected);
-    followerMotorDisconnected
-        .set(m_constants.kFollowMotor != null && !inputs.followerMotorConnected);
+    followerMotorDisconnected.set(
+        m_constants.kFollowMotor != null && !inputs.followerMotorConnected);
     CANcoderDisconnected.set(m_constants.kCANcoder != null && !inputs.CANcoderConnected);
 
     // If changed, update controller constants from Tuneable Numbers
@@ -104,12 +114,15 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
       io.configurePID(kP.get(), kI.get(), kD.get(), true);
     }
 
-    if (kG.hasChanged(hashCode()) || kS.hasChanged(hashCode()) || kV.hasChanged(hashCode())
+    if (kG.hasChanged(hashCode())
+        || kS.hasChanged(hashCode())
+        || kV.hasChanged(hashCode())
         || kA.hasChanged(hashCode())) {
       io.configureGSVA(kG.get(), kS.get(), kV.get(), kA.get(), true);
     }
 
-    if (kCruiseVelocity.hasChanged(hashCode()) || kAcceleration.hasChanged(hashCode())
+    if (kCruiseVelocity.hasChanged(hashCode())
+        || kAcceleration.hasChanged(hashCode())
         || kJerk.hasChanged(hashCode())) {
       io.configureMotion(kCruiseVelocity.get(), kAcceleration.get(), kJerk.get(), true);
     }

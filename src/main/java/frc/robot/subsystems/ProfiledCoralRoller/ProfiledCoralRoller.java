@@ -14,17 +14,16 @@ public class ProfiledCoralRoller extends GenericMotionProfiledSubsystem<Profiled
   @RequiredArgsConstructor
   @Getter
   public enum State implements TargetState {
-    OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE), EJECT(6.0,
-        0.0, ProfileType.OPEN_VOLTAGE);
+    OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE),
+    INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
+    EJECT(6.0, 0.0, ProfileType.OPEN_VOLTAGE);
 
     private final double output;
     private final double feedFwd;
     private final ProfileType profileType;
   }
 
-  @Getter
-  @Setter
-  private State state = State.OFF;
+  @Getter @Setter private State state = State.OFF;
 
   private final boolean debug = true;
 

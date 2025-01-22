@@ -32,8 +32,12 @@ public class ElevatorSimProfile extends SimProfile {
    * @param motorConst Motor Sim configuration values
    * @param armConst Arm Sim configuration values
    */
-  public ElevatorSimProfile(final String simName, final TalonFX talon, final CANcoder cancoder,
-      final MotorSimConfiguration motorConst, final ElevatorSimConfiguration elevConst) {
+  public ElevatorSimProfile(
+      final String simName,
+      final TalonFX talon,
+      final CANcoder cancoder,
+      final MotorSimConfiguration motorConst,
+      final ElevatorSimConfiguration elevConst) {
     this.m_Name = simName;
     this.m_Talon = talon;
     this.m_CANcoder = cancoder;
@@ -43,9 +47,16 @@ public class ElevatorSimProfile extends SimProfile {
     DCMotor elevatorGearbox = m_MotorConst.simMotorModelSupplier.get();
 
     // Create sim object
-    this.m_ElevatorSim = new ElevatorSim(elevatorGearbox, m_ElevConst.kElevatorGearing,
-        m_ElevConst.kCarriageMass, m_ElevConst.kElevatorDrumRadius, m_ElevConst.kMinElevatorHeight,
-        m_ElevConst.kMaxElevatorHeight, true, m_ElevConst.kDefaultSetpoint);
+    this.m_ElevatorSim =
+        new ElevatorSim(
+            elevatorGearbox,
+            m_ElevConst.kElevatorGearing,
+            m_ElevConst.kCarriageMass,
+            m_ElevConst.kElevatorDrumRadius,
+            m_ElevConst.kMinElevatorHeight,
+            m_ElevConst.kMaxElevatorHeight,
+            true,
+            m_ElevConst.kDefaultSetpoint);
 
     // Create sim mechanism
     if (m_ElevConst.kIsComboSim) {

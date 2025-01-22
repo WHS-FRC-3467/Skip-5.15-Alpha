@@ -53,12 +53,15 @@ public class RobotContainer {
   public RobotContainer() {
 
     switch (Constants.currentMode) {
-      // Real robot, instantiate hardware IO implementations
+        // Real robot, instantiate hardware IO implementations
       case REAL:
-        m_drive = new Drive(new GyroIOPigeon2(), new ModuleIOTalonFX(TunerConstants.FrontLeft),
-            new ModuleIOTalonFX(TunerConstants.FrontRight),
-            new ModuleIOTalonFX(TunerConstants.BackLeft),
-            new ModuleIOTalonFX(TunerConstants.BackRight));
+        m_drive =
+            new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
 
         m_sampleProfiledRollerSubsystem =
             new ProfiledCoralRoller(new SampleProfiledRollerIOTalonFX(), false);
@@ -66,11 +69,15 @@ public class RobotContainer {
         m_laserCanSensor = new LaserCanSensor(Ports.INTAKE_LASERCAN.getDeviceNumber(), 180);
         break;
 
-      // Sim robot, instantiate physics sim IO implementations
+        // Sim robot, instantiate physics sim IO implementations
       case SIM:
-        m_drive = new Drive(new GyroIO() {}, new ModuleIOSim(TunerConstants.FrontLeft),
-            new ModuleIOSim(TunerConstants.FrontRight), new ModuleIOSim(TunerConstants.BackLeft),
-            new ModuleIOSim(TunerConstants.BackRight));
+        m_drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
 
         m_sampleProfiledRollerSubsystem =
             new ProfiledCoralRoller(new ProfiledCoralRollerIOSim(), true);
@@ -79,10 +86,15 @@ public class RobotContainer {
 
         break;
 
-      // Replayed robot, disable IO implementations
+        // Replayed robot, disable IO implementations
       default:
-        m_drive = new Drive(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
-            new ModuleIO() {}, new ModuleIO() {});
+        m_drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
 
         m_sampleProfiledRollerSubsystem =
             new ProfiledCoralRoller(new ProfiledCoralRollerIO() {}, false);
@@ -95,18 +107,20 @@ public class RobotContainer {
     m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    m_autoChooser.addOption("Drive Wheel Radius Characterization",
-        DriveCommands.wheelRadiusCharacterization(m_drive));
-    m_autoChooser.addOption("Drive Simple FF Characterization",
-        DriveCommands.feedforwardCharacterization(m_drive));
-    m_autoChooser.addOption("Drive SysId (Quasistatic Forward)",
+    m_autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_drive));
+    m_autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
+    m_autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
         m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption("Drive SysId (Quasistatic Reverse)",
+    m_autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
         m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_autoChooser.addOption("Drive SysId (Dynamic Forward)",
-        m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption("Drive SysId (Dynamic Reverse)",
-        m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    m_autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the controller button and joystick bindings
     configureControllerBindings();
@@ -119,21 +133,36 @@ public class RobotContainer {
   private void configureControllerBindings() {
 
     // Default command, normal field-relative drive
-    m_drive.setDefaultCommand(DriveCommands.joystickDrive(m_drive, () -> -m_driver.getLeftY(),
-        () -> -m_driver.getLeftX(), () -> -m_driver.getRightX()));
+    m_drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            m_drive,
+            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getRightX()));
 
     // Driver A Button: Lock to 0°
-    m_driver.a().whileTrue(DriveCommands.joystickDriveAtAngle(m_drive, () -> -m_driver.getLeftY(),
-        () -> -m_driver.getLeftX(), () -> new Rotation2d()));
+    m_driver
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
+                () -> new Rotation2d()));
 
     // Driver X Button: Switch wheel modules to X pattern
     m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
 
     // Driver B Button: Reset gyro to 0°
-    m_driver.b()
-        .onTrue(Commands.runOnce(
-            () -> m_drive.setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-            m_drive).ignoringDisable(true));
+    m_driver
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        m_drive.setPose(
+                            new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
+                    m_drive)
+                .ignoringDisable(true));
 
     // Driver Y Button: Intake Coral
     m_driver.y().onTrue(new IntakeCommand(m_sampleProfiledRollerSubsystem, m_laserCanSensor));
