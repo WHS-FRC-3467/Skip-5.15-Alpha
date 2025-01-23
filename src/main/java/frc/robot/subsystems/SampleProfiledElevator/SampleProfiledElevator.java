@@ -25,9 +25,7 @@ public class SampleProfiledElevator
     private final ProfileType profileType;
   }
 
-  @Getter
-  @Setter
-  private State state = State.HOME;
+  @Getter @Setter private State state = State.HOME;
 
   /** Constructor */
   public SampleProfiledElevator(SampleProfiledElevatorIO io, boolean isSim) {

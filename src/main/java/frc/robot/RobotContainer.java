@@ -234,6 +234,10 @@ public class RobotContainer {
                 // Operator Buttons A & B run the Complex and Simple subsystems when held
                 m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
                 m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
+
+                // TODO: Button Bindings for Climber
+                // m_operator.x().whileTrue(m_ProfiledClimber.setStateCommand(SampleProfiledArm.State.LEVEL_1));
+                // m_operator.y().whileTrue(m_ProfiledClimber.setStateCommand(SampleProfiledArm.State.LEVEL_2));
         }
 
         /**

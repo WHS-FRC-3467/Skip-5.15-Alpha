@@ -56,6 +56,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   private double mCurrPosition = 0.0;
   private double mCurrVelocity = 0.0;
   private double mCurrTrajectoryPosition = 0.0;
+  private double mCurrTorqueCurrent = 0.0;
 
   // All the Talon StatusSignals of interest
   private final StatusSignal<Angle> mInternalPositionRotations;
@@ -237,6 +238,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
               mConstants.kMotorSimConfig,
               mConstants.kElevSimConfig);
           break;
+        case ROLLER:
+          mSim.addRollerSim(mConstants.kName, mMainMotor, mConstants.kMotorSimConfig);
+          break;
         case NONE:
         default:
           break;
@@ -325,6 +329,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mCurrPosition = inputs.positionRot;
     mCurrVelocity = inputs.velocityRps;
     mCurrTrajectoryPosition = inputs.activeTrajectoryPosition;
+    mCurrTorqueCurrent = inputs.torqueCurrentAmps[0];
   }
 
   /** Run Open Loop at the specified voltage */
@@ -440,6 +445,11 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   @Override
   public double getVelocity() {
     return mCurrVelocity;
+  }
+
+  /* Get torque current of lead motor */
+  public double getTorqueCurrent() {
+    return mCurrTorqueCurrent;
   }
 
   @Override

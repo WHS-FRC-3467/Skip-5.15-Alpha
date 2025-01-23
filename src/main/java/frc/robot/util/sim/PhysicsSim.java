@@ -28,6 +28,15 @@ public class PhysicsSim {
     }
   }
 
+  /** Adds a Roller sim controller to the simulator */
+  public void addRollerSim(
+      final String simName, final TalonFX talon, final MotorSimConfiguration motorConst) {
+    if (talon != null) {
+      RollerSimProfile simArm = new RollerSimProfile(simName, talon, motorConst);
+      _simProfiles.add(simArm);
+    }
+  }
+
   /** Adds an Arm sim controller to the simulator */
   public void addArmSim(
       final String simName,

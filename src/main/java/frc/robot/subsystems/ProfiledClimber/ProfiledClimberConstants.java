@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ComplexClimber;
+package frc.robot.subsystems.ProfiledClimber;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -11,17 +11,19 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledArmConstants {
+public final class ProfiledClimberConstants {
 
   public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
       new GenericMotionProfiledSubsystemConstants();
 
-  static {
-    kSubSysConstants.kName = "SampleProfiledArm";
+  public static final double kTorqueCurrentLimit = 75.0;
 
-    kSubSysConstants.kLeaderMotor = Ports.ARM_MAIN;
-    kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
-    kSubSysConstants.kFollowerOpposesMain = true;
+  static {
+    kSubSysConstants.kName = "ProfiledClimber";
+
+    kSubSysConstants.kLeaderMotor = Ports.CLIMBER;
+    // kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
+    // kSubSysConstants.kFollowerOpposesMain = true;
 
     // Using TalonFX internal encoder
 
@@ -85,9 +87,9 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.SimType = simType.ARM;
 
     // Motor simulation
-    kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
+    kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
 
-    // Arm Simulation
+    // Climber Simulation - TODO: Fill in with real values once the climbe is designed
     kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
     kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
