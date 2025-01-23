@@ -47,7 +47,7 @@ public class ProfiledClimber extends GenericMotionProfiledSubsystem<ProfiledClim
   }
 
   // TODO: Code Review this Command that stops climber if current exceeds a certain threshold
-  public Command stopOnCurrentThresholdCommand(State state) {
+  public Command setStateUntilCurrentLimit(State state) {
     return run(() -> this.state = state)
         .until(isTorqueCurrentLimitBreached)
         .andThen(run(() -> this.state = State.HOME));

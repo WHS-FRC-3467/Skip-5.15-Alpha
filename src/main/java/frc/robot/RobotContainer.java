@@ -28,6 +28,10 @@ import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.SimpleSubsystem;
+import frc.robot.subsystems.ProfiledClimber.ProfiledClimber;
+import frc.robot.subsystems.ProfiledClimber.ProfiledClimberIO;
+import frc.robot.subsystems.ProfiledClimber.ProfiledClimberIOSim;
+import frc.robot.subsystems.ProfiledClimber.ProfiledClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -59,6 +63,7 @@ public class RobotContainer {
         private final SampleRollers m_sampleRollersSubsystem;
         private final SampleProfiledArm m_sampleArmSubsystem;
         private final SampleProfiledElevator m_sampleElevatorSubsystem;
+        private final ProfiledClimber m_profiledClimber;
 
         // Non-AK-enabled Subsystems
         private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
@@ -83,6 +88,7 @@ public class RobotContainer {
                                 m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
                                 m_sampleElevatorSubsystem = new SampleProfiledElevator(
                                                 new SampleProfiledElevatorIOTalonFX(), false);
+                                m_profiledClimber = new ProfiledClimber(new ProfiledClimberIOTalonFX(), false);
                                 break;
 
                         case SIM:
@@ -99,6 +105,7 @@ public class RobotContainer {
                                 m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
                                 m_sampleElevatorSubsystem = new SampleProfiledElevator(
                                                 new SampleProfiledElevatorIOSim(), true);
+                                m_profiledClimber = new ProfiledClimber(new ProfiledClimberIOSim(), true);
                                 break;
 
                         default:
@@ -119,6 +126,8 @@ public class RobotContainer {
                                 m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {
                                 }, true);
                                 m_sampleElevatorSubsystem = new SampleProfiledElevator(new SampleProfiledElevatorIO() {
+                                }, true);
+                                m_profiledClimber = new ProfiledClimber(new ProfiledClimberIO() {
                                 }, true);
                                 break;
                 }
@@ -235,9 +244,9 @@ public class RobotContainer {
                 m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
                 m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
 
-                // TODO: Button Bindings for Climber
-                // m_operator.x().whileTrue(m_ProfiledClimber.setStateCommand(SampleProfiledArm.State.LEVEL_1));
-                // m_operator.y().whileTrue(m_ProfiledClimber.setStateCommand(SampleProfiledArm.State.LEVEL_2));
+                // Operator: Button X & Y run the Climber subsystem when pressed
+                m_operator.x().onTrue(m_profiledClimber.setStateCommand(ProfiledClimber.State.CLIMB));
+                m_operator.y().onTrue(m_profiledClimber.setStateUntilCurrentLimit(ProfiledClimber.State.CLIMB));
         }
 
         /**
