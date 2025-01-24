@@ -43,6 +43,13 @@ public class RobotState {
     return instance;
   }
 
+  public TARGET getNextTarget() {
+    TARGET[] values = TARGET.values();
+    int index = target.ordinal();
+    int nextIndex = (index + 1) % values.length;
+    return values[nextIndex];
+  }
+
   public Rotation2d getAngleToTarget(Pose2d currentPose) {
     return target.TargetPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
   }
