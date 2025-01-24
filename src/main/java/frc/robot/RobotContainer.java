@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
-import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
+import static frc.robot.subsystems.Vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.Vision.VisionConstants.robotToCamera0;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,16 +29,16 @@ import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
 import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
 import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
 import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionIO;
+import frc.robot.subsystems.Vision.VisionIOPhotonVision;
+import frc.robot.subsystems.Vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
