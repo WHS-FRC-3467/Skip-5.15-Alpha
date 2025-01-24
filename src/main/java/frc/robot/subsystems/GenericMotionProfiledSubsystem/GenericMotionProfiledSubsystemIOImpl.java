@@ -52,10 +52,11 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   // Maintain a copy of the Operational setpoint
   private double mOpSetpoint = 0.0;
 
-  // Hold the latest encoder position, rotor velocity, and trajectory position
+  // Hold the latest encoder position, rotor velocity, and trajectory position, and supply current
   private double mCurrPosition = 0.0;
   private double mCurrVelocity = 0.0;
   private double mCurrTrajectoryPosition = 0.0;
+  private double mCurrSupplyCurrent = 0.0;
 
   // All the Talon StatusSignals of interest
   private final StatusSignal<Angle> mInternalPositionRotations;
@@ -237,6 +238,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
               mConstants.kMotorSimConfig,
               mConstants.kElevSimConfig);
           break;
+        case ROLLER:
+          mSim.addRollerSim(mConstants.kName, mMainMotor, mConstants.kMotorSimConfig);
+          break;
         case NONE:
         default:
           break;
@@ -325,6 +329,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mCurrPosition = inputs.positionRot;
     mCurrVelocity = inputs.velocityRps;
     mCurrTrajectoryPosition = inputs.activeTrajectoryPosition;
+    mCurrSupplyCurrent = inputs.supplyCurrentAmps[0];
   }
 
   /** Run Open Loop at the specified voltage */
@@ -440,6 +445,12 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   @Override
   public double getVelocity() {
     return mCurrVelocity;
+  }
+
+  @Override
+  /* Get current lead motor supply current) */
+  public double getSupplyCurrent() {
+    return mCurrSupplyCurrent;
   }
 
   @Override

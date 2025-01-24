@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ComplexSubsystem;
+import frc.robot.subsystems.ProfiledElevator.ElevatorIO;
+import frc.robot.subsystems.ProfiledElevator.ElevatorIOSim;
+import frc.robot.subsystems.ProfiledElevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.ProfiledElevator.ProfiledElevator;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArm;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIO;
 import frc.robot.subsystems.SampleProfiledArm.SampleProfiledArmIOSim;
@@ -24,10 +28,6 @@ import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.SimpleSubsystem;
-import frc.robot.subsystems.ProfiledElevator.ProfiledElevator;
-import frc.robot.subsystems.ProfiledElevator.ElevatorIO;
-import frc.robot.subsystems.ProfiledElevator.ElevatorIOSim;
-import frc.robot.subsystems.ProfiledElevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -220,7 +220,10 @@ public class RobotContainer {
     m_driver
         .povCenter()
         .onTrue(
-                m_profiledElevator.setStateCommand(ProfiledElevator.State.HOMING));
+            m_profiledElevator
+                .setStateCommand(ProfiledElevator.State.HOMING)
+                .until(m_profiledElevator.getHomedTrigger())
+                .andThen(m_profiledElevator.zeroSensorCommand()));
 
     // Operator Buttons A & B run the Complex and Simple subsystems when held
     m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));

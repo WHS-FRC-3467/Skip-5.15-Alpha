@@ -78,8 +78,20 @@ public interface GenericMotionProfiledSubsystemIO {
     return 0;
   }
 
+  /* Get current lead motor supply current) */
+  public default double getSupplyCurrent() {
+    return 0;
+  }
+
   /* Has the closed loop completed (within tolerance)? */
   public default boolean hasFinishedTrajectory(double tolerance) {
+    return false;
+  }
+
+  /* Encoder homing and reset */
+  public default void zeroSensors() {}
+
+  public default boolean hasBeenZeroed() {
     return false;
   }
 }

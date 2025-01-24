@@ -18,8 +18,10 @@ public final class ElevatorConstants {
   public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
       new GenericMotionProfiledSubsystemConstants();
 
+  public static final double kHomingCurrent = 2.0;
+
   static {
-    kSubSysConstants.kName = "Elevator";
+    kSubSysConstants.kName = "ProfiledElevator";
 
     kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
     kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
@@ -29,8 +31,10 @@ public final class ElevatorConstants {
     kSubSysConstants.kCANcoder = null;
     kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
         FeedbackSensorSourceValue.RemoteCANcoder;
-    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0; // Sensor is on the mechanism shaft
-    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 5.0; // 5 to 1 gear ratio on the motor
+    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio =
+        1.0; // Sensor is on the mechanism shaft
+    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio =
+        5.0; // 5 to 1 gear ratio on the motor
 
     // Using a remote CANcoder
     /*
@@ -47,7 +51,8 @@ public final class ElevatorConstants {
      */
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    kSubSysConstants.kMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: Test direction of elevator motor
+    kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
+        InvertedValue.CounterClockwise_Positive; // TODO: Test direction of elevator motor
     kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
     kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
