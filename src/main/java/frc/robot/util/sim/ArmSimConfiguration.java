@@ -4,9 +4,9 @@
 
 package frc.robot.util.sim;
 
-/** Add your docs here. */
 public class ArmSimConfiguration {
 
+  public boolean kIsComboSim = false;
   public double kArmMass = 0.0; // Kilograms
   public double kArmLength = 0.0; // Meters
   public double kDefaultArmSetpointDegrees = 0.0; // Degrees

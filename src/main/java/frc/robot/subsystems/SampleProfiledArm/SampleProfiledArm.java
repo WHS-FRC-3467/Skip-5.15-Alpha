@@ -17,8 +17,8 @@ public class SampleProfiledArm extends GenericMotionProfiledSubsystem<SampleProf
   public enum State implements TargetState {
     HOME(0.0, 0.0, ProfileType.MM_POSITION),
     LEVEL_1(Units.degreesToRotations(90.0), 0.0, ProfileType.MM_POSITION),
-    LEVEL_2(Units.degreesToRotations(135.0), 0.0, ProfileType.MM_POSITION),
-    LEVEL_3(Units.degreesToRotations(200.0), 0.0, ProfileType.MM_POSITION);
+    LEVEL_2(Units.degreesToRotations(75.0), 0.0, ProfileType.MM_POSITION),
+    LEVEL_3(Units.degreesToRotations(45.0), 0.0, ProfileType.MM_POSITION);
 
     private final double output;
     private final double feedFwd;

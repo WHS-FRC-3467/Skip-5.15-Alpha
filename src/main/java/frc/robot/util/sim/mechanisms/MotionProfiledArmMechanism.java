@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Class to draw a simulated Arm mechanism controlled by motion profiling */
-public class MotionProfiledArmMechanism {
+public class MotionProfiledArmMechanism implements MotionProfiledMechanism {
 
   String mSimName;
   Mechanism2d mMech;
@@ -31,7 +31,7 @@ public class MotionProfiledArmMechanism {
   }
 
   /** Runs the mech2d widget in GUI. */
-  public void update(double degrees) {
+  public void updateArm(double degrees) {
 
     mArm.setAngle(degrees);
     SmartDashboard.putData(mSimName, mMech); // Creates mech2d in SmartDashboard

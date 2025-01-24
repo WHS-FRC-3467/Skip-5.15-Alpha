@@ -88,6 +88,7 @@ public final class SampleProfiledArmConstants {
     kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
 
     // Arm Simulation
+    kSubSysConstants.kArmSimConfig.kIsComboSim = true;
     kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
     kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;

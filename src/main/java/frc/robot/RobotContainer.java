@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,12 +31,24 @@ import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.SimpleSubsystem;
+import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevator;
+import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIO;
+import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOSim;
+import frc.robot.subsystems.SampleProfiledElevator.SampleProfiledElevatorIOTalonFX;
+import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
+import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
+import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
+import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -46,20 +61,24 @@ public class RobotContainer {
 
   // Controllers
   private final CommandXboxController m_driver = new CommandXboxController(0);
-  private final CommandXboxController m_operator = new CommandXboxController(1);
+  // private final CommandXboxController m_operator = new
+  // CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> m_autoChooser;
 
   // AK-enabled Subsystems
   private final Drive m_drive;
-  private final SampleRollers m_sampleRollersSubsystem;
+  // private final SampleRollers m_sampleRollersSubsystem;
   private final SampleProfiledArm m_sampleArmSubsystem;
   private final ProfiledElevator m_profiledElevator;
+  private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
+
+  public final Vision m_vision;
 
   // Non-AK-enabled Subsystems
-  private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
-  private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
+  // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
+  // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -75,9 +94,16 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
+        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
         m_profiledElevator = new ProfiledElevator(new ElevatorIOTalonFX(), false);
+        m_sampleProfiledRollerSubsystem =
+            new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
+
+        m_vision =
+            new Vision(
+                m_drive::addVisionMeasurement,
+                new VisionIOPhotonVision(camera0Name, robotToCamera0));
         break;
 
       case SIM:
@@ -90,9 +116,16 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
-        m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
+        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
         m_profiledElevator = new ProfiledElevator(new ElevatorIOSim(), true);
+        m_sampleProfiledRollerSubsystem =
+            new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
+
+        m_vision =
+            new Vision(
+                m_drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose));
         break;
 
       default:
@@ -104,9 +137,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
+        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
         m_profiledElevator = new ProfiledElevator(new ElevatorIO() {}, true);
+        m_sampleProfiledRollerSubsystem =
+            new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+
+        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         break;
     }
 
@@ -171,10 +208,28 @@ public class RobotContainer {
                     m_drive)
                 .ignoringDisable(true));
 
-    // Driver X Button: Run the Sample Roller in Eject direction when held
-    m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-    // Driver Y Button: Run the Sample Roller in Intake direction when held
-    m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+    // // Driver X Button: Run the Sample Roller in Eject direction when held
+    // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
+    // // Driver Y Button: Run the Sample Roller in Intake direction when held
+    // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+
+    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
+    // held
+    m_driver
+        .leftBumper()
+        .whileTrue(
+            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+    m_driver
+        .rightBumper()
+        .whileTrue(
+            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
+
+    // Driver Right Trigger: Run the Sample Profiled Roller to the requested
+    // position
+    m_driver
+        .rightTrigger()
+        .whileTrue(
+            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.POSITION));
 
     // Driver POV Down: Bring Arm and Elevator to Home position
     m_driver
@@ -226,8 +281,8 @@ public class RobotContainer {
                 .andThen(m_profiledElevator.zeroSensorCommand()));
 
     // Operator Buttons A & B run the Complex and Simple subsystems when held
-    m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-    m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
+    // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
+    // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
   }
 
   /**
