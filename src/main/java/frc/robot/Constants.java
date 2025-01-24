@@ -234,6 +234,15 @@ public class Constants {
             Units.inchesToMeters(0.0), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
             new Rotation2d()); // Rotation
+
+    public static final Pose2d BLUE_REEF_CENTER =
+        new Pose2d(Units.inchesToMeters(196.75), Units.inchesToMeters(158.5), new Rotation2d());
+    
+    public static final Pose2d RED_REEF_CENTER =
+        new Pose2d(Units.inchesToMeters(514.13), Units.inchesToMeters(158.5), new Rotation2d());
+
+    public static final double FIELD_X_LENGTH = Units.inchesToMeters(690.875);
+    public static final double FIELD_Y_LENGTH = Units.inchesToMeters(317.0);
     // public static final Pose2d BLUE_SPEAKER =
     // new Pose2d(
     // Units.inchesToMeters(-1.5 + 12), Units.inchesToMeters(218.42), new

@@ -176,6 +176,18 @@ public class RobotContainer {
     // Driver X Button: Switch wheel modules to X pattern
     m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
 
+    // Driver START Button: Auto Angle to closest Reef target
+    m_driver
+        .start()
+        .whileTrue(
+            Commands.sequence(
+                m_RobotState.setTargetCommand(RobotState.getInstance().chooseReefTarget()),
+                DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> RobotState.getInstance().getAngleOfTarget())));
+
     // Driver B Button: Reset gyro to 0°
     m_driver
         .b()

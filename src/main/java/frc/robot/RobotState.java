@@ -30,9 +30,10 @@ public class RobotState {
     REEF_AB(Constants.FieldConstants.BLUE_REEF_AB, Constants.FieldConstants.RED_REEF_AB),
     REEF_CD(Constants.FieldConstants.BLUE_REEF_CD, Constants.FieldConstants.RED_REEF_CD),
     REEF_EF(Constants.FieldConstants.BLUE_REEF_EF, Constants.FieldConstants.RED_REEF_EF),
-    REEF_GF(Constants.FieldConstants.BLUE_REEF_GH, Constants.FieldConstants.RED_REEF_GH),
+    REEF_GH(Constants.FieldConstants.BLUE_REEF_GH, Constants.FieldConstants.RED_REEF_GH),
     REEF_IJ(Constants.FieldConstants.BLUE_REEF_IJ, Constants.FieldConstants.RED_REEF_IJ),
-    REEF_JK(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
+    REEF_KL(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
+    REEF_CENTER(Constants.FieldConstants.BLUE_REEF_CENTER, Constants.FieldConstants.RED_REEF_CENTER),
     SUBSTATION(Constants.FieldConstants.BLUE_SUBSTATION, Constants.FieldConstants.RED_SUBSTATION),
     PROCESSOR(Constants.FieldConstants.BLUE_PROCESSOR, Constants.FieldConstants.RED_PROCESSOR),
     NET(Constants.FieldConstants.BLUE_NET, Constants.FieldConstants.RED_NET),
@@ -49,7 +50,7 @@ public class RobotState {
 
   @Getter @Setter private TARGET target = TARGET.NONE;
 
-  private double deltaT = .15;
+  // private double deltaT = .15;
 
   public static RobotState getInstance() {
     if (instance == null) instance = new RobotState();
@@ -79,6 +80,79 @@ public class RobotState {
         : target.redTargetPose.getRotation();
   }
 
+    // TODO: need to test or code review
+    public Rotation2d getAngleToTarget() {
+      // Get the angle of the vector from the robot to the reef
+      double angle =
+          robotPose
+              .getTranslation()
+              .minus(
+                  (DriverStation.getAlliance().get() == Alliance.Blue)
+                      ? target.blueTargetPose.getTranslation()
+                      : target.redTargetPose.getTranslation()) // Get the vector from the robot to target
+              // Robotpose - target
+              .getAngle()
+              .getRadians();
+      return new Rotation2d(angle);
+    }
+
+    public TARGET chooseReefTarget() {
+
+      // Get the angle of the vector from the robot to the reef
+      double angle =
+          robotPose
+              .getTranslation()
+              .minus(
+                  (DriverStation.getAlliance().get() == Alliance.Blue)
+                      ? Constants.FieldConstants.BLUE_REEF_CENTER.getTranslation()
+                      : Constants.FieldConstants.RED_REEF_CENTER
+                          .getTranslation()) // Get the vector from the robot to the reef.
+              // Robotpose - reef center
+              .getAngle()
+              .getDegrees();
+  
+      // Now get the angle of the nearest target
+      if (((angle >= -30) && (angle < 30))) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_GH);
+        } else {
+          return (TARGET.REEF_AB);
+        }
+      } else if ((angle >= 30) && (angle < 90)) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_IJ);
+        } else {
+          return (TARGET.REEF_CD);
+        }
+      } else if ((angle >= 90) && (angle < 150)) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_KL);
+        } else {
+          return (TARGET.REEF_EF);
+        }
+      } else if (((angle >= 150) && (angle < 180)) || ((angle >= -180) && (angle < -150))) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_AB);
+        } else {
+          return (TARGET.REEF_GH);
+        }
+      } else if ((angle >= -150) && (angle < -90)) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_CD);
+        } else {
+          return (TARGET.REEF_IJ);
+        }
+      } else if ((angle >= -90) && (angle < -30)) {
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+          return (TARGET.REEF_EF);
+        } else {
+          return (TARGET.REEF_KL);
+        }
+      } else {
+        return (TARGET.REEF_CENTER); // Catch all
+      }
+    }
+  
   // todo: need to invert
   // public Rotation2d getAngleToTarget() {
   // return getFuturePose()
