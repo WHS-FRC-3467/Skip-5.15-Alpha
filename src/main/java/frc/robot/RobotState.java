@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import lombok.Getter;
@@ -28,13 +26,12 @@ public class RobotState {
   @RequiredArgsConstructor
   @Getter
   public enum TARGET {
-    NONE(null, null),
-    SPEAKER(Constants.FieldConstants.BLUE_SPEAKER, Constants.FieldConstants.RED_SPEAKER),
-    AMP(Constants.FieldConstants.BLUE_AMP, Constants.FieldConstants.RED_AMP),
-    FEED(Constants.FieldConstants.BLUE_FEED, Constants.FieldConstants.RED_FEED);
+    NONE(null),
+    LEFT_CORAL_STATION(FieldConstants.CoralStation.leftCenterFace),
+    RIGHT_CORAL_STATION(FieldConstants.CoralStation.rightCenterFace),
+    REEF(FieldConstants.Reef.centerFaces[0]);
 
-    private final Pose2d blueTargetPose;
-    private final Pose2d redTargetPose;
+    private final Pose2d TargetPose;
   }
 
   @Getter @Setter private TARGET target = TARGET.NONE;
@@ -44,6 +41,10 @@ public class RobotState {
   public static RobotState getInstance() {
     if (instance == null) instance = new RobotState();
     return instance;
+  }
+
+  public Rotation2d getAngleToTarget(Pose2d currentPose) {
+    return target.TargetPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
   }
 
   private Translation2d getFuturePose() {
@@ -58,32 +59,6 @@ public class RobotState {
               new Translation2d(
                   deltaT * robotSpeeds.vxMetersPerSecond, deltaT * robotSpeeds.vyMetersPerSecond));
     }
-  }
-
-  public Rotation2d getAngleOfTarget() {
-    // Return the angle to allign to target
-    return (DriverStation.getAlliance().get() == Alliance.Blue)
-        ? target.blueTargetPose.getRotation()
-        : target.redTargetPose.getRotation();
-  }
-
-  // todo: need to invert
-  public Rotation2d getAngleToTarget() {
-    return getFuturePose()
-        .minus(
-            (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? target.blueTargetPose.getTranslation()
-                : target.redTargetPose.getTranslation())
-        .getAngle()
-        .unaryMinus(); // todo: Test if unaryMinus fixed it
-  }
-
-  private double getDistanceToTarget() {
-    return getFuturePose()
-        .getDistance(
-            (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? target.blueTargetPose.getTranslation()
-                : target.redTargetPose.getTranslation());
   }
 
   private static final InterpolatingDoubleTreeMap speakerArmAngleMap =
@@ -107,17 +82,6 @@ public class RobotState {
     feedArmAngleMap.put(5.0, 0.0);
     feedArmAngleMap.put(6.0, -10.0);
     feedArmAngleMap.put(7.0, -19.0);
-  }
-
-  public double getShotAngle() {
-    switch (target) {
-      case SPEAKER:
-        return speakerArmAngleMap.get(getDistanceToTarget());
-      case FEED:
-        return feedArmAngleMap.get(getDistanceToTarget());
-      default:
-        return 0.0;
-    }
   }
 
   public Command setTargetCommand(TARGET target) {
