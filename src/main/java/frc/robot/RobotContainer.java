@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.Vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.Vision.VisionConstants.robotToCamera0;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,10 +39,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-
-import static frc.robot.subsystems.Vision.VisionConstants.camera0Name;
-import static frc.robot.subsystems.Vision.VisionConstants.robotToCamera0;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
