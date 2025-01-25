@@ -2,6 +2,8 @@ package frc.robot.subsystems.Arm;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import lombok.Getter;
@@ -16,6 +18,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
   @Getter
   public enum State implements TargetState {
     HOME(0.0, 0.0),
+    HOMING(0.0, 0.0),
     LEVEL_1(Units.degreesToRotations(90.0), 0.0),
     LEVEL_2(Units.degreesToRotations(135.0), 0.0),
     LEVEL_3(Units.degreesToRotations(135.0), 0.0),
@@ -31,9 +34,14 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     }
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   private final boolean debug = true;
+
+  public Trigger homedTrigger = new Trigger(
+      () -> (this.state == State.HOMING && io.getSupplyCurrent() > ArmConstants.kHomingCurrent));
 
   /** Constructor */
   public Arm(ArmIO io, boolean isSim) {
@@ -42,5 +50,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
   public Command setStateCommand(State state) {
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+  }
+
+  public Command zeroSensorCommand() {
+    return new InstantCommand(() -> io.zeroSensors());
   }
 }

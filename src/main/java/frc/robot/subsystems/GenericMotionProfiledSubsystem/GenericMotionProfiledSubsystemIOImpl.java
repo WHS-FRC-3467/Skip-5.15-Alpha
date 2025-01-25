@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generic motion IO implementation for any motion mechanism using a TalonFX motor controller, an
+ * Generic motion IO implementation for any motion mechanism using a TalonFX
+ * motor controller, an
  * optional follower motor, and an optional remote CANcoder encoder.
  */
 public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfiledSubsystemIO {
@@ -63,27 +64,24 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   private final StatusSignal<Double> mMainClosedLoopError;
   private final StatusSignal<Double> mMainClosedLoopReference;
   private final StatusSignal<Double> mMainClosedLoopReferenceSlope;
-  private final List<StatusSignal<Voltage>> mAppliedVoltage =
-      new ArrayList<StatusSignal<Voltage>>();
+  private final List<StatusSignal<Voltage>> mAppliedVoltage = new ArrayList<StatusSignal<Voltage>>();
   private final List<StatusSignal<Current>> mSupplyCurrent = new ArrayList<StatusSignal<Current>>();
   private final List<StatusSignal<Current>> mTorqueCurrent = new ArrayList<StatusSignal<Current>>();
-  private final List<StatusSignal<Temperature>> mTempCelsius =
-      new ArrayList<StatusSignal<Temperature>>();
+  private final List<StatusSignal<Temperature>> mTempCelsius = new ArrayList<StatusSignal<Temperature>>();
   private final StatusSignal<Angle> mEncoderAbsolutePositionRotations;
   private final StatusSignal<Angle> mEncoderRelativePositionRotations;
 
   // Use single-shot control requests, as robot loop will call continuously
-  private final VoltageOut voltageControl =
-      new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0.0);
+  private final VoltageOut voltageControl = new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0.0);
   private final TorqueCurrentFOC currentControl = new TorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
-  private final PositionTorqueCurrentFOC positionControl =
-      new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
-  private final VelocityTorqueCurrentFOC velocityControl =
-      new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
-  private final MotionMagicTorqueCurrentFOC motionMagicPositionControl =
-      new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
-  private final MotionMagicVelocityTorqueCurrentFOC motionMagicVelocityControl =
-      new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+  private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0)
+      .withSlot(0);
+  private final VelocityTorqueCurrentFOC velocityControl = new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0)
+      .withSlot(0);
+  private final MotionMagicTorqueCurrentFOC motionMagicPositionControl = new MotionMagicTorqueCurrentFOC(0.0)
+      .withUpdateFreqHz(0.0).withSlot(0);
+  private final MotionMagicVelocityTorqueCurrentFOC motionMagicVelocityControl = new MotionMagicVelocityTorqueCurrentFOC(
+      0.0).withUpdateFreqHz(0.0).withSlot(0);
 
   /*
    * Constructor
@@ -97,8 +95,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mConstants = constants;
 
     // Instantiate the main TalonFX object
-    mMainMotor =
-        new TalonFX(mConstants.kLeaderMotor.getDeviceNumber(), mConstants.kLeaderMotor.getBus());
+    mMainMotor = new TalonFX(mConstants.kLeaderMotor.getDeviceNumber(), mConstants.kLeaderMotor.getBus());
 
     // Get the motor configuration group and configure the main motor
     /*
@@ -115,8 +112,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     if (mConstants.kFollowMotor != null) {
 
       // Instantiate a follower motor object ...
-      mFollower =
-          new TalonFX(mConstants.kFollowMotor.getDeviceNumber(), mConstants.kFollowMotor.getBus());
+      mFollower = new TalonFX(mConstants.kFollowMotor.getDeviceNumber(), mConstants.kFollowMotor.getBus());
       mFollowerConfig = mConstants.kFollowerConfig;
 
       // ... configure it with the same settings as the main motor ...
@@ -135,8 +131,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     // If a remote CANcoder has been specified, instantiate and configure it
     if (mConstants.kCANcoder != null) {
 
-      mCancoder =
-          new CANcoder(mConstants.kCANcoder.getDeviceNumber(), mConstants.kCANcoder.getBus());
+      mCancoder = new CANcoder(mConstants.kCANcoder.getDeviceNumber(), mConstants.kCANcoder.getBus());
       Phoenix6Util.checkErrorAndRetry(
           () -> mCancoder.getConfigurator().apply(mConstants.kEncoderConfig));
     }
@@ -176,42 +171,38 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Set update frequencies for the StatusSignals of interest
     Phoenix6Util.checkErrorAndRetry(
-        () ->
-            BaseStatusSignal.setUpdateFrequencyForAll(
-                100,
-                mInternalPositionRotations,
-                mVelocityRps,
-                mAppliedVoltage.get(0),
-                mSupplyCurrent.get(0),
-                mTorqueCurrent.get(0),
-                mTempCelsius.get(0)));
+        () -> BaseStatusSignal.setUpdateFrequencyForAll(
+            100,
+            mInternalPositionRotations,
+            mVelocityRps,
+            mAppliedVoltage.get(0),
+            mSupplyCurrent.get(0),
+            mTorqueCurrent.get(0),
+            mTempCelsius.get(0)));
     mMainMotor.optimizeBusUtilization(0, 1.0);
 
     if (mConstants.kFollowMotor != null) {
       Phoenix6Util.checkErrorAndRetry(
-          () ->
-              BaseStatusSignal.setUpdateFrequencyForAll(
-                  100,
-                  mAppliedVoltage.get(1),
-                  mSupplyCurrent.get(1),
-                  mTorqueCurrent.get(1),
-                  mTempCelsius.get(1)));
+          () -> BaseStatusSignal.setUpdateFrequencyForAll(
+              100,
+              mAppliedVoltage.get(1),
+              mSupplyCurrent.get(1),
+              mTorqueCurrent.get(1),
+              mTempCelsius.get(1)));
       mFollower.optimizeBusUtilization(0, 1.0);
     }
 
     Phoenix6Util.checkErrorAndRetry(
-        () ->
-            BaseStatusSignal.setUpdateFrequencyForAll(
-                200,
-                mMainClosedLoopError,
-                mMainClosedLoopReference,
-                mMainClosedLoopReferenceSlope));
+        () -> BaseStatusSignal.setUpdateFrequencyForAll(
+            200,
+            mMainClosedLoopError,
+            mMainClosedLoopReference,
+            mMainClosedLoopReferenceSlope));
 
     if (mConstants.kCANcoder != null) {
       Phoenix6Util.checkErrorAndRetry(
-          () ->
-              BaseStatusSignal.setUpdateFrequencyForAll(
-                  500, mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations));
+          () -> BaseStatusSignal.setUpdateFrequencyForAll(
+              500, mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations));
       mCancoder.optimizeBusUtilization(0, 1.0);
     }
 
@@ -257,31 +248,28 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Refresh all StatusSignals and signal result
     // refreshAll() is more efficient than doing each one individually
-    inputs.leaderMotorConnected =
-        BaseStatusSignal.refreshAll(
-                mInternalPositionRotations,
-                mVelocityRps,
-                mAppliedVoltage.get(0),
-                mSupplyCurrent.get(0),
-                mTorqueCurrent.get(0),
-                mTempCelsius.get(0))
-            .isOK();
+    inputs.leaderMotorConnected = BaseStatusSignal.refreshAll(
+        mInternalPositionRotations,
+        mVelocityRps,
+        mAppliedVoltage.get(0),
+        mSupplyCurrent.get(0),
+        mTorqueCurrent.get(0),
+        mTempCelsius.get(0))
+        .isOK();
 
     if (mConstants.kFollowMotor != null) {
-      inputs.followerMotorConnected =
-          BaseStatusSignal.refreshAll(
-                  mAppliedVoltage.get(1),
-                  mSupplyCurrent.get(1),
-                  mTorqueCurrent.get(1),
-                  mTempCelsius.get(1))
-              .isOK();
+      inputs.followerMotorConnected = BaseStatusSignal.refreshAll(
+          mAppliedVoltage.get(1),
+          mSupplyCurrent.get(1),
+          mTorqueCurrent.get(1),
+          mTempCelsius.get(1))
+          .isOK();
     }
 
     if (mConstants.kCANcoder != null) {
-      inputs.CANcoderConnected =
-          BaseStatusSignal.refreshAll(
-                  mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
-              .isOK();
+      inputs.CANcoderConnected = BaseStatusSignal.refreshAll(
+          mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
+          .isOK();
     }
 
     // Due to an unfixed firmware error, certain closed-loop signals do not get

@@ -13,9 +13,9 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 /** Add your docs here. */
 public final class ArmConstants {
 
-  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
-      new GenericMotionProfiledSubsystemConstants();
+  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants = new GenericMotionProfiledSubsystemConstants();
 
+  public static final double kHomingCurrent = 2.0;
   static {
     kSubSysConstants.kName = "Arm";
 
@@ -26,8 +26,7 @@ public final class ArmConstants {
     // Using TalonFX internal encoder
 
     kSubSysConstants.kCANcoder = null;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-        FeedbackSensorSourceValue.RotorSensor;
+    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
     kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
@@ -96,8 +95,7 @@ public final class ArmConstants {
     kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
     kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
     kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-    kSubSysConstants.kArmSimConfig.kArmReduction =
-        54.4; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kArmSimConfig.kArmReduction = 54.4; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
   }
 }
