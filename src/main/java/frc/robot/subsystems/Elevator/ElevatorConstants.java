@@ -25,16 +25,14 @@ public final class ElevatorConstants {
 
     kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
     kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
-    kSubSysConstants.kFollowerOpposesMain = false;
+    kSubSysConstants.kFollowerOpposesMain = true;
 
     // Using TalonFX internal encoder
     kSubSysConstants.kCANcoder = null;
     kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-        FeedbackSensorSourceValue.RemoteCANcoder;
-    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio =
-        1.0; // Sensor is on the mechanism shaft
-    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio =
-        5.0; // 5 to 1 gear ratio on the motor
+        FeedbackSensorSourceValue.RotorSensor;
+    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
+    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Using a remote CANcoder
     /*
@@ -51,10 +49,7 @@ public final class ElevatorConstants {
      */
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-        InvertedValue.CounterClockwise_Positive; // TODO: Test
-    // direction of
-    // elevator motor
+    kSubSysConstants.kMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
     kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
@@ -95,6 +90,8 @@ public final class ElevatorConstants {
     // Motor simulation
     kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
 
+    // Elevator Simulation
+    kSubSysConstants.kElevSimConfig.kIsComboSim = true;
     // Elevator Simulation
     kSubSysConstants.kElevSimConfig.kDefaultSetpoint = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kCarriageMass = Units.lbsToKilograms(25); // Kilograms

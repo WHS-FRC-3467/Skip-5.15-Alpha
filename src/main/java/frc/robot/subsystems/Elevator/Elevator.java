@@ -37,15 +37,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
   @Getter @Setter private State state = State.HOME;
 
-  // We are in the correct position for homing if we are moving down and the
-  // current is above a
-  // certain threshold
-  public Trigger homedTrigger =
-      new Trigger(
-          () ->
-              (this.state == State.HOMING
-                  && io.getSupplyCurrent() > ElevatorConstants.kHomingCurrent));
-
   /** Constructor */
   public Elevator(ElevatorIO io, boolean isSim) {
     super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
@@ -55,7 +46,12 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
   }
 
-  // Command that calls zeroSensors(), part of the homing sequence
+  public Trigger homedTrigger =
+      new Trigger(
+          () ->
+              (this.state == State.HOMING
+                  && io.getSupplyCurrent() > ElevatorConstants.kHomingCurrent));
+
   public Command zeroSensorCommand() {
     return new InstantCommand(() -> io.zeroSensors());
   }
