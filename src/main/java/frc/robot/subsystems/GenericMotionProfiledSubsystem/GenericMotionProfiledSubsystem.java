@@ -92,7 +92,6 @@ public abstract class GenericMotionProfiledSubsystem<
   }
 
   public void periodic() {
-
     // If Profile Type has changed, reset the encoder(s)
     ProfileType newProfType = getState().getProfileType();
     if (m_proType != newProfType) {
