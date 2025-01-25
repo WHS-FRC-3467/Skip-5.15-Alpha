@@ -265,15 +265,17 @@ public class RobotContainer {
                 m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
 
     // Driver POV Center: Send Elevator to Homing
-    /*
-     * m_driver
-     * .start()
-     * .onTrue(
-     * m_profiledElevator
-     * .setStateCommand(Elevator.State.HOMING)
-     * .until(m_profiledElevator.getHomedTrigger())
-     * .andThen(m_profiledElevator.zeroSensorCommand()));
-     */
+
+    m_driver
+        .start()
+        .onTrue(
+            m_profiledElevator
+                .setStateCommand(Elevator.State.HOMING)
+                .until(m_profiledElevator.getHomedTrigger())
+                .andThen(m_profiledElevator.zeroSensorCommand()));
+
+    m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.setHomedAlertCommand(true));
+    m_profiledElevator.getHomedTrigger().onFalse(m_profiledElevator.setHomedAlertCommand(false));
 
     // Operator Buttons A & B run the Complex and Simple subsystems when held
     // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
