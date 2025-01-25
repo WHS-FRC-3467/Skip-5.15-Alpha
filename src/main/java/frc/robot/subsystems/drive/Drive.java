@@ -48,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -74,6 +75,8 @@ public class Drive extends SubsystemBase {
   public State getDrivetrainState() {
     return state;
   }
+
+  private RobotState.TARGET target = RobotState.TARGET.NONE;
 
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
@@ -238,6 +241,30 @@ public class Drive extends SubsystemBase {
     // MJW 1/18/2025
     // Provide the settings for the desired state
     // MJW 1/18/2025
+    target = RobotState.getInstance().getTarget();
+
+    switch (target) {
+        case NONE:
+            // Regular teleop
+            setState(State.TELEOP);
+            break;
+        case BARGE:
+            setState(State.CARDINAL);
+            break;
+        case PROCESSOR:
+            setState(State.CARDINAL);
+            break;
+        case NET:
+            setState(State.CARDINAL);
+            break;
+        // case NOTE:
+        //    setState(State.RELATIVE);
+        //    break;
+        default: 
+            // For all the reef targets
+            setState(State.HEADING);
+            break;
+    }
   }
 
   /**
