@@ -19,7 +19,7 @@
   ],
   "cameras": [
     {
-      "name": "front_camera",
+      "name": "front_left",
       "fov": 55,
       "resolution": [
         1600,
@@ -28,6 +28,25 @@
       "position": [
         0.287,
         0.260,
+        0.211
+      ],
+      "rotations": [
+        {
+          "axis": "y",
+          "degrees": -15
+        }
+      ]
+    },
+    {
+      "name": "front_right",
+      "fov": 55,
+      "resolution": [
+        1600,
+        1304
+      ],
+      "position": [
+        0.287,
+        -0.260,
         0.211
       ],
       "rotations": [

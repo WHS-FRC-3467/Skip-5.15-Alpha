@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.Vision.VisionConstants.camera0Name;
-import static frc.robot.subsystems.Vision.VisionConstants.robotToCamera0;
+import static frc.robot.subsystems.Vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -98,7 +97,8 @@ public class RobotContainer {
         m_vision =
             new Vision(
                 m_drive::addVisionMeasurement,
-                new VisionIOPhotonVision(camera0Name, robotToCamera0));
+                new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
         break;
 
@@ -122,7 +122,8 @@ public class RobotContainer {
         m_vision =
             new Vision(
                 m_drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose));
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
+                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
         break;
 
       default:
