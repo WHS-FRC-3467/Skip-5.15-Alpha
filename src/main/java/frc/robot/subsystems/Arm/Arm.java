@@ -34,14 +34,14 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     }
   }
 
-  @Getter
-  @Setter
-  private State state = State.HOME;
+  @Getter @Setter private State state = State.HOME;
 
   private final boolean debug = true;
 
-  public Trigger homedTrigger = new Trigger(
-      () -> (this.state == State.HOMING && io.getSupplyCurrent() > ArmConstants.kHomingCurrent));
+  public Trigger homedTrigger =
+      new Trigger(
+          () ->
+              (this.state == State.HOMING && io.getSupplyCurrent() > ArmConstants.kHomingCurrent));
 
   /** Constructor */
   public Arm(ArmIO io, boolean isSim) {
