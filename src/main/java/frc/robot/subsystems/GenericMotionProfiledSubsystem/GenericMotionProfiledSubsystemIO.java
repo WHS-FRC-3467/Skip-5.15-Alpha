@@ -13,10 +13,10 @@ public interface GenericMotionProfiledSubsystemIO {
 
     public double positionRot = 0.0;
     public double velocityRps = 0.0;
-    public double[] appliedVoltage = new double[] {0.0, 0.0};
-    public double[] supplyCurrentAmps = new double[] {0.0, 0.0};
-    public double[] torqueCurrentAmps = new double[] {0.0, 0.0};
-    public double[] tempCelsius = new double[] {0.0, 0.0};
+    public double[] appliedVoltage = new double[] { 0.0, 0.0 };
+    public double[] supplyCurrentAmps = new double[] { 0.0, 0.0 };
+    public double[] torqueCurrentAmps = new double[] { 0.0, 0.0 };
+    public double[] tempCelsius = new double[] { 0.0, 0.0 };
 
     public double errorRotations = 0.0;
     public double activeTrajectoryPosition = 0.0;
@@ -26,37 +26,48 @@ public interface GenericMotionProfiledSubsystemIO {
     public double relativeEncoderPositionRot = 0.0;
   }
 
-  default void updateInputs(GenericMotionProfiledIOInputs inputs) {}
+  default void updateInputs(GenericMotionProfiledIOInputs inputs) {
+  }
 
   /** Run Open Loop at the specified voltage */
-  public default void runVoltage(double volts) {}
+  public default void runVoltage(double volts) {
+  }
 
   /** Run Open Loop at the specified current */
-  public default void runCurrent(double amps) {}
+  public default void runCurrent(double amps) {
+  }
 
   /** Run Closed Loop to position in rotations */
-  public default void runToPosition(double position, double feedforward) {}
+  public default void runToPosition(double position, double feedforward) {
+  }
 
   /** Run Closed Loop to velocity in rotations/second */
-  public default void runToVelocity(double velocity, double feedforward) {}
+  public default void runToVelocity(double velocity, double feedforward) {
+  }
 
   /** Run Motion Magic to the specified setpoint */
-  public default void runMotionMagicPosition(double setpoint, double feedFwd) {}
+  public default void runMotionMagicPosition(double setpoint, double feedFwd) {
+  }
 
   /** Run Motion Magic to the specified velocity */
-  public default void runMotionMagicVelocity(double velocity, double feedFwd) {}
+  public default void runMotionMagicVelocity(double velocity, double feedFwd) {
+  }
 
   /* Stop in Open Loop */
-  public default void stop() {}
+  public default void stop() {
+  }
 
   /* Configure PID constants */
-  public default void configurePID(double kP, double kI, double kD, boolean check) {}
+  public default void configurePID(double kP, double kI, double kD, boolean check) {
+  }
 
   /* Configure Closed Loop constants */
-  public default void configureGSVA(double kG, double kS, double kV, double kA, boolean check) {}
+  public default void configureGSVA(double kG, double kS, double kV, double kA, boolean check) {
+  }
 
   /* Configure Motion constants */
-  public default void configureMotion(double kCruise, double kAccel, double kJerk, boolean check) {}
+  public default void configureMotion(double kCruise, double kAccel, double kJerk, boolean check) {
+  }
 
   /* Get the closed loop operational setpoint (in rotations) */
   public default double getSetpoint() {
@@ -83,10 +94,15 @@ public interface GenericMotionProfiledSubsystemIO {
     return false;
   }
 
-  /* Encoder homing and reset */
-  public default void zeroSensors() {}
+  /* Encoder Homing and Reset */
+  public default void zeroSensors() {
+  }
 
   public default boolean hasBeenZeroed() {
     return false;
+  }
+
+  public default double getSupplyCurrent() {
+    return 0.0;
   }
 }
