@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,7 +24,6 @@ public class RobotState {
   @RequiredArgsConstructor
   @Getter
   public enum TARGET {
-    NONE(null),
     LEFT_CORAL_STATION(FieldConstants.CoralStation.leftCenterFace),
     RIGHT_CORAL_STATION(FieldConstants.CoralStation.rightCenterFace),
     REEF(FieldConstants.Reef.centerFaces[0]);
@@ -34,7 +31,7 @@ public class RobotState {
     private final Pose2d TargetPose;
   }
 
-  @Getter @Setter private TARGET target = TARGET.NONE;
+  @Getter @Setter private TARGET target = TARGET.LEFT_CORAL_STATION;
 
   private double deltaT = .15;
 
@@ -89,10 +86,5 @@ public class RobotState {
     feedArmAngleMap.put(5.0, 0.0);
     feedArmAngleMap.put(6.0, -10.0);
     feedArmAngleMap.put(7.0, -19.0);
-  }
-
-  public Command setTargetCommand(TARGET target) {
-    return Commands.startEnd(() -> setTarget(target), () -> setTarget(TARGET.NONE))
-        .withName("Set Robot Target: " + target.toString());
   }
 }
