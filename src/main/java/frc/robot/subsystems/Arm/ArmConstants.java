@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledArm;
+package frc.robot.subsystems.Arm;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -11,17 +11,19 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledArmConstants {
+public final class ArmConstants {
 
   public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
       new GenericMotionProfiledSubsystemConstants();
 
+  public static final double kHomingCurrent = 2.0;
+
   static {
-    kSubSysConstants.kName = "SampleProfiledArm";
+    kSubSysConstants.kName = "Arm";
 
     kSubSysConstants.kLeaderMotor = Ports.ARM_MAIN;
-    kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
-    kSubSysConstants.kFollowerOpposesMain = true;
+    // kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
+    // kSubSysConstants.kFollowerOpposesMain = true;
 
     // Using TalonFX internal encoder
 
@@ -43,6 +45,9 @@ public final class SampleProfiledArmConstants {
      * SensorDirectionValue.Clockwise_Positive;
      * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
      * AbsoluteSensorRangeValue.Unsigned_0To1;
+     * Sprocket ratios = 2.0;
+     * Gear Ratios = 3.0;
+     * Planetary Ratio = 25.0;
      */
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
