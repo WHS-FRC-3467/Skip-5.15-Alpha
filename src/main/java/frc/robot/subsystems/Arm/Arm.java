@@ -30,7 +30,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     private final ProfileType profileType;
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
   private final boolean debug = true;
 
@@ -38,10 +40,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
   }
 
-  public Trigger homedTrigger =
-      new Trigger(
-          () ->
-              (this.state == State.HOMING && io.getSupplyCurrent() > ArmConstants.kHomingCurrent));
+  public Trigger homedTrigger = new Trigger(
+      () -> (this.state == State.HOMING && io.getSupplyCurrent() > ArmConstants.kHomingCurrent));
 
   /** Constructor */
   public Command setStateCommand(State state) {

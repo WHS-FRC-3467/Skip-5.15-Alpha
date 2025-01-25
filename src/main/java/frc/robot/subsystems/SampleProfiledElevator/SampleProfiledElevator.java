@@ -15,10 +15,10 @@ public class SampleProfiledElevator
   @RequiredArgsConstructor
   @Getter
   public enum State implements TargetState {
-    HOME(0.0, 0.0, ProfileType.MM_POSITION),
-    LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
-    LEVEL_2(0.6, 0.0, ProfileType.MM_POSITION),
-    LEVEL_3(1.0, 0.0, ProfileType.MM_POSITION);
+    HOME(2, 0.0, ProfileType.MM_POSITION),
+    LEVEL_1(5, 0.0, ProfileType.MM_POSITION),
+    LEVEL_2(10, 0.0, ProfileType.MM_POSITION),
+    LEVEL_3(20, 0.0, ProfileType.MM_POSITION);
 
     private final double output;
     private final double feedFwd;

@@ -34,14 +34,17 @@ public final class SampleProfiledElevatorConstants {
 
     // Using a remote CANcoder
     /*
-          kSubSysConstants.kCANcoder = Ports.ELEVATOR_CANCODER;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
-    kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-          kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-          */
+     * kSubSysConstants.kCANcoder = Ports.ELEVATOR_CANCODER;
+     * kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
+     * FeedbackSensorSourceValue.FusedCANcoder;
+     * kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
+     * kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
+     * SensorDirectionValue.Clockwise_Positive;
+     * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
+     * AbsoluteSensorRangeValue.Unsigned_0To1;
+     */
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     kSubSysConstants.kMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -86,11 +89,12 @@ public final class SampleProfiledElevatorConstants {
     kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
 
     // Elevator Simulation
+    kSubSysConstants.kElevSimConfig.kIsComboSim = true;
     kSubSysConstants.kElevSimConfig.kDefaultSetpoint = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kCarriageMass = 8.0; // Kilograms
     kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(4.0); // Meters
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
-    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = 1.0; // Meters
+    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = 50; // Meters
     kSubSysConstants.kElevSimConfig.kElevatorGearing =
         10.0; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio

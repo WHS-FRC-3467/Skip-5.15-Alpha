@@ -7,8 +7,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public abstract class GenericMotionProfiledSubsystem<
-        G extends GenericMotionProfiledSubsystem.TargetState>
+public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProfiledSubsystem.TargetState>
     extends SubsystemBase {
 
   // Tunable numbers
@@ -40,8 +39,7 @@ public abstract class GenericMotionProfiledSubsystem<
   private boolean mIsSim = false;
   private ProfileType m_proType;
 
-  protected final GenericMotionProfiledIOInputsAutoLogged inputs =
-      new GenericMotionProfiledIOInputsAutoLogged();
+  protected final GenericMotionProfiledIOInputsAutoLogged inputs = new GenericMotionProfiledIOInputsAutoLogged();
   private final Alert leaderMotorDisconnected;
   private final Alert followerMotorDisconnected;
   private final Alert CANcoderDisconnected;
@@ -58,12 +56,9 @@ public abstract class GenericMotionProfiledSubsystem<
     this.mIsSim = isSim;
     this.m_name = m_constants.kName;
 
-    this.leaderMotorDisconnected =
-        new Alert(m_name + " Leader motor disconnected!", Alert.AlertType.kWarning);
-    this.followerMotorDisconnected =
-        new Alert(m_name + " Follower motor disconnected!", Alert.AlertType.kWarning);
-    this.CANcoderDisconnected =
-        new Alert(m_name + " CANcoder disconnected!", Alert.AlertType.kWarning);
+    this.leaderMotorDisconnected = new Alert(m_name + " Leader motor disconnected!", Alert.AlertType.kWarning);
+    this.followerMotorDisconnected = new Alert(m_name + " Follower motor disconnected!", Alert.AlertType.kWarning);
+    this.CANcoderDisconnected = new Alert(m_name + " CANcoder disconnected!", Alert.AlertType.kWarning);
 
     // Make sure we use the correct profiling configs
     TalonFXConfiguration fxConfig = mIsSim ? m_constants.kSimMotorConfig : m_constants.kMotorConfig;
@@ -78,12 +73,10 @@ public abstract class GenericMotionProfiledSubsystem<
     kV = new LoggedTunableNumber(m_name + "/Gains/kV", fxConfig.Slot0.kV);
     kA = new LoggedTunableNumber(m_name + "/Gains/kA", fxConfig.Slot0.kA);
 
-    kCruiseVelocity =
-        new LoggedTunableNumber(
-            m_name + "/CruiseVelocity", fxConfig.MotionMagic.MotionMagicCruiseVelocity);
-    kAcceleration =
-        new LoggedTunableNumber(
-            m_name + "/Acceleration", fxConfig.MotionMagic.MotionMagicAcceleration);
+    kCruiseVelocity = new LoggedTunableNumber(
+        m_name + "/CruiseVelocity", fxConfig.MotionMagic.MotionMagicCruiseVelocity);
+    kAcceleration = new LoggedTunableNumber(
+        m_name + "/Acceleration", fxConfig.MotionMagic.MotionMagicAcceleration);
     kJerk = new LoggedTunableNumber(m_name + "/Jerk", fxConfig.MotionMagic.MotionMagicJerk);
 
     io.configurePID(kP.get(), kI.get(), kD.get(), true);
@@ -92,21 +85,20 @@ public abstract class GenericMotionProfiledSubsystem<
   }
 
   public void periodic() {
-
+    // If Profile Type has changed, reset the encoder(s)
     ProfileType newProfType = getState().getProfileType();
     if (m_proType != newProfType) {
       io.zeroSensors();
       m_proType = newProfType;
     }
 
-    m_proType = getState().getProfileType();
-
     io.updateInputs(inputs);
     Logger.processInputs(m_name, inputs);
 
     // Check for disconnections
     leaderMotorDisconnected.set(!inputs.leaderMotorConnected);
-    followerMotorDisconnected.set(!inputs.followerMotorConnected);
+    followerMotorDisconnected.set(
+        m_constants.kFollowMotor != null && !inputs.followerMotorConnected);
     CANcoderDisconnected.set(m_constants.kCANcoder != null && !inputs.CANcoderConnected);
 
     // If changed, update controller constants from Tuneable Numbers
@@ -147,11 +139,11 @@ public abstract class GenericMotionProfiledSubsystem<
         io.runMotionMagicVelocity(getState().getOutput(), getState().getFeedFwd());
         break;
       case OPEN_VOLTAGE:
-        /* Run Open Loop to velocity in rotations/second */
+        /* Run Open Loop using specified voltage in volts */
         io.runVoltage(getState().getOutput());
         break;
       case OPEN_CURRENT:
-        /* Run Open Loop to current in amps */
+        /* Run Open Loop using specified current in amps */
         io.runCurrent(getState().getOutput());
         break;
     }
@@ -162,6 +154,7 @@ public abstract class GenericMotionProfiledSubsystem<
   private void displayInfo() {
 
     Logger.recordOutput(m_name + "/Goal State", getState().toString());
+    Logger.recordOutput(m_name + "/Profile Type", getState().getProfileType().toString());
 
     if (Constants.tuningMode) {
       Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());
