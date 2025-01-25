@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ProfiledElevator;
+package frc.robot.subsystems.Elevator;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -21,7 +21,7 @@ public final class ElevatorConstants {
   public static final double kHomingCurrent = 2.0;
 
   static {
-    kSubSysConstants.kName = "ProfiledElevator";
+    kSubSysConstants.kName = "Elevator";
 
     kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
     kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
@@ -52,7 +52,9 @@ public final class ElevatorConstants {
 
     kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-        InvertedValue.CounterClockwise_Positive; // TODO: Test direction of elevator motor
+        InvertedValue.CounterClockwise_Positive; // TODO: Test
+    // direction of
+    // elevator motor
     kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
     kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
@@ -97,7 +99,8 @@ public final class ElevatorConstants {
     kSubSysConstants.kElevSimConfig.kDefaultSetpoint = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kCarriageMass = Units.lbsToKilograms(25); // Kilograms
     kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(1.75); // Meters
-    // May want to triple "drum size" to account for the x3 scale in the cascading elevator
+    // May want to triple "drum size" to account for the x3 scale in the cascading
+    // elevator
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(60); // Meters
     kSubSysConstants.kElevSimConfig.kElevatorGearing =

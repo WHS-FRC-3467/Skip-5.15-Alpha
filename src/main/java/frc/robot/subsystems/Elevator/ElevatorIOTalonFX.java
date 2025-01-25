@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ProfiledElevator;
+package frc.robot.subsystems.Elevator;
 
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemIOImpl;
 
