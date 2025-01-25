@@ -274,8 +274,7 @@ public class RobotContainer {
                 .until(m_profiledElevator.getHomedTrigger())
                 .andThen(m_profiledElevator.zeroSensorCommand()));
 
-    m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.setHomedAlertCommand(true));
-    m_profiledElevator.getHomedTrigger().onFalse(m_profiledElevator.setHomedAlertCommand(false));
+    m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
     // Operator Buttons A & B run the Complex and Simple subsystems when held
     // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));

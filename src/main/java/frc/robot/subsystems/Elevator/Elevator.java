@@ -4,7 +4,9 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
@@ -38,12 +40,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     private final ProfileType profileType;
   }
 
-  @Getter
-  @Setter
-  private State state = State.HOME;
+  @Getter @Setter private State state = State.HOME;
 
-  @Getter
-  public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
+  @Getter public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
 
   /** Constructor */
   public Elevator(ElevatorIO io, boolean isSim) {
@@ -56,15 +55,20 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
   private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
 
-  public Trigger homedTrigger = new Trigger(
-      () -> homedDebouncer.calculate(
-          (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
+  public Trigger homedTrigger =
+      new Trigger(
+          () ->
+              homedDebouncer.calculate(
+                  (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
 
   public Command zeroSensorCommand() {
     return new InstantCommand(() -> io.zeroSensors());
   }
 
-  public Command setHomedAlertCommand(boolean cond) {
-    return new InstantCommand(() -> homedAlert.set(cond));
+  public Command homedAlertCommand() {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> homedAlert.set(true)),
+        Commands.waitSeconds(1),
+        new InstantCommand(() -> homedAlert.set(false)));
   }
 }
