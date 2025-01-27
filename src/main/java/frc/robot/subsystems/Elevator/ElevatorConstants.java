@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledElevator;
+package frc.robot.subsystems.Elevator;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -13,13 +13,15 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledElevatorConstants {
+public final class ElevatorConstants {
 
   public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
       new GenericMotionProfiledSubsystemConstants();
 
+  public static final double kHomingCurrent = 2.0;
+
   static {
-    kSubSysConstants.kName = "SampleProfiledElevator";
+    kSubSysConstants.kName = "Elevator";
 
     kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
     kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
@@ -90,13 +92,20 @@ public final class SampleProfiledElevatorConstants {
 
     // Elevator Simulation
     kSubSysConstants.kElevSimConfig.kIsComboSim = true;
+    // Elevator Simulation
     kSubSysConstants.kElevSimConfig.kDefaultSetpoint = 0.0; // Meters
-    kSubSysConstants.kElevSimConfig.kCarriageMass = 8.0; // Kilograms
-    kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(4.0); // Meters
+    kSubSysConstants.kElevSimConfig.kCarriageMass = Units.lbsToKilograms(25); // Kilograms
+    kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(1.75); // Meters
+    // May want to triple "drum size" to account for the x3 scale in the cascading
+    // elevator
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
-    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = 50; // Meters
+    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(60); // Meters
     kSubSysConstants.kElevSimConfig.kElevatorGearing =
-        10.0; // RotorToSensorRatio * SensorToMechanismRatio
+        5.0; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
+
+    // Calculate ratio of motor rotation to distance the top of the elevator moves
+    // 5:1 and then x3. Each rotation is 1.75in diameter x pi = 5.498in per rotation
+    // 0.2*3*5.498 = 3.2988in of cascading elevator travel per rotation of Kraken
   }
 }
