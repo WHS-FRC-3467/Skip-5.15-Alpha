@@ -99,7 +99,7 @@ public final class ElevatorConstants {
     // May want to triple "drum size" to account for the x3 scale in the cascading
     // elevator
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
-    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(60); // Meters
+    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(30); // Meters
     kSubSysConstants.kElevSimConfig.kElevatorGearing =
         5.0; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
