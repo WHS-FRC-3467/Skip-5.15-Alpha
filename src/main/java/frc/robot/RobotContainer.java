@@ -51,8 +51,7 @@ public class RobotContainer {
 
   // Controllers
   private final CommandXboxController m_driver = new CommandXboxController(0);
-  // private final CommandXboxController m_operator = new
-  // CommandXboxController(1);
+  private final CommandXboxController m_operator = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -65,10 +64,6 @@ public class RobotContainer {
   private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
 
   public final Vision m_vision;
-
-  // Non-AK-enabled Subsystems
-  // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
-  // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -201,13 +196,7 @@ public class RobotContainer {
                     m_drive)
                 .ignoringDisable(true));
 
-    // // Driver X Button: Run the Sample Roller in Eject direction when held
-    // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-    // // Driver Y Button: Run the Sample Roller in Intake direction when held
-    // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
-
-    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-    // held
+    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when held
     m_driver
         .leftBumper()
         .whileTrue(
@@ -217,8 +206,7 @@ public class RobotContainer {
         .whileTrue(
             m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
 
-    // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-    // position
+    // Driver Right Trigger: Run the Sample Profiled Roller to the requested position
     m_driver
         .rightTrigger()
         .whileTrue(
@@ -265,7 +253,6 @@ public class RobotContainer {
                 m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
 
     // Driver POV Center: Send Elevator to Homing
-
     m_driver
         .start()
         .onTrue(
@@ -276,9 +263,10 @@ public class RobotContainer {
 
     m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
-    // Operator Buttons A & B run the Complex and Simple subsystems when held
-    // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-    // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
+    // Operator X Button: Run the Sample Roller in Eject direction when held
+    m_operator.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
+    // Operator Y Button: Run the Sample Roller in Intake direction when held
+    m_operator.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
   }
 
   /**

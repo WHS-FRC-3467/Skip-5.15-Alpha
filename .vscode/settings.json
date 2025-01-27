@@ -61,5 +61,9 @@
     "edu.wpi.first.math.**.struct.*",
     null
   ],
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "java.format.settings.url": "./eclipse-java-google-style.xml",
+  "[java]": {
+    "editor.detectIndentation": false
+  }
 }
