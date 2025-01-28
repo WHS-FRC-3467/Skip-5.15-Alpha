@@ -52,7 +52,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   // Maintain a copy of the Operational setpoint
   private double mOpSetpoint = 0.0;
 
-  // Hold the latest encoder position, rotor velocity, and trajectory position, and supply current
+  // Hold the latest encoder position, rotor velocity, and trajectory position
   private double mCurrPosition = 0.0;
   private double mCurrVelocity = 0.0;
   private double mCurrTrajectoryPosition = 0.0;
@@ -103,11 +103,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Get the motor configuration group and configure the main motor
     /*
-     * Note: We can use the kMotorcConfig constants here for both REAL and SIM,
-     * because
-     * after this class is instantiated, if needed, the Subsystem's constructor will
-     * pull
-     * the SIM constants into LoggedTunableNumbers and update this config.
+     * Note: We can use the kMotorcConfig constants here for both REAL and SIM, because after
+     * this class is instantiated, if needed, the Subsystem's constructor will pull the SIM
+     * constants into LoggedTunableNumbers and update this config.
      */
     mMainConfig = mConstants.kMotorConfig;
     Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
@@ -289,8 +287,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     }
 
     // Due to an unfixed firmware error, certain closed-loop signals do not get
-    // refreshed by
-    // refreshAll()
+    // refreshed by refreshAll()
     // See: https://api.ctr-electronics.com/changelog#known-issues-20240209
     mMainClosedLoopError.refresh();
     mMainClosedLoopReference.refresh();
