@@ -66,10 +66,10 @@ public final class SampleProfiledRollerConstants {
     kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
     /* SIM system profile constants */
-    kSubSysConstants.kSimMotorConfig.Slot0.kP = 700;
+    kSubSysConstants.kSimMotorConfig.Slot0.kP = 500;
     kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
-    kSubSysConstants.kSimMotorConfig.Slot0.kD = 100;
-    kSubSysConstants.kSimMotorConfig.Slot0.kG = 13;
+    kSubSysConstants.kSimMotorConfig.Slot0.kD = 20;
+    kSubSysConstants.kSimMotorConfig.Slot0.kG = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
     kSubSysConstants.kSimMotorConfig.Slot0.kV = 0.19;
     kSubSysConstants.kSimMotorConfig.Slot0.kA = 0;

@@ -7,8 +7,6 @@ package frc.robot;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -59,15 +57,14 @@ public class RobotContainer {
 
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
-    // private final CommandXboxController m_operator = new
-    // CommandXboxController(1);
+    private final CommandXboxController m_operator = new CommandXboxController(1);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
 
     // AK-enabled Subsystems
     private final Drive m_drive;
-
+  
     private SwerveDriveSimulation m_driveSimulation = null;
     private final SampleRollers m_sampleRollersSubsystem;
     private final Arm m_sampleArmSubsystem;
@@ -94,8 +91,8 @@ public class RobotContainer {
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (pose) -> {
-                        });
+                        (pose) -> {}
+                );
 
                 m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
                 m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
@@ -187,112 +184,82 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    /** Use this method to define your joystick and button -> command mappings. */
-    private void configureControllerBindings() {
+    /** Use this method to define your joystick and button -> command mappings. */=
+    private void configureControllerBindings()
+    {
 
         // Default command, normal field-relative drive
         m_drive.setDefaultCommand(
-                DriveCommands.joystickDrive(
-                        m_drive,
-                        () -> -m_driver.getLeftY(),
-                        () -> -m_driver.getLeftX(),
-                        () -> -m_driver.getRightX()));
-
-        // Driver A Button: Lock to 0°
+            DriveCommands.joystickDrive(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
+                () -> -m_driver.getRightX()));
+        // m_driver
+        // .leftBumper()
+        // .whileTrue(
+        // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
         m_driver
-                .a()
-                .whileTrue(
-                        DriveCommands.joystickDriveAtAngle(
-                                m_drive,
-                                () -> -m_driver.getLeftY(),
-                                () -> -m_driver.getLeftX(),
-                                () -> new Rotation2d()));
+            .rightBumper()
+            .whileTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
+                    m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
-        // Driver X Button: Switch wheel modules to X pattern
-        m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
-
-        // Driver B Button: Reset gyro to 0°
+        // Driver Right Trigger: Run the Sample Profiled Roller to the requested position
         m_driver
-                .b()
-                .onTrue(
-                        Commands.runOnce(
-                                () -> m_drive.setPose(
-                                        new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-                                m_drive)
-                                .ignoringDisable(true));
-
-        // // Driver X Button: Run the Sample Roller in Eject direction when held
-        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-        // // Driver Y Button: Run the Sample Roller in Intake direction when held
-        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
-
-        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-        // held
-        m_driver
-                .leftBumper()
-                .whileTrue(
-                        m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
-        m_driver
-                .rightBumper()
-                .whileTrue(
-                        m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
-
-        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-        // position
-        m_driver
-                .rightTrigger()
-                .whileTrue(
-                        m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.POSITION));
+            .rightTrigger()
+            .whileTrue(
+                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
 
         // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
-                .povDown()
-                .onTrue(
-                        Commands.parallel(
-                                m_sampleArmSubsystem.setStateCommand(Arm.State.HOME),
-                                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+            .leftTrigger()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
+                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
 
         // Driver POV Left: Send Arm and Elevator to LEVEL_1
         m_driver
-                .povLeft()
-                .onTrue(
-                        Commands.parallel(
-                                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
-                                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1)));
+            .a()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1)));
 
         // Driver POV Up: Send Arm and Elevator to LEVEL_2
         m_driver
-                .povUp()
-                .onTrue(
-                        Commands.parallel(
-                                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
-                                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
+            .x()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
 
         // Driver POV Right: Send Arm and Elevator to LEVEL_3
         m_driver
-                .povRight()
-                .onTrue(
-                        Commands.parallel(
-                                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
-                                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+            .y()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
 
         // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
         m_driver
-                .back()
-                .onTrue(
-                        Commands.parallel(
-                                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
-                                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+            .b()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4)));
 
         // Driver POV Center: Send Elevator to Homing
-
         m_driver
-                .start()
-                .onTrue(
-                        m_profiledElevator
-                                .setStateCommand(Elevator.State.HOMING)
-                                .until(m_profiledElevator.getHomedTrigger())
-                                .andThen(m_profiledElevator.zeroSensorCommand()));
+            .start()
+            .onTrue(
+                m_profiledElevator
+                    .setStateCommand(Elevator.State.HOMING)
+                    .until(m_profiledElevator.getHomedTrigger())
+                    .andThen(m_profiledElevator.zeroSensorCommand()));
 
         m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
@@ -306,7 +273,8 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    public Command getAutonomousCommand()
+    {
         return m_autoChooser.get();
     }
 }
