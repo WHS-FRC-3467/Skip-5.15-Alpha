@@ -15,14 +15,14 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
   @RequiredArgsConstructor
   @Getter
   public enum State implements TargetState {
-    HOME(Units.degreesToRotations(10.0), 0.0, ProfileType.MM_POSITION),
+    HOME(Units.degreesToRotations(20.0), 0.0, ProfileType.MM_POSITION),
     // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
     INTAKE(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
     LEVEL_1(Units.degreesToRotations(20.0), 0.0, ProfileType.MM_POSITION),
     LEVEL_2(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
     LEVEL_3(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
     LEVEL_4(Units.degreesToRotations(60.0), 0.0, ProfileType.MM_POSITION),
-    GROUND(Units.degreesToRotations(120.0), 0.0, ProfileType.MM_POSITION);
+    GROUND(Units.degreesToRotations(105.0), 0.0, ProfileType.MM_POSITION);
 
     private final double output;
     private final double feedFwd;

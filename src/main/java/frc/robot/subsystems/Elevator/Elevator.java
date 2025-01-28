@@ -26,10 +26,11 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         0.0,
         ProfileType.OPEN_VOLTAGE), // TODO: Test Voltage and position values (rotations) (elevator)
     HOME(0.15, 0.0, ProfileType.MM_POSITION),
-    LEVEL_1(10, 0.0, ProfileType.MM_POSITION),
-    LEVEL_2(20, 0.0, ProfileType.MM_POSITION),
-    LEVEL_3(30, 0.0, ProfileType.MM_POSITION),
-    LEVEL_4(50.0, 0.0, ProfileType.MM_POSITION),
+    INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
+    LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
+    LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
+    LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
+    LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
     CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
     ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
     ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
@@ -40,9 +41,12 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     private final ProfileType profileType;
   }
 
-  @Getter @Setter private State state = State.HOME;
+  @Getter
+  @Setter
+  private State state = State.HOME;
 
-  @Getter public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
+  @Getter
+  public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
 
   /** Constructor */
   public Elevator(ElevatorIO io, boolean isSim) {
@@ -55,11 +59,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
   private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
 
-  public Trigger homedTrigger =
-      new Trigger(
-          () ->
-              homedDebouncer.calculate(
-                  (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
+  public Trigger homedTrigger = new Trigger(
+      () -> homedDebouncer.calculate(
+          (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
 
   public Command zeroSensorCommand() {
     return new InstantCommand(() -> io.zeroSensors());

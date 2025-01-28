@@ -40,9 +40,12 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -68,73 +71,79 @@ public class RobotContainer {
   // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
   // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
 
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        m_drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
+        m_drive = new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight));
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
         m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
         m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
+        m_sampleProfiledRollerSubsystem = new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
 
-        m_vision =
-            new Vision(
-                m_drive::addVisionMeasurement,
-                new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                new VisionIOPhotonVision(camera1Name, robotToCamera1));
+        m_vision = new Vision(
+            m_drive::addVisionMeasurement,
+            new VisionIOPhotonVision(camera0Name, robotToCamera0),
+            new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+        m_drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(TunerConstants.FrontLeft),
+            new ModuleIOSim(TunerConstants.FrontRight),
+            new ModuleIOSim(TunerConstants.BackLeft),
+            new ModuleIOSim(TunerConstants.BackRight));
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
         m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
         m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
+        m_sampleProfiledRollerSubsystem = new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
 
-        m_vision =
-            new Vision(
-                m_drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
+        m_vision = new Vision(
+            m_drive::addVisionMeasurement,
+            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
+            new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        m_drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-        m_sampleArmSubsystem = new Arm(new ArmIO() {}, true);
-        m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+        m_drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+        m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {
+        });
+        m_sampleArmSubsystem = new Arm(new ArmIO() {
+        }, true);
+        m_profiledElevator = new Elevator(new ElevatorIO() {
+        }, true);
+        m_sampleProfiledRollerSubsystem = new SampleProfiledRoller(new SampleProfiledRollerIO() {
+        }, false);
 
-        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {
+        }, new VisionIO() {
+        });
         break;
     }
 
@@ -205,33 +214,35 @@ public class RobotContainer {
 
     // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
     // held
-    m_driver
-        .leftBumper()
-        .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+    // m_driver
+    // .leftBumper()
+    // .whileTrue(
+    // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
     m_driver
         .rightBumper()
         .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
+            Commands.parallel(
+                m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
+                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
     // Driver Right Trigger: Run the Sample Profiled Roller to the requested
     // position
     m_driver
         .rightTrigger()
         .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.POSITION));
+            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
 
     // Driver POV Down: Bring Arm and Elevator to Home position
     m_driver
-        .b()
+        .leftTrigger()
         .onTrue(
             Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.HOME),
-                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+                m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
+                m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
 
     // Driver POV Left: Send Arm and Elevator to LEVEL_1
     m_driver
-        .povLeft()
+        .a()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
@@ -247,7 +258,7 @@ public class RobotContainer {
 
     // Driver POV Right: Send Arm and Elevator to LEVEL_3
     m_driver
-        .povLeft()
+        .y()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
@@ -255,7 +266,7 @@ public class RobotContainer {
 
     // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
     m_driver
-        .a()
+        .b()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4),
@@ -273,9 +284,6 @@ public class RobotContainer {
 
     m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
-    // Operator Buttons A & B run the Complex and Simple subsystems when held
-    // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-    // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
   }
 
   /**
