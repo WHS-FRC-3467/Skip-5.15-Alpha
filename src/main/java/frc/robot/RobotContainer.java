@@ -38,8 +38,8 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
+import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -65,6 +65,7 @@ public class RobotContainer {
   private SwerveDriveSimulation driveSimulation = null;
 
   // AK-enabled Subsystems
+  public Pose2d startingPose = new Pose2d(1.0, 1.0, new Rotation2d());
   private final Drive m_drive;
   private final SampleRollers m_sampleRollersSubsystem;
   private final Arm m_sampleArmSubsystem;
@@ -86,10 +87,10 @@ public class RobotContainer {
         m_drive =
             new Drive(
                 new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
+                new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                new ModuleIOTalonFXReal(TunerConstants.BackRight),
                 (robotPose) -> {});
 
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
@@ -100,7 +101,7 @@ public class RobotContainer {
 
         m_vision =
             new Vision(
-                m_drive::addVisionMeasurement,
+                m_drive,
                 new VisionIOPhotonVision(camera0Name, robotToCamera0),
                 new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
@@ -114,12 +115,16 @@ public class RobotContainer {
         m_drive =
             new Drive(
                 new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                new ModuleIOSim(this.driveSimulation.getModules()[0]),
-                new ModuleIOSim(this.driveSimulation.getModules()[1]),
-                new ModuleIOSim(this.driveSimulation.getModules()[2]),
-                new ModuleIOSim(this.driveSimulation.getModules()[3]),
+                new ModuleIOTalonFXSim(
+                    TunerConstants.FrontLeft, this.driveSimulation.getModules()[0]),
+                new ModuleIOTalonFXSim(
+                    TunerConstants.FrontRight, this.driveSimulation.getModules()[1]),
+                new ModuleIOTalonFXSim(
+                    TunerConstants.BackLeft, this.driveSimulation.getModules()[2]),
+                new ModuleIOTalonFXSim(
+                    TunerConstants.BackRight, this.driveSimulation.getModules()[3]),
                 driveSimulation::setSimulationWorldPose);
-
+        // m_drive.setPose(startingPose);
         m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
         m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
         m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
@@ -128,9 +133,11 @@ public class RobotContainer {
 
         m_vision =
             new Vision(
-                m_drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
+                m_drive,
+                new VisionIOPhotonVisionSim(
+                    camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
+                new VisionIOPhotonVisionSim(
+                    camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
 
         break;
 
@@ -150,7 +157,7 @@ public class RobotContainer {
         m_sampleProfiledRollerSubsystem =
             new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
 
-        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
         break;
     }
 
@@ -316,6 +323,10 @@ public class RobotContainer {
 
     m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
     SimulatedArena.getInstance().resetFieldForAuto();
+  }
+
+  public void resetSimulationField() {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
   }
 
   public void displaySimFieldToAdvantageScope() {
