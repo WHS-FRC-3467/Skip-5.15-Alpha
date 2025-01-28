@@ -64,7 +64,6 @@ public class RobotContainer {
   private SwerveDriveSimulation driveSimulation = null;
 
   // AK-enabled Subsystems
-  public Pose2d startingPose = new Pose2d(1.0, 1.0, new Rotation2d());
   private final Drive m_drive;
   private final SampleRollers m_sampleRollersSubsystem;
   private final Arm m_sampleArmSubsystem;
@@ -72,6 +71,10 @@ public class RobotContainer {
   private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
 
   public final Vision m_vision;
+
+  // Non-AK-enabled Subsystems
+  // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
+  // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -194,14 +197,14 @@ public class RobotContainer {
             () -> -m_driver.getRightX()));
 
     // Driver A Button: Lock to 0°
-    m_driver
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                m_drive,
-                () -> -m_driver.getLeftY(),
-                () -> -m_driver.getLeftX(),
-                () -> new Rotation2d()));
+    // m_driver
+    // .a()
+    // .whileTrue(
+    // DriveCommands.joystickDriveAtAngle(
+    // m_drive,
+    // () -> -m_driver.getLeftY(),
+    // () -> -m_driver.getLeftX(),
+    // () -> new Rotation2d()));
 
     // Driver X Button: Switch wheel modules to X pattern
     // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
@@ -214,43 +217,50 @@ public class RobotContainer {
     m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
 
     // Driver B Button: Reset gyro to 0°
-    m_driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        m_drive.setPose(
-                            new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-                    m_drive)
-                .ignoringDisable(true));
+    // m_driver
+    // .b()
+    // .onTrue(
+    // Commands.runOnce(
+    // () -> m_drive.setPose(
+    // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
+    // m_drive)
+    // .ignoringDisable(true));
 
-    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when held
-    m_driver
-        .leftBumper()
-        .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+    // // Driver X Button: Run the Sample Roller in Eject direction when held
+    // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
+    // // Driver Y Button: Run the Sample Roller in Intake direction when held
+    // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+
+    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
+    // held
+    // m_driver
+    // .leftBumper()
+    // .whileTrue(
+    // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
     m_driver
         .rightBumper()
         .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
+            Commands.parallel(
+                m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
+                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
     // Driver Right Trigger: Run the Sample Profiled Roller to the requested position
     m_driver
         .rightTrigger()
         .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.POSITION));
+            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
 
     // Driver POV Down: Bring Arm and Elevator to Home position
     m_driver
-        .povDown()
+        .leftTrigger()
         .onTrue(
             Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.HOME),
-                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+                m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
+                m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
 
     // Driver POV Left: Send Arm and Elevator to LEVEL_1
     m_driver
-        .povLeft()
+        .a()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
@@ -258,7 +268,7 @@ public class RobotContainer {
 
     // Driver POV Up: Send Arm and Elevator to LEVEL_2
     m_driver
-        .povUp()
+        .x()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
@@ -266,7 +276,7 @@ public class RobotContainer {
 
     // Driver POV Right: Send Arm and Elevator to LEVEL_3
     m_driver
-        .povRight()
+        .y()
         .onTrue(
             Commands.parallel(
                 m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
@@ -274,11 +284,11 @@ public class RobotContainer {
 
     // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
     m_driver
-        .back()
+        .b()
         .onTrue(
             Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
-                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4),
+                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4)));
 
     // Driver POV Center: Send Elevator to Homing
     m_driver
@@ -291,10 +301,9 @@ public class RobotContainer {
 
     m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
-    // Operator X Button: Run the Sample Roller in Eject direction when held
-    m_operator.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-    // Operator Y Button: Run the Sample Roller in Intake direction when held
-    m_operator.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+    // Operator Buttons A & B run the Complex and Simple subsystems when held
+    // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
+    // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
   }
 
   /**

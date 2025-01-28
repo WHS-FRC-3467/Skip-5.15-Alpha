@@ -72,9 +72,9 @@ public final class ElevatorConstants {
     kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
     /* SIM system profile constants */
-    kSubSysConstants.kSimMotorConfig.Slot0.kP = 50.0;
-    kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
-    kSubSysConstants.kSimMotorConfig.Slot0.kD = 0;
+    kSubSysConstants.kSimMotorConfig.Slot0.kP = 300.0;
+    kSubSysConstants.kSimMotorConfig.Slot0.kI = 50;
+    kSubSysConstants.kSimMotorConfig.Slot0.kD = 50;
     kSubSysConstants.kSimMotorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     kSubSysConstants.kSimMotorConfig.Slot0.kG = 0.1;
     kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
@@ -99,7 +99,7 @@ public final class ElevatorConstants {
     // May want to triple "drum size" to account for the x3 scale in the cascading
     // elevator
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
-    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(60); // Meters
+    kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(30); // Meters
     kSubSysConstants.kElevSimConfig.kElevatorGearing =
         5.0; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
