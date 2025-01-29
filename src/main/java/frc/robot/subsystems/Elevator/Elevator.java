@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -63,6 +64,10 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
   public Command zeroSensorCommand() {
     return new InstantCommand(() -> io.zeroSensors());
+  }
+
+  public boolean atPosition(double tolerance) {
+    return Util.epsilonEquals(io.getPosition(), state.output, Math.max(1, tolerance));
   }
 
   public Command homedAlertCommand() {
