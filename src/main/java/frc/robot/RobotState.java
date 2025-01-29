@@ -24,11 +24,11 @@ public class RobotState {
   @RequiredArgsConstructor
   @Getter
   public enum TARGET {
-    LEFT_CORAL_STATION(FieldConstants.CoralStation.leftCenterFace),
-    RIGHT_CORAL_STATION(FieldConstants.CoralStation.rightCenterFace),
-    REEF(FieldConstants.Reef.centerFaces[0]);
+    LEFT_CORAL_STATION(FieldConstants.CoralStation.leftCenterFace.getTranslation()),
+    RIGHT_CORAL_STATION(FieldConstants.CoralStation.rightCenterFace.getTranslation()),
+    REEF(FieldConstants.Reef.center);
 
-    private final Pose2d TargetPose;
+    private final Translation2d TargetPose;
   }
 
   @Getter @Setter private TARGET target = TARGET.LEFT_CORAL_STATION;
@@ -48,7 +48,7 @@ public class RobotState {
   }
 
   public Rotation2d getAngleToTarget(Pose2d currentPose) {
-    return target.TargetPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
+    return target.TargetPose.minus(currentPose.getTranslation()).getAngle();
   }
 
   private Translation2d getFuturePose() {

@@ -111,7 +111,8 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Rotation2d> rotationSupplier) {
+      Supplier<Rotation2d> rotationSupplier,
+      boolean robotCentric) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -127,7 +128,12 @@ public class DriveCommands {
             () -> {
               // Get linear velocity
               Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                  robotCentric
+                      ? getLinearVelocityFromJoysticks(
+                              xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                          .rotateBy(drive.getRotation())
+                      : getLinearVelocityFromJoysticks(
+                          xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
               // Calculate angular speed
               double omega =
