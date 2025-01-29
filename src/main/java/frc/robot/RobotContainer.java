@@ -28,6 +28,10 @@ import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
 import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.SimpleSubsystem;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionConstants;
+import frc.robot.subsystems.Vision.VisionIO;
+import frc.robot.subsystems.Vision.VisionIOPhotonVision;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -57,6 +61,8 @@ public class RobotContainer {
   private final SampleProfiledArm m_sampleArmSubsystem;
   private final SampleProfiledElevator m_sampleElevatorSubsystem;
 
+  public final Vision m_vision;
+
   // Non-AK-enabled Subsystems
   private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
   private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
@@ -80,6 +86,15 @@ public class RobotContainer {
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOTalonFX(), false);
         m_sampleElevatorSubsystem =
             new SampleProfiledElevator(new SampleProfiledElevatorIOTalonFX(), false);
+
+        m_vision =
+            new Vision(
+                m_drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+
         break;
 
       case SIM:
@@ -96,6 +111,17 @@ public class RobotContainer {
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIOSim(), true);
         m_sampleElevatorSubsystem =
             new SampleProfiledElevator(new SampleProfiledElevatorIOSim(), true);
+
+        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        // m_vision =
+        //     new Vision(
+        //         m_drive::addVisionMeasurement,
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0,
+        // m_drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1,
+        // m_drive::getPose));
         break;
 
       default:
@@ -111,6 +137,8 @@ public class RobotContainer {
         m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
         m_sampleElevatorSubsystem =
             new SampleProfiledElevator(new SampleProfiledElevatorIO() {}, true);
+
+        m_vision = new Vision(m_drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         break;
     }
 
@@ -165,7 +193,7 @@ public class RobotContainer {
     m_driver
         .back()
         .whileTrue(
-            Commands.sequence(
+            Commands.parallel(
                 m_RobotState.setTargetCommand(RobotState.TARGET.REEF_AB),
                 DriveCommands.joystickDriveAtAngle(
                     m_drive,
@@ -180,13 +208,26 @@ public class RobotContainer {
     m_driver
         .start()
         .whileTrue(
-            Commands.sequence(
+            Commands.parallel(
                 m_RobotState.setTargetCommand(RobotState.getInstance().chooseReefTarget()),
                 DriveCommands.joystickDriveAtAngle(
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
                     () -> RobotState.getInstance().getAngleOfTarget())));
+
+    m_driver
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                m_RobotState.setTargetCommand(RobotState.TARGET.PROCESSOR),
+                DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> RobotState.getInstance().getAngleOfTarget())));
+    // m_driver.rightBumper().onTrue(m_RobotState.setTempTargetCommand(RobotState.TARGET.PROCESSOR));
+    m_driver.rightBumper().onFalse(m_RobotState.setTempTargetCommand(RobotState.TARGET.REEF_AB));
 
     // Driver B Button: Reset gyro to 0°
     m_driver

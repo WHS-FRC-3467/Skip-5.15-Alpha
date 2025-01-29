@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Add your docs here. */
 public class RobotState {
@@ -26,14 +27,15 @@ public class RobotState {
   @RequiredArgsConstructor
   @Getter
   public enum TARGET {
-    NONE(null, null),
+    // NONE(null, null),
     REEF_AB(Constants.FieldConstants.BLUE_REEF_AB, Constants.FieldConstants.RED_REEF_AB),
     REEF_CD(Constants.FieldConstants.BLUE_REEF_CD, Constants.FieldConstants.RED_REEF_CD),
     REEF_EF(Constants.FieldConstants.BLUE_REEF_EF, Constants.FieldConstants.RED_REEF_EF),
     REEF_GH(Constants.FieldConstants.BLUE_REEF_GH, Constants.FieldConstants.RED_REEF_GH),
     REEF_IJ(Constants.FieldConstants.BLUE_REEF_IJ, Constants.FieldConstants.RED_REEF_IJ),
     REEF_KL(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
-    REEF_CENTER(Constants.FieldConstants.BLUE_REEF_CENTER, Constants.FieldConstants.RED_REEF_CENTER),
+    REEF_CENTER(
+        Constants.FieldConstants.BLUE_REEF_CENTER, Constants.FieldConstants.RED_REEF_CENTER),
     SUBSTATION(Constants.FieldConstants.BLUE_SUBSTATION, Constants.FieldConstants.RED_SUBSTATION),
     PROCESSOR(Constants.FieldConstants.BLUE_PROCESSOR, Constants.FieldConstants.RED_PROCESSOR),
     NET(Constants.FieldConstants.BLUE_NET, Constants.FieldConstants.RED_NET),
@@ -48,7 +50,7 @@ public class RobotState {
     private final Pose2d redTargetPose;
   }
 
-  @Getter @Setter private TARGET target = TARGET.NONE;
+  @Getter @Setter private TARGET target = TARGET.REEF_AB;
 
   // private double deltaT = .15;
 
@@ -56,6 +58,16 @@ public class RobotState {
     if (instance == null) instance = new RobotState();
     return instance;
   }
+
+  // Pose Estimation Members
+  @Getter
+  @Setter
+  @AutoLogOutput(key = "RobotState/OdometryPose")
+  private Pose2d odometryPose = new Pose2d();
+
+  @Getter
+  @AutoLogOutput(key = "RobotState/EstimatedPose")
+  private Pose2d estimatedPose = new Pose2d();
 
   // private Translation2d getFuturePose() {
   // // If magnitude of velocity is low enough, use current pose
@@ -72,7 +84,9 @@ public class RobotState {
   // robotSpeeds.vyMetersPerSecond));
   // }
   // }
-
+  
+  // For Cardinal targets, such as the Processor, Net, Barge, and Coral
+  // Substations
   public Rotation2d getAngleOfTarget() {
     // Return the angle to allign to target
     return (DriverStation.getAlliance().get() == Alliance.Blue)
@@ -80,79 +94,80 @@ public class RobotState {
         : target.redTargetPose.getRotation();
   }
 
-    // TODO: need to test or code review
-    public Rotation2d getAngleToTarget() {
-      // Get the angle of the vector from the robot to the reef
-      double angle =
-          robotPose
-              .getTranslation()
-              .minus(
-                  (DriverStation.getAlliance().get() == Alliance.Blue)
-                      ? target.blueTargetPose.getTranslation()
-                      : target.redTargetPose.getTranslation()) // Get the vector from the robot to target
-              // Robotpose - target
-              .getAngle()
-              .getRadians();
-      return new Rotation2d(angle);
-    }
+  // TODO: need to test or code review
+  public Rotation2d getAngleToTarget() {
+    // Get the angle of the vector from the robot to the reef
+    double angle =
+        robotPose
+            .getTranslation()
+            .minus(
+                (DriverStation.getAlliance().get() == Alliance.Blue)
+                    ? target.blueTargetPose.getTranslation()
+                    : target.redTargetPose
+                        .getTranslation()) // Get the vector from the robot to target
+            // Robotpose - target
+            .getAngle()
+            .getRadians();
+    return new Rotation2d(angle);
+  }
 
-    public TARGET chooseReefTarget() {
+  public TARGET chooseReefTarget() {
 
-      // Get the angle of the vector from the robot to the reef
-      double angle =
-          robotPose
-              .getTranslation()
-              .minus(
-                  (DriverStation.getAlliance().get() == Alliance.Blue)
-                      ? Constants.FieldConstants.BLUE_REEF_CENTER.getTranslation()
-                      : Constants.FieldConstants.RED_REEF_CENTER
-                          .getTranslation()) // Get the vector from the robot to the reef.
-              // Robotpose - reef center
-              .getAngle()
-              .getDegrees();
-  
-      // Now get the angle of the nearest target
-      if (((angle >= -30) && (angle < 30))) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_GH);
-        } else {
-          return (TARGET.REEF_AB);
-        }
-      } else if ((angle >= 30) && (angle < 90)) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_IJ);
-        } else {
-          return (TARGET.REEF_CD);
-        }
-      } else if ((angle >= 90) && (angle < 150)) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_KL);
-        } else {
-          return (TARGET.REEF_EF);
-        }
-      } else if (((angle >= 150) && (angle < 180)) || ((angle >= -180) && (angle < -150))) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_AB);
-        } else {
-          return (TARGET.REEF_GH);
-        }
-      } else if ((angle >= -150) && (angle < -90)) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_CD);
-        } else {
-          return (TARGET.REEF_IJ);
-        }
-      } else if ((angle >= -90) && (angle < -30)) {
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          return (TARGET.REEF_EF);
-        } else {
-          return (TARGET.REEF_KL);
-        }
+    // Get the angle of the vector from the robot to the reef
+    double angle =
+        robotPose
+            .getTranslation()
+            .minus(
+                (DriverStation.getAlliance().get() == Alliance.Blue)
+                    ? Constants.FieldConstants.BLUE_REEF_CENTER.getTranslation()
+                    : Constants.FieldConstants.RED_REEF_CENTER
+                        .getTranslation()) // Get the vector from the robot to the reef.
+            // Robotpose - reef center
+            .getAngle()
+            .getDegrees();
+
+    // Now get the angle of the nearest target
+    if (((angle >= -30) && (angle < 30))) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_GH);
       } else {
-        return (TARGET.REEF_CENTER); // Catch all
+        return (TARGET.REEF_AB);
       }
+    } else if ((angle >= 30) && (angle < 90)) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_IJ);
+      } else {
+        return (TARGET.REEF_CD);
+      }
+    } else if ((angle >= 90) && (angle < 150)) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_KL);
+      } else {
+        return (TARGET.REEF_EF);
+      }
+    } else if (((angle >= 150) && (angle < 180)) || ((angle >= -180) && (angle < -150))) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_AB);
+      } else {
+        return (TARGET.REEF_GH);
+      }
+    } else if ((angle >= -150) && (angle < -90)) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_CD);
+      } else {
+        return (TARGET.REEF_IJ);
+      }
+    } else if ((angle >= -90) && (angle < -30)) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return (TARGET.REEF_EF);
+      } else {
+        return (TARGET.REEF_KL);
+      }
+    } else {
+      return (TARGET.REEF_CENTER); // Catch all
     }
-  
+  }
+
   // todo: need to invert
   // public Rotation2d getAngleToTarget() {
   // return getFuturePose()
@@ -216,7 +231,11 @@ public class RobotState {
   // }
 
   public Command setTargetCommand(TARGET target) {
-    return Commands.startEnd(() -> setTarget(target), () -> setTarget(TARGET.NONE))
+    return Commands.startEnd(() -> setTarget(target), () -> setTarget(TARGET.REEF_AB))
         .withName("Set Robot Target: " + target.toString());
+  }
+
+  public Command setTempTargetCommand(TARGET target) {
+    return Commands.runOnce(() -> setTarget(target));
   }
 }

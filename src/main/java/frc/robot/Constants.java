@@ -172,7 +172,7 @@ public class Constants {
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
-            new Rotation2d()); // Rotation
+            new Rotation2d(-90)); // Rotation
     public static final Pose2d BLUE_NET =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
@@ -223,7 +223,7 @@ public class Constants {
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
-            new Rotation2d()); // Rotation
+            new Rotation2d(90)); // Rotation
     public static final Pose2d RED_NET =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
@@ -237,7 +237,7 @@ public class Constants {
 
     public static final Pose2d BLUE_REEF_CENTER =
         new Pose2d(Units.inchesToMeters(196.75), Units.inchesToMeters(158.5), new Rotation2d());
-    
+
     public static final Pose2d RED_REEF_CENTER =
         new Pose2d(Units.inchesToMeters(514.13), Units.inchesToMeters(158.5), new Rotation2d());
 

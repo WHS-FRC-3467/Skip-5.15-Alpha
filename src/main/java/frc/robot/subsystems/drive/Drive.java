@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -76,7 +77,7 @@ public class Drive extends SubsystemBase {
     return state;
   }
 
-  private RobotState.TARGET target = RobotState.TARGET.NONE;
+  private RobotState.TARGET target = RobotState.TARGET.REEF_AB;
 
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
@@ -241,29 +242,56 @@ public class Drive extends SubsystemBase {
     // MJW 1/18/2025
     // Provide the settings for the desired state
     // MJW 1/18/2025
+    // First update the pose in RobotState
+
+    SmartDashboard.putNumber("Odometry/RobotX", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Odometry/RobotY", poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber(
+        "Odometry/RobotTheta", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+    SmartDashboard.putString("RobotState/TARGET", RobotState.getInstance().getTarget().toString());
+
+    RobotState.getInstance().setOdometryPose(poseEstimator.getEstimatedPosition());
+    // Now get the current target (set in RobotContainer, button bindings)
     target = RobotState.getInstance().getTarget();
 
     switch (target) {
-        case NONE:
-            // Regular teleop
-            setState(State.TELEOP);
-            break;
-        case BARGE:
-            setState(State.CARDINAL);
-            break;
-        case PROCESSOR:
-            setState(State.CARDINAL);
-            break;
-        case NET:
-            setState(State.CARDINAL);
-            break;
+      case BARGE:
+        setState(State.CARDINAL);
+        break;
+      case PROCESSOR:
+        setState(State.CARDINAL);
+        break;
+      case NET:
+        setState(State.CARDINAL);
+        break;
         // case NOTE:
         //    setState(State.RELATIVE);
         //    break;
-        default: 
-            // For all the reef targets
-            setState(State.HEADING);
-            break;
+      case REEF_AB:
+        setState(State.HEADING);
+        break;
+      case REEF_CD:
+        setState(State.HEADING);
+        break;
+      case REEF_EF:
+        setState(State.HEADING);
+        break;
+      case REEF_GH:
+        setState(State.HEADING);
+        break;
+      case REEF_IJ:
+        setState(State.HEADING);
+        break;
+      case REEF_KL:
+        setState(State.HEADING);
+        break;
+      case REEF_CENTER:
+        setState(State.HEADING);
+        break;
+      default:
+        // For all the reef targets
+        setState(State.TELEOP);
+        break;
     }
   }
 
