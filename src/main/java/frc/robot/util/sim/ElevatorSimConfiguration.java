@@ -6,12 +6,12 @@ package frc.robot.util.sim;
 
 public class ElevatorSimConfiguration {
 
-  public boolean kIsComboSim = false;
-  public double kDefaultSetpoint = 0.0; // Meters
-  public double kCarriageMass = 0.0; // Kilograms
-  public double kElevatorDrumRadius = 0.0; // Meters
-  public double kMinElevatorHeight = 0.0; // Meters
-  public double kMaxElevatorHeight = 0.0; // Meters
-  public double kElevatorGearing = 0.0; // RotorToSensorRatio * SensorToMechanismRatio
-  public double kSensorReduction = 0.0; // SensorToMechanismRatio
+    public boolean kIsComboSim = false;
+    public double kDefaultSetpoint = 0.0; // Meters
+    public double kCarriageMass = 0.0; // Kilograms
+    public double kElevatorDrumRadius = 0.0; // Meters
+    public double kMinElevatorHeight = 0.0; // Meters
+    public double kMaxElevatorHeight = 0.0; // Meters
+    public double kElevatorGearing = 0.0; // RotorToSensorRatio * SensorToMechanismRatio
+    public double kSensorReduction = 0.0; // SensorToMechanismRatio
 }

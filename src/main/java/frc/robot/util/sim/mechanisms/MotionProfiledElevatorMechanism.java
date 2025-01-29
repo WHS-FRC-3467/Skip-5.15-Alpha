@@ -12,27 +12,29 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /** Class to draw a simulated Elevator mechanism controlled by motion profiling */
 public class MotionProfiledElevatorMechanism implements MotionProfiledMechanism {
 
-  String mSimName;
-  Mechanism2d mMech;
-  MechanismLigament2d mElevator;
+    String mSimName;
+    Mechanism2d mMech;
+    MechanismLigament2d mElevator;
 
-  public MotionProfiledElevatorMechanism(String simName) {
+    public MotionProfiledElevatorMechanism(String simName)
+    {
 
-    double HEIGHT = 50; // Controls the height of the mech2d SmartDashboard
-    double WIDTH = 20; // Controls width of the mech2d SmartDashboard
+        double HEIGHT = 50; // Controls the height of the mech2d SmartDashboard
+        double WIDTH = 20; // Controls width of the mech2d SmartDashboard
 
-    mSimName = simName;
+        mSimName = simName;
 
-    // Create a Mechanism2d visualization of the elevator
-    mMech = new Mechanism2d(WIDTH, HEIGHT);
-    MechanismRoot2d mech2dRoot = mMech.getRoot("Elevator Root", 10, 0);
-    mElevator = mech2dRoot.append(new MechanismLigament2d("Elevator", 0.0, 90));
-  }
+        // Create a Mechanism2d visualization of the elevator
+        mMech = new Mechanism2d(WIDTH, HEIGHT);
+        MechanismRoot2d mech2dRoot = mMech.getRoot("Elevator Root", 10, 0);
+        mElevator = mech2dRoot.append(new MechanismLigament2d("Elevator", 0.0, 90));
+    }
 
-  /** Runs the mech2d widget in GUI. */
-  public void updateElevator(double position) {
+    /** Runs the mech2d widget in GUI. */
+    public void updateElevator(double position)
+    {
 
-    mElevator.setLength(position);
-    SmartDashboard.putData(mSimName, mMech); // Creates mech2d in SmartDashboard
-  }
+        mElevator.setLength(position);
+        SmartDashboard.putData(mSimName, mMech); // Creates mech2d in SmartDashboard
+    }
 }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /** Add your docs here. */
 public class MotorSimConfiguration {
 
-  public Supplier<DCMotor> simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
-  public double simReduction = 1;
-  public double simMOI = 0.001;
+    public Supplier<DCMotor> simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
+    public double simReduction = 1;
+    public double simMOI = 0.001;
 }

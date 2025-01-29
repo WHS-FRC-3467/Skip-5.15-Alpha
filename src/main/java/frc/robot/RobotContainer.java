@@ -53,331 +53,353 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
-  private static final int RIGHT_STICK_HORIZONTAL = 4;
-  private static final int RIGHT_STICK_VERTICAL = 5;
+    private static final int RIGHT_STICK_HORIZONTAL = 4;
+    private static final int RIGHT_STICK_VERTICAL = 5;
 
-  // Controllers
-  private final CommandXboxController m_driver = new CommandXboxController(0);
-  // private final CommandXboxController m_operator = new
-  // CommandXboxController(1);
+    // Controllers
+    private final CommandXboxController m_driver = new CommandXboxController(0);
+    // private final CommandXboxController m_operator = new
+    // CommandXboxController(1);
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> m_autoChooser;
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> m_autoChooser;
 
-  // Maple Sim
-  private SwerveDriveSimulation driveSimulation = null;
+    // Maple Sim
+    private SwerveDriveSimulation driveSimulation = null;
 
-  // AK-enabled Subsystems
-  private final Drive m_drive;
-  // private final SampleRollers m_sampleRollersSubsystem;
-  private final Arm m_sampleArmSubsystem;
-  private final Elevator m_profiledElevator;
-  private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
+    // AK-enabled Subsystems
+    private final Drive m_drive;
+    // private final SampleRollers m_sampleRollersSubsystem;
+    private final Arm m_sampleArmSubsystem;
+    private final Elevator m_profiledElevator;
+    private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
 
-  public final Vision m_vision;
+    public final Vision m_vision;
 
-  // Non-AK-enabled Subsystems
-  // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
-  // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
+    // Non-AK-enabled Subsystems
+    // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
+    // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer()
+    {
 
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        m_drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                (robotPose) -> {});
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                m_drive =
+                    new Drive(
+                        new GyroIOPigeon2(),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                        (robotPose) -> {
+                        });
 
-        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
-        m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
-        m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
+                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
+                m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
+                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                m_sampleProfiledRollerSubsystem =
+                    new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
 
-        m_vision =
-            new Vision(
-                m_drive,
-                new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                m_vision =
+                    new Vision(
+                        m_drive,
+                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
-        break;
+                break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        driveSimulation =
-            new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
-        SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-        m_drive =
-            new Drive(
-                new GyroIOSim(this.driveSimulation.getGyroSimulation()),
-                new ModuleIOTalonFXSim(
-                    TunerConstants.FrontLeft, this.driveSimulation.getModules()[0]),
-                new ModuleIOTalonFXSim(
-                    TunerConstants.FrontRight, this.driveSimulation.getModules()[1]),
-                new ModuleIOTalonFXSim(
-                    TunerConstants.BackLeft, this.driveSimulation.getModules()[2]),
-                new ModuleIOTalonFXSim(
-                    TunerConstants.BackRight, this.driveSimulation.getModules()[3]),
-                driveSimulation::setSimulationWorldPose);
-        // m_drive.setPose(startingPose);
-        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
-        m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
-        m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
+            case SIM:
+                // Sim robot, instantiate physics sim IO implementations
+                driveSimulation =
+                    new SwerveDriveSimulation(Drive.mapleSimConfig,
+                        new Pose2d(3, 3, new Rotation2d()));
+                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                m_drive =
+                    new Drive(
+                        new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.FrontLeft, this.driveSimulation.getModules()[0]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.FrontRight, this.driveSimulation.getModules()[1]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.BackLeft, this.driveSimulation.getModules()[2]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.BackRight, this.driveSimulation.getModules()[3]),
+                        driveSimulation::setSimulationWorldPose);
+                // m_drive.setPose(startingPose);
+                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
+                m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
+                m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
+                m_sampleProfiledRollerSubsystem =
+                    new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
 
-        m_vision =
-            new Vision(
-                m_drive,
-                new VisionIOPhotonVisionSim(
-                    camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
-                new VisionIOPhotonVisionSim(
-                    camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
+                m_vision =
+                    new Vision(
+                        m_drive,
+                        new VisionIOPhotonVisionSim(
+                            camera0Name, robotToCamera0,
+                            driveSimulation::getSimulatedDriveTrainPose),
+                        new VisionIOPhotonVisionSim(
+                            camera1Name, robotToCamera1,
+                            driveSimulation::getSimulatedDriveTrainPose));
 
-        break;
+                break;
 
-      default:
-        // Replayed robot, disable IO implementations
-        m_drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                (robotPose) -> {});
-        // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-        m_sampleArmSubsystem = new Arm(new ArmIO() {}, true);
-        m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-        m_sampleProfiledRollerSubsystem =
-            new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+            default:
+                // Replayed robot, disable IO implementations
+                m_drive =
+                    new Drive(
+                        new GyroIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        (robotPose) -> {
+                        });
+                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
+                m_sampleArmSubsystem = new Arm(new ArmIO() {}, true);
+                m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_sampleProfiledRollerSubsystem =
+                    new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
 
-        m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
-        break;
+                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+                break;
+        }
+
+        // Logic Triggers
+
+        // Set up auto routines
+        m_autoChooser =
+            new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+        // Set up SysId routines
+        m_autoChooser.addOption(
+            "Drive Wheel Radius Characterization",
+            DriveCommands.wheelRadiusCharacterization(m_drive));
+        m_autoChooser.addOption(
+            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
+        m_autoChooser.addOption(
+            "Drive SysId (Quasistatic Forward)",
+            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(
+            "Drive SysId (Quasistatic Reverse)",
+            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        m_autoChooser.addOption(
+            "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        m_autoChooser.addOption(
+            "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        // Configure the controller button and joystick bindings
+        configureControllerBindings();
+        // Configure the controller button and joystick bindings
+        configureControllerBindings();
+
+        // Detect if controllers are missing / Stop multiple warnings
+        DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    // Logic Triggers
+    /** Use this method to define your joystick and button -> command mappings. */
+    private void configureControllerBindings()
+    {
 
-    // Set up auto routines
-    m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up SysId routines
-    m_autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_drive));
-    m_autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
-    m_autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    // Configure the controller button and joystick bindings
-    configureControllerBindings();
-    // Configure the controller button and joystick bindings
-    configureControllerBindings();
-
-    // Detect if controllers are missing / Stop multiple warnings
-    DriverStation.silenceJoystickConnectionWarning(true);
-  }
-
-  /** Use this method to define your joystick and button -> command mappings. */
-  private void configureControllerBindings() {
-
-    // Default command, normal field-relative drive
-    m_drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            m_drive,
-            () -> -m_driver.getLeftY(),
-            () -> -m_driver.getLeftX(),
-            () -> -m_driver.getRightX()));
-
-    // Driver A Button: Lock to 0°
-    // m_driver
-    // .a()
-    // .whileTrue(
-    // DriveCommands.joystickDriveAtAngle(
-    // m_drive,
-    // () -> -m_driver.getLeftY(),
-    // () -> -m_driver.getLeftX(),
-    // () -> new Rotation2d()));
-    // Driver A Button: Lock to 0°
-
-    m_driver
-        .leftBumper()
-        .whileTrue(
-            DriveCommands.joystickOrbitAtAngle(
+        // Default command, normal field-relative drive
+        m_drive.setDefaultCommand(
+            DriveCommands.joystickDrive(
                 m_drive,
-                () -> m_driver.getLeftY(),
-                () -> m_driver.getLeftX(),
-                () -> RobotState.getInstance().getAngleToTarget(m_drive.getPose().getTranslation()),
-                () -> RobotState.getInstance().getTarget().getTranslation()));
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
+                () -> -m_driver.getRightX()));
 
-    m_driver
-        .leftBumper()
-        .and(m_driver.axisGreaterThan(RIGHT_STICK_HORIZONTAL, 0.8))
-        .onTrue(
-            Commands.runOnce(
-                () -> RobotState.getInstance().setTarget(RobotState.TARGET.RIGHT_CORAL_STATION)));
+        // Driver A Button: Lock to 0°
+        // m_driver
+        // .a()
+        // .whileTrue(
+        // DriveCommands.joystickDriveAtAngle(
+        // m_drive,
+        // () -> -m_driver.getLeftY(),
+        // () -> -m_driver.getLeftX(),
+        // () -> new Rotation2d()));
+        // Driver A Button: Lock to 0°
 
-    m_driver
-        .leftBumper()
-        .and(m_driver.axisLessThan(RIGHT_STICK_HORIZONTAL, -0.8))
-        .onTrue(
-            Commands.runOnce(
-                () -> RobotState.getInstance().setTarget(RobotState.TARGET.LEFT_CORAL_STATION)));
+        m_driver
+            .leftBumper()
+            .whileTrue(
+                DriveCommands.joystickOrbitAtAngle(
+                    m_drive,
+                    () -> m_driver.getLeftY(),
+                    () -> m_driver.getLeftX(),
+                    () -> RobotState.getInstance()
+                        .getAngleToTarget(m_drive.getPose().getTranslation()),
+                    () -> RobotState.getInstance().getTarget().getTranslation()));
 
-    m_driver
-        .leftBumper()
-        .and(m_driver.axisLessThan(RIGHT_STICK_VERTICAL, -0.8))
-        .onTrue(Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
+        m_driver
+            .leftBumper()
+            .and(m_driver.axisGreaterThan(RIGHT_STICK_HORIZONTAL, 0.8))
+            .onTrue(
+                Commands.runOnce(
+                    () -> RobotState.getInstance()
+                        .setTarget(RobotState.TARGET.RIGHT_CORAL_STATION)));
 
-    // Driver X Button: Switch wheel modules to X pattern
-    // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
-    // Reset gyro / odometry
-    final Runnable setPose =
-        Constants.currentMode == Constants.Mode.SIM
-            ? () -> m_drive.setPose(driveSimulation.getSimulatedDriveTrainPose())
-            : () ->
-                m_drive.setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
-    m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
+        m_driver
+            .leftBumper()
+            .and(m_driver.axisLessThan(RIGHT_STICK_HORIZONTAL, -0.8))
+            .onTrue(
+                Commands.runOnce(
+                    () -> RobotState.getInstance()
+                        .setTarget(RobotState.TARGET.LEFT_CORAL_STATION)));
 
-    // Driver B Button: Reset gyro to 0°
-    // m_driver
-    // .b()
-    // .onTrue(
-    // Commands.runOnce(
-    // () -> m_drive.setPose(
-    // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-    // m_drive)
-    // .ignoringDisable(true));
+        m_driver
+            .leftBumper()
+            .and(m_driver.axisLessThan(RIGHT_STICK_VERTICAL, -0.8))
+            .onTrue(
+                Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
-    // // Driver X Button: Run the Sample Roller in Eject direction when held
-    // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-    // // Driver Y Button: Run the Sample Roller in Intake direction when held
-    // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+        // Driver X Button: Switch wheel modules to X pattern
+        // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
+        // Reset gyro / odometry
+        final Runnable setPose =
+            Constants.currentMode == Constants.Mode.SIM
+                ? () -> m_drive.setPose(driveSimulation.getSimulatedDriveTrainPose())
+                : () -> m_drive
+                    .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
+        m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
 
-    // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-    // held
-    // m_driver
-    // .leftBumper()
-    // .whileTrue(
-    // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+        // Driver B Button: Reset gyro to 0°
+        // m_driver
+        // .b()
+        // .onTrue(
+        // Commands.runOnce(
+        // () -> m_drive.setPose(
+        // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
+        // m_drive)
+        // .ignoringDisable(true));
 
-    m_driver
-        .povDown()
-        .whileTrue(
-            Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
-                m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+        // // Driver X Button: Run the Sample Roller in Eject direction when held
+        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
+        // // Driver Y Button: Run the Sample Roller in Intake direction when held
+        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
 
-    // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-    // position
-    // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-    // position
-    m_driver
-        .rightTrigger()
-        .whileTrue(
-            m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
+        // held
+        // m_driver
+        // .leftBumper()
+        // .whileTrue(
+        // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
 
-    // Driver POV Down: Bring Arm and Elevator to Home position
-    m_driver
-        .leftTrigger()
-        .onTrue(
-            Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
-                m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
+        m_driver
+            .povDown()
+            .whileTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
+                    m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
-    // Driver POV Left: Send Arm and Elevator to LEVEL_1
-    m_driver
-        .a()
-        .onTrue(
-            Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
-                Commands.waitUntil(() -> m_sampleArmSubsystem.atPosition(0))
-                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
+        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
+        // position
+        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
+        // position
+        m_driver
+            .rightTrigger()
+            .whileTrue(
+                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
 
-    // Driver POV Up: Send Arm and Elevator to LEVEL_2
-    m_driver
-        .x()
-        .onTrue(
-            Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
-                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
+        // Driver POV Down: Bring Arm and Elevator to Home position
+        m_driver
+            .leftTrigger()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
+                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
 
-    // Driver POV Right: Send Arm and Elevator to LEVEL_3
-    m_driver
-        .y()
-        .onTrue(
-            Commands.parallel(
-                m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
-                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+        // Driver POV Left: Send Arm and Elevator to LEVEL_1
+        m_driver
+            .a()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
+                    Commands.waitUntil(() -> m_sampleArmSubsystem.atPosition(0))
+                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
 
-    // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
-    m_driver
-        .b()
-        .onTrue(
-            Commands.parallel(
-                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
-                Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                    .andThen(m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4))));
+        // Driver POV Up: Send Arm and Elevator to LEVEL_2
+        m_driver
+            .x()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
 
-    // Driver POV Center: Send Elevator to Homing
-    m_driver
-        .start()
-        .onTrue(
-            m_profiledElevator
-                .setStateCommand(Elevator.State.HOMING)
-                .until(m_profiledElevator.getHomedTrigger())
-                .andThen(m_profiledElevator.zeroSensorCommand()));
+        // Driver POV Right: Send Arm and Elevator to LEVEL_3
+        m_driver
+            .y()
+            .onTrue(
+                Commands.parallel(
+                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
 
-    m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
+        // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
+        m_driver
+            .b()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                        .andThen(m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4))));
 
-    // Operator Buttons A & B run the Complex and Simple subsystems when held
-    // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-    // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
-  }
+        // Driver POV Center: Send Elevator to Homing
+        m_driver
+            .start()
+            .onTrue(
+                m_profiledElevator
+                    .setStateCommand(Elevator.State.HOMING)
+                    .until(m_profiledElevator.getHomedTrigger())
+                    .andThen(m_profiledElevator.zeroSensorCommand()));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return m_autoChooser.get();
-  }
+        m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
 
-  public void resetSimulation() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+        // Operator Buttons A & B run the Complex and Simple subsystems when held
+        // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
+        // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
+    }
 
-    m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
-    SimulatedArena.getInstance().resetFieldForAuto();
-  }
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand()
+    {
+        return m_autoChooser.get();
+    }
 
-  public void resetSimulationField() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
-  }
+    public void resetSimulation()
+    {
+        if (Constants.currentMode != Constants.Mode.SIM)
+            return;
 
-  public void displaySimFieldToAdvantageScope() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+        m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
+        SimulatedArena.getInstance().resetFieldForAuto();
+    }
 
-    Logger.recordOutput(
-        "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
-    Logger.recordOutput(
-        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-    Logger.recordOutput(
-        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-  }
+    public void resetSimulationField()
+    {
+        if (Constants.currentMode != Constants.Mode.SIM)
+            return;
+    }
+
+    public void displaySimFieldToAdvantageScope()
+    {
+        if (Constants.currentMode != Constants.Mode.SIM)
+            return;
+
+        Logger.recordOutput(
+            "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+        Logger.recordOutput(
+            "FieldSimulation/Coral",
+            SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+        Logger.recordOutput(
+            "FieldSimulation/Algae",
+            SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+    }
 }
