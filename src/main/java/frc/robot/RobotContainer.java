@@ -225,7 +225,7 @@ public class RobotContainer {
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
-                    () -> RobotState.getInstance().getAngleOfTarget())));
+                    () -> m_RobotState.getAngleOfTarget())));
     // m_driver.rightBumper().onTrue(m_RobotState.setTempTargetCommand(RobotState.TARGET.PROCESSOR));
     m_driver.rightBumper().onFalse(m_RobotState.setTempTargetCommand(RobotState.TARGET.REEF_AB));
 

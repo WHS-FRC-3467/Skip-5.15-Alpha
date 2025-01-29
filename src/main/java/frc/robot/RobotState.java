@@ -84,7 +84,7 @@ public class RobotState {
   // robotSpeeds.vyMetersPerSecond));
   // }
   // }
-  
+
   // For Cardinal targets, such as the Processor, Net, Barge, and Coral
   // Substations
   public Rotation2d getAngleOfTarget() {
