@@ -234,7 +234,7 @@ public class RobotContainer {
                                 () -> m_driver.getLeftX(),
                                 () -> RobotState.getInstance()
                                         .getAngleToTarget(m_drive.getPose().getTranslation()),
-                                () -> RobotState.getInstance().getTarget().getTargetTranslation()));
+                                () -> RobotState.getInstance().getTarget().getTranslation()));
 
         m_driver
                 .leftBumper()
