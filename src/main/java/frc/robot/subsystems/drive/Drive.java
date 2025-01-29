@@ -244,15 +244,22 @@ public class Drive extends SubsystemBase {
     // MJW 1/18/2025
     // First update the pose in RobotState
 
+    Logger.recordOutput("Odometry/RobotX", poseEstimator.getEstimatedPosition().getX());
+    Logger.recordOutput("Odometry/RobotY", poseEstimator.getEstimatedPosition().getY());
+    Logger.recordOutput(
+        "Odometry/RobotTheta", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+    
+    // Now get the current target (set in RobotContainer, button bindings)
+    target = RobotState.getInstance().getTarget();
+    Logger.recordOutput("RobotState/TARGET", target.toString());
+
     SmartDashboard.putNumber("Odometry/RobotX", poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Odometry/RobotY", poseEstimator.getEstimatedPosition().getY());
     SmartDashboard.putNumber(
         "Odometry/RobotTheta", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-    SmartDashboard.putString("RobotState/TARGET", RobotState.getInstance().getTarget().toString());
+    SmartDashboard.putString("RobotState/TARGET", target.toString());
 
     RobotState.getInstance().setOdometryPose(poseEstimator.getEstimatedPosition());
-    // Now get the current target (set in RobotContainer, button bindings)
-    target = RobotState.getInstance().getTarget();
 
     switch (target) {
       case BARGE:

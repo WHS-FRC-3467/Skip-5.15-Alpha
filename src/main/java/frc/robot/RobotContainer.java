@@ -199,7 +199,7 @@ public class RobotContainer {
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
-                    () -> RobotState.getInstance().getAngleOfTarget())));
+                    () -> RobotState.getInstance().getAngleToTarget())));
 
     // Driver X Button: Switch wheel modules to X pattern
     m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
@@ -214,20 +214,21 @@ public class RobotContainer {
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
-                    () -> RobotState.getInstance().getAngleOfTarget())));
-
+                    () -> m_RobotState.getAngleToTarget())));
+    // Driver Right bumper: Cardinal direction to Processor
     m_driver
         .rightBumper()
         .whileTrue(
-            Commands.parallel(
-                m_RobotState.setTargetCommand(RobotState.TARGET.PROCESSOR),
+            //Experimental: put the command in a lambda inside the run() method
+            Commands.run(()-> 
+            // TODO: Alternatively replace with runOnce and have a runOnce at the end to set state back to default
+                m_RobotState.setTargetCommand(RobotState.TARGET.PROCESSOR))
+            .alongWith(
                 DriveCommands.joystickDriveAtAngle(
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
                     () -> m_RobotState.getAngleOfTarget())));
-    // m_driver.rightBumper().onTrue(m_RobotState.setTempTargetCommand(RobotState.TARGET.PROCESSOR));
-    m_driver.rightBumper().onFalse(m_RobotState.setTempTargetCommand(RobotState.TARGET.REEF_AB));
 
     // Driver B Button: Reset gyro to 0°
     m_driver

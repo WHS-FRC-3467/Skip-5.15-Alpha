@@ -36,7 +36,8 @@ public class RobotState {
     REEF_KL(Constants.FieldConstants.BLUE_REEF_KL, Constants.FieldConstants.RED_REEF_KL),
     REEF_CENTER(
         Constants.FieldConstants.BLUE_REEF_CENTER, Constants.FieldConstants.RED_REEF_CENTER),
-    SUBSTATION(Constants.FieldConstants.BLUE_SUBSTATION, Constants.FieldConstants.RED_SUBSTATION),
+    SUBSTATION_LEFT(Constants.FieldConstants.BLUE_SUBSTATION_LEFT, Constants.FieldConstants.RED_SUBSTATION_LEFT),
+    SUBSTATION_RIGHT(Constants.FieldConstants.BLUE_SUBSTATION_RIGHT, Constants.FieldConstants.RED_SUBSTATION_RIGHT),
     PROCESSOR(Constants.FieldConstants.BLUE_PROCESSOR, Constants.FieldConstants.RED_PROCESSOR),
     NET(Constants.FieldConstants.BLUE_NET, Constants.FieldConstants.RED_NET),
     BARGE(Constants.FieldConstants.BLUE_BARGE, Constants.FieldConstants.RED_BARGE);

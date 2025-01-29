@@ -175,11 +175,6 @@ public class Constants {
             Units.inchesToMeters(0.0), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
             new Rotation2d()); // Rotation
-    public static final Pose2d BLUE_SUBSTATION =
-        new Pose2d(
-            Units.inchesToMeters(0.0), // X Pose
-            Units.inchesToMeters(0.0), // Y Pose
-            new Rotation2d()); // Rotation
     public static final Pose2d BLUE_PROCESSOR =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
@@ -229,7 +224,12 @@ public class Constants {
             Units.inchesToMeters(530.49), // X Pose
             Units.inchesToMeters(130.17), // Y Pose
             new Rotation2d(Units.degreesToRadians(120))); // Rotation
-    public static final Pose2d RED_SUBSTATION =
+    public static final Pose2d RED_SUBSTATION_LEFT =
+        new Pose2d(
+            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(0.0), // Y Pose
+            new Rotation2d()); // Rotation
+    public static final Pose2d RED_SUBSTATION_RIGHT =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
