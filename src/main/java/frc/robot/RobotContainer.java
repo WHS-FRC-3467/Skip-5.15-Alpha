@@ -32,6 +32,7 @@ import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOPhotonVision;
+import frc.robot.subsystems.Vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -149,7 +150,7 @@ public class RobotContainer {
                     new ModuleIO() {},
                     (robotPose) -> {
                     });
-                m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
+                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
                 m_sampleArmSubsystem = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_sampleProfiledRollerSubsystem =
