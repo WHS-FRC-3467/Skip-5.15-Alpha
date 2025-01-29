@@ -4,6 +4,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -41,5 +42,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
   /** Constructor */
   public Command setStateCommand(State state) {
     return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+  }
+
+  public boolean atPosition(double tolerance) {
+    return Util.epsilonEquals(io.getPosition(), state.output, Math.max(0.0001, tolerance));
   }
 }
