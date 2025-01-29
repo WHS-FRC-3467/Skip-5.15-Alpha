@@ -15,7 +15,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 /** Add your docs here. */
 public final class ElevatorConstants {
 
-  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants = new GenericMotionProfiledSubsystemConstants();
+  public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
+      new GenericMotionProfiledSubsystemConstants();
 
   public static final double kHomingCurrent = 2.0;
 
@@ -28,7 +29,8 @@ public final class ElevatorConstants {
 
     // Using TalonFX internal encoder
     kSubSysConstants.kCANcoder = null;
-    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
+        FeedbackSensorSourceValue.RotorSensor;
     kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
     kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
@@ -98,7 +100,8 @@ public final class ElevatorConstants {
     // elevator
     kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
     kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(30); // Meters
-    kSubSysConstants.kElevSimConfig.kElevatorGearing = 5.0; // RotorToSensorRatio * SensorToMechanismRatio
+    kSubSysConstants.kElevSimConfig.kElevatorGearing =
+        5.0; // RotorToSensorRatio * SensorToMechanismRatio
     kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
 
     // Calculate ratio of motor rotation to distance the top of the elevator moves

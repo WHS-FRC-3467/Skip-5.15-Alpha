@@ -165,9 +165,11 @@ public abstract class GenericMotionProfiledSubsystem<
 
     if (Constants.tuningMode) {
       Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());
-      Logger.recordOutput(m_name + "/Position", io.getPosition());
+      Logger.recordOutput(m_name + "/Position(Rotations)", io.getPosition());
+      Logger.recordOutput(m_name + "/Position(Degrees)", Math.toDegrees(io.getPosition()));
       Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
       Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
+      Logger.recordOutput(m_name + "/hasFinishedTrajectory", io.hasFinishedTrajectory(0.1));
 
       Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
       Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);
