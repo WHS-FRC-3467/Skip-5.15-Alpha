@@ -4,7 +4,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 
 public class ElevatorIOTalonFX extends GenericMotionProfiledSubsystemIOImpl implements ElevatorIO {
 
-  public ElevatorIOTalonFX() {
-    super(ElevatorConstants.kSubSysConstants, false);
-  }
+    public ElevatorIOTalonFX()
+    {
+        super(ElevatorConstants.kSubSysConstants, false);
+    }
 }
