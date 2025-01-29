@@ -22,9 +22,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
   @Getter
   public enum State implements TargetState {
     HOMING(
-        -0.2,
-        0.0,
-        ProfileType.OPEN_VOLTAGE), // TODO: Test Voltage and position values (rotations) (elevator)
+        -0.2, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: Test Voltage and position values (rotations)
+    // (elevator)
     HOME(0.15, 0.0, ProfileType.MM_POSITION),
     INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
     LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),

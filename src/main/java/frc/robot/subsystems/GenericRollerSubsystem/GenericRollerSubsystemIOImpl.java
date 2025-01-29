@@ -128,8 +128,8 @@ public abstract class GenericRollerSubsystemIOImpl implements GenericRollerSubsy
   public void updateInputs(GenericRollerIOInputs inputs) {
 
     /*
-     * Because this code supports a configurable number of motors, we must wait
-     * until the first time this method is called to instantiate arrays of the proper size
+     * Because this code supports a configurable number of motors, we must wait until the first
+     * time this method is called to instantiate arrays of the proper size
      */
     if (!mInitialized) {
       inputs.connected = new boolean[mNumMotors];

@@ -44,9 +44,7 @@ public final class ArmConstants {
      * kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
      * SensorDirectionValue.Clockwise_Positive;
      * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-     * AbsoluteSensorRangeValue.Unsigned_0To1;
-     * Sprocket ratios = 2.0;
-     * Gear Ratios = 3.0;
+     * AbsoluteSensorRangeValue.Unsigned_0To1; Sprocket ratios = 2.0; Gear Ratios = 3.0;
      * Planetary Ratio = 25.0;
      */
 
