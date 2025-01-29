@@ -206,12 +206,12 @@ public class RobotContainer {
     m_driver
         .leftBumper()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
+            DriveCommands.joystickOrbitAtAngle(
                 m_drive,
                 () -> m_driver.getLeftY(),
                 () -> m_driver.getLeftX(),
-                () -> RobotState.getInstance().getAngleToTarget(m_drive.getPose()),
-                true));
+                () ->
+                    RobotState.getInstance().getAngleToTarget(m_drive.getPose().getTranslation())));
 
     m_driver
         .rightBumper()

@@ -28,7 +28,7 @@ public class RobotState {
     RIGHT_CORAL_STATION(FieldConstants.CoralStation.rightCenterFace.getTranslation()),
     REEF(FieldConstants.Reef.center);
 
-    private final Translation2d TargetPose;
+    private final Translation2d targetTranslation;
   }
 
   @Getter @Setter private TARGET target = TARGET.LEFT_CORAL_STATION;
@@ -47,8 +47,8 @@ public class RobotState {
     return values[nextIndex];
   }
 
-  public Rotation2d getAngleToTarget(Pose2d currentPose) {
-    return target.TargetPose.minus(currentPose.getTranslation()).getAngle();
+  public Rotation2d getAngleToTarget(Translation2d currentTranslation) {
+    return target.targetTranslation.minus(currentTranslation).getAngle();
   }
 
   private Translation2d getFuturePose() {
