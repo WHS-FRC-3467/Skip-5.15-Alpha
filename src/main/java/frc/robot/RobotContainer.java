@@ -46,6 +46,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
+    private static final int RIGHT_STICK_HORIZONTAL = 4;
+    private static final int RIGHT_STICK_VERTICAL = 5;
+
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
     // private final CommandXboxController m_operator = new CommandXboxController(1);
@@ -222,7 +225,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisGreaterThan(4, 0.8))
+            .and(m_driver.axisGreaterThan(RIGHT_STICK_HORIZONTAL, 0.8))
             .onTrue(
                 Commands.runOnce(
                     () -> RobotState.getInstance()
@@ -230,7 +233,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisLessThan(4, -0.8))
+            .and(m_driver.axisLessThan(RIGHT_STICK_HORIZONTAL, -0.8))
             .onTrue(
                 Commands.runOnce(
                     () -> RobotState.getInstance()
@@ -238,7 +241,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisLessThan(5, -0.8))
+            .and(m_driver.axisLessThan(RIGHT_STICK_VERTICAL, -0.8))
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
