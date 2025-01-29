@@ -18,7 +18,7 @@ public class SampleProfiledRoller
     OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE),
     INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
     EJECT(-6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-    POSITION(90.0, 0.0, ProfileType.MM_POSITION);
+    POSITION(20.0, 0.0, ProfileType.MM_POSITION);
 
     private final double output;
     private final double feedFwd;

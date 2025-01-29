@@ -36,7 +36,7 @@ public abstract class GenericMotionProfiledSubsystem<
 
   private final String m_name;
   private final GenericMotionProfiledSubsystemConstants m_constants;
-  private final GenericMotionProfiledSubsystemIO io;
+  protected final GenericMotionProfiledSubsystemIO io;
   private boolean mIsSim = false;
   private ProfileType m_proType;
 
@@ -92,7 +92,6 @@ public abstract class GenericMotionProfiledSubsystem<
   }
 
   public void periodic() {
-
     // If Profile Type has changed, reset the encoder(s)
     ProfileType newProfType = getState().getProfileType();
     if (m_proType != newProfType) {
@@ -167,6 +166,7 @@ public abstract class GenericMotionProfiledSubsystem<
     if (Constants.tuningMode) {
       Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());
       Logger.recordOutput(m_name + "/Position", io.getPosition());
+      Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
       Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
 
       Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);

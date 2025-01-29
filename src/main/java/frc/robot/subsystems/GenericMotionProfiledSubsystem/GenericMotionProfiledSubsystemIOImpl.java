@@ -56,6 +56,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   private double mCurrPosition = 0.0;
   private double mCurrVelocity = 0.0;
   private double mCurrTrajectoryPosition = 0.0;
+  private double mCurrSupplyCurrent = 0.0;
 
   // All the Talon StatusSignals of interest
   private final StatusSignal<Angle> mInternalPositionRotations;
@@ -102,11 +103,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     // Get the motor configuration group and configure the main motor
     /*
-     * Note: We can use the kMotorcConfig constants here for both REAL and SIM,
-     * because
-     * after this class is instantiated, if needed, the Subsystem's constructor will
-     * pull
-     * the SIM constants into LoggedTunableNumbers and update this config.
+     * Note: We can use the kMotorcConfig constants here for both REAL and SIM, because after
+     * this class is instantiated, if needed, the Subsystem's constructor will pull the SIM
+     * constants into LoggedTunableNumbers and update this config.
      */
     mMainConfig = mConstants.kMotorConfig;
     Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
@@ -288,8 +287,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     }
 
     // Due to an unfixed firmware error, certain closed-loop signals do not get
-    // refreshed by
-    // refreshAll()
+    // refreshed by refreshAll()
     // See: https://api.ctr-electronics.com/changelog#known-issues-20240209
     mMainClosedLoopError.refresh();
     mMainClosedLoopReference.refresh();
@@ -328,6 +326,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     mCurrPosition = inputs.positionRot;
     mCurrVelocity = inputs.velocityRps;
     mCurrTrajectoryPosition = inputs.activeTrajectoryPosition;
+    mCurrSupplyCurrent = inputs.supplyCurrentAmps[0];
   }
 
   /** Run Open Loop at the specified voltage */
@@ -443,6 +442,12 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
   @Override
   public double getVelocity() {
     return mCurrVelocity;
+  }
+
+  @Override
+  /* Get current lead motor supply current) */
+  public double getSupplyCurrent() {
+    return mCurrSupplyCurrent;
   }
 
   @Override
