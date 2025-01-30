@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.TARGET;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm.Arm;
@@ -229,8 +230,8 @@ public class RobotContainer {
             .whileTrue(
                 DriveCommands.joystickOrbitAtAngle(
                     m_drive,
-                    () -> m_driver.getLeftY(),
-                    () -> m_driver.getLeftX(),
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
                     () -> RobotState.getInstance()
                         .getAngleToTarget(m_drive.getPose().getTranslation()),
                     () -> RobotState.getInstance().getTarget().getTranslation()));

@@ -66,5 +66,6 @@
   "[java]": {
     "editor.detectIndentation": false
   },
-  "workbench.iconTheme": "vs-seti"
+  "workbench.iconTheme": "vs-seti",
+  "java.debug.settings.onBuildFailureProceed": true
 }

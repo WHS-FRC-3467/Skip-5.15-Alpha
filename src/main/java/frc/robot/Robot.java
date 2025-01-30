@@ -32,8 +32,6 @@ public class Robot extends LoggedRobot {
 
     public Robot()
     {
-        CanBridge.runTCP();
-
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
