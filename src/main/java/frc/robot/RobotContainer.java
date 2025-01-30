@@ -230,6 +230,25 @@ public class RobotContainer {
                     () -> -m_driver.getLeftX(),
                     () -> m_RobotState.getAngleOfTarget())));
 
+    /* m_driver
+        .rightBumper()
+        .whileTrue(
+            //Experimental 2.0: put the command in a lambda inside the run() method
+            Commands.run(()-> 
+            // TODO: Alternatively replace with runOnce and have a runOnce at the end to set state back to default
+                m_RobotState.setTempTargetCommand(RobotState.TARGET.PROCESSOR))
+            .alongWith(
+                DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> m_RobotState.getAngleOfTarget()))); */
+
+        /*m_drive.run(DriveCommands.joystickDriveAtAngle(
+                    m_drive,
+                    () -> -m_driver.getLeftY(),
+                    () -> -m_driver.getLeftX(),
+                    () -> m_RobotState.getAngleOfTarget())); */
     // Driver B Button: Reset gyro to 0°
     m_driver
         .b()

@@ -237,6 +237,6 @@ public class RobotState {
   }
 
   public Command setTempTargetCommand(TARGET target) {
-    return Commands.runOnce(() -> setTarget(target));
+    return Commands.runOnce(() -> setTarget(target)).andThen(Commands.idle()).finallyDo(() -> setTarget(TARGET.REEF_AB));
   }
 }
