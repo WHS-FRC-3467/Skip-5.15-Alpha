@@ -4,12 +4,14 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -43,6 +45,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnFly;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -383,6 +386,29 @@ public class RobotContainer {
         Commands.parallel(
             m_profiledElevator.setStateCommand(Elevator.State.HOME),
             m_sampleArmSubsystem.setStateCommand(Arm.State.HOME)));
+
+    NamedCommands.registerCommand(
+        "SIMScore",
+        Commands.runOnce(
+            () ->
+                SimulatedArena.getInstance()
+                    .addGamePieceProjectile(
+                        new ReefscapeCoralOnFly(
+                            // Obtain robot position from drive simulation
+                            driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+                            // The scoring mechanism is installed at (0.46, 0) (meters) on the
+                            // robot
+                            new Translation2d(0.48, 0),
+                            // Obtain robot speed from drive simulation
+                            driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+                            // Obtain robot facing from drive simulation
+                            driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+                            // The height at which the coral is ejected
+                            Meters.of(2.3),
+                            // The initial speed of the coral
+                            MetersPerSecond.of(1),
+                            // The coral is ejected vertically downwards
+                            Degrees.of(-75)))));
   }
 
   /**
