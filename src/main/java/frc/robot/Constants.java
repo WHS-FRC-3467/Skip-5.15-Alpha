@@ -177,9 +177,9 @@ public class Constants {
             new Rotation2d()); // Rotation
     public static final Pose2d BLUE_PROCESSOR =
         new Pose2d(
-            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(235.726), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
-            new Rotation2d()); // Rotation
+            Rotation2d.fromDegrees(90)); // Rotation
     public static final Pose2d BLUE_NET =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose
@@ -236,9 +236,9 @@ public class Constants {
             new Rotation2d()); // Rotation
     public static final Pose2d RED_PROCESSOR =
         new Pose2d(
-            Units.inchesToMeters(0.0), // X Pose
+            Units.inchesToMeters(690.875 - 235.726), // X Pose
             Units.inchesToMeters(0.0), // Y Pose
-            new Rotation2d(90)); // Rotation
+            Rotation2d.fromDegrees(-90)); // Rotation
     public static final Pose2d RED_NET =
         new Pose2d(
             Units.inchesToMeters(0.0), // X Pose

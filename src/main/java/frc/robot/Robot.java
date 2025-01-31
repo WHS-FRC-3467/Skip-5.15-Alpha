@@ -108,6 +108,20 @@ public class Robot extends LoggedRobot {
 
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
+    // TODO: Add/delete logging for debugging purposes in Robot.java
+    Logger.recordOutput("/RobotState/Target", RobotState.getInstance().target.toString());
+    Logger.recordOutput(
+        "/RobotState/BlueTarget", RobotState.getInstance().target.getBlueTargetPose());
+    Logger.recordOutput(
+        "/RobotState/RedTarget", RobotState.getInstance().target.getRedTargetPose());
+    Logger.recordOutput(
+        "/RobotState/getAngleToTarget", RobotState.getInstance().getAngleToTarget().getDegrees());
+    Logger.recordOutput(
+        "/RobotState/BlueTargetRotation",
+        RobotState.getInstance().target.getBlueTargetPose().getRotation().getDegrees());
+    Logger.recordOutput(
+        "/RobotState/chooseTarget",
+        RobotState.getInstance().chooseReefTarget().getRedTargetPose().getRotation().getDegrees());
   }
 
   /** This function is called once when the robot is disabled. */

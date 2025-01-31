@@ -66,7 +66,7 @@ public class RobotContainer {
   // Non-AK-enabled Subsystems
   private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
   private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
-  private final RobotState m_RobotState = new RobotState();
+  private final RobotState m_RobotState = RobotState.getInstance();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -190,19 +190,19 @@ public class RobotContainer {
                 () -> new Rotation2d()));
 
     // Driver Back Button: Lock to REEF AB
-    m_driver
-        .back()
-        .whileTrue(
-            Commands.parallel(
-                m_RobotState.setTargetCommand(RobotState.TARGET.REEF_AB),
-                DriveCommands.joystickDriveAtAngle(
-                    m_drive,
-                    () -> -m_driver.getLeftY(),
-                    () -> -m_driver.getLeftX(),
-                    () -> RobotState.getInstance().getAngleToTarget())));
+    // m_driver
+    //     .back()
+    //     .whileTrue(
+    //         Commands.parallel(
+    //             m_RobotState.setTargetCommand(RobotState.TARGET.REEF_AB),
+    //             DriveCommands.joystickDriveAtAngle(
+    //                 m_drive,
+    //                 () -> -m_driver.getLeftY(),
+    //                 () -> -m_driver.getLeftX(),
+    //                 () -> RobotState.getInstance().getAngleToTarget())));
 
-    // Driver X Button: Switch wheel modules to X pattern
-    m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
+    // // Driver X Button: Switch wheel modules to X pattern
+    // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
 
     // Driver START Button: Auto Angle to closest Reef target
     m_driver
@@ -214,41 +214,20 @@ public class RobotContainer {
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
-                    () -> m_RobotState.getAngleToTarget())));
-    // Driver Right bumper: Cardinal direction to Processor
+                    () -> new Rotation2d(m_RobotState.getAngleToTargetDegrees()))));
+
+    // Driver Right bumper: Cardinal direction to PROCESSOR
     m_driver
         .rightBumper()
         .whileTrue(
-            //Experimental: put the command in a lambda inside the run() method
-            Commands.run(()-> 
-            // TODO: Alternatively replace with runOnce and have a runOnce at the end to set state back to default
-                m_RobotState.setTargetCommand(RobotState.TARGET.PROCESSOR))
-            .alongWith(
+            Commands.parallel(
+                m_RobotState.setTargetCommand(RobotState.TARGET.PROCESSOR),
                 DriveCommands.joystickDriveAtAngle(
                     m_drive,
                     () -> -m_driver.getLeftY(),
                     () -> -m_driver.getLeftX(),
                     () -> m_RobotState.getAngleOfTarget())));
 
-    /* m_driver
-        .rightBumper()
-        .whileTrue(
-            //Experimental 2.0: put the command in a lambda inside the run() method
-            Commands.run(()-> 
-            // TODO: Alternatively replace with runOnce and have a runOnce at the end to set state back to default
-                m_RobotState.setTempTargetCommand(RobotState.TARGET.PROCESSOR))
-            .alongWith(
-                DriveCommands.joystickDriveAtAngle(
-                    m_drive,
-                    () -> -m_driver.getLeftY(),
-                    () -> -m_driver.getLeftX(),
-                    () -> m_RobotState.getAngleOfTarget()))); */
-
-        /*m_drive.run(DriveCommands.joystickDriveAtAngle(
-                    m_drive,
-                    () -> -m_driver.getLeftY(),
-                    () -> -m_driver.getLeftX(),
-                    () -> m_RobotState.getAngleOfTarget())); */
     // Driver B Button: Reset gyro to 0°
     m_driver
         .b()
