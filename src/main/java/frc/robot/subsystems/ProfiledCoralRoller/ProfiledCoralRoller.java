@@ -40,4 +40,9 @@ public class ProfiledCoralRoller extends GenericMotionProfiledSubsystem<Profiled
     {
         return startEnd(() -> this.state = state, () -> this.state = State.OFF);
     }
+
+    public Command setStateCommandNoReset(State state)
+    {
+        return runOnce(() -> this.setState(state));
+    }
 }

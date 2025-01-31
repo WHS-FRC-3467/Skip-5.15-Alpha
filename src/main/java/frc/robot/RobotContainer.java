@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -74,6 +75,7 @@ public class RobotContainer {
     // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
     // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
     private final LaserCanSensor m_laserCanSensor;
+    private Trigger m_laserClose;
 
     // The container for the robot. Contains subsystems, OI devices, and commands.
     public RobotContainer()
@@ -97,6 +99,7 @@ public class RobotContainer {
                 m_roller =
                     new ProfiledCoralRoller(new ProfiledCoralRollerIOTalonFX(), false);
                 m_laserCanSensor = new LaserCanSensor(Ports.INTAKE_LASERCAN.getDeviceNumber(), 180);
+                m_laserClose = new Trigger(() -> m_laserCanSensor.isClose());
 
                 m_vision = new Vision(
                     m_drive,
@@ -128,6 +131,7 @@ public class RobotContainer {
                 m_roller =
                     new ProfiledCoralRoller(new ProfiledCoralRollerIOSim(), true);
                 m_laserCanSensor = null; // TODO
+                m_laserClose = new Trigger(() -> m_laserCanSensor.isClose());
 
                 m_vision = new Vision(
                     m_drive,
@@ -156,6 +160,7 @@ public class RobotContainer {
                 m_roller =
                     new ProfiledCoralRoller(new ProfiledCoralRollerIO() {}, false);
                 m_laserCanSensor = null; // TODO
+                m_laserClose = new Trigger(() -> m_laserCanSensor.isClose());
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
@@ -203,17 +208,16 @@ public class RobotContainer {
                 () -> -m_driver.getLeftX(),
                 () -> -m_driver.getRightX()));
 
-        // Driver A Button: Lock to 0°
-        // m_driver
-        // .a()
-        // .whileTrue(
-        // DriveCommands.joystickDriveAtAngle(
-        // m_drive,
-        // () -> -m_driver.getLeftY(),
-        // () -> -m_driver.getLeftX(),
-        // () -> new Rotation2d()));
-        // Driver A Button: Lock to 0°
+        // Driver X Button: Switch wheel modules to X pattern
+        // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
+        // Reset gyro / odometry
+        final Runnable setPose = Constants.currentMode == Constants.Mode.SIM
+            ? () -> m_drive.setPose(driveSimulation.getSimulatedDriveTrainPose())
+            : () -> m_drive
+                .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
+        m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
 
+        // Driver Left Bumper: Orbit Target
         m_driver
             .leftBumper()
             .whileTrue(
@@ -224,6 +228,7 @@ public class RobotContainer {
                     () -> RobotState.getInstance()
                         .getAngleToTarget(m_drive.getPose().getTranslation())));
 
+        // Driver Left Bumper + Right Stick Right: Set Target to Right Coral Station
         m_driver
             .leftBumper()
             .and(m_driver.axisGreaterThan(RIGHT_STICK_HORIZONTAL, 0.8))
@@ -232,6 +237,7 @@ public class RobotContainer {
                     () -> RobotState.getInstance()
                         .setTarget(RobotState.TARGET.RIGHT_CORAL_STATION)));
 
+        // Driver Left Bumper + Right Stick Left: Set Target to Left Coral Station
         m_driver
             .leftBumper()
             .and(m_driver.axisLessThan(RIGHT_STICK_HORIZONTAL, -0.8))
@@ -240,54 +246,24 @@ public class RobotContainer {
                     () -> RobotState.getInstance()
                         .setTarget(RobotState.TARGET.LEFT_CORAL_STATION)));
 
+        // Driver Left Bumper + Right Stick Up: Set Target to Center of Reef
         m_driver
             .leftBumper()
             .and(m_driver.axisLessThan(RIGHT_STICK_VERTICAL, -0.8))
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
-        // Driver X Button: Switch wheel modules to X pattern
-        // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
-        // Reset gyro / odometry
-        final Runnable setPose = Constants.currentMode == Constants.Mode.SIM
-            ? () -> m_drive.setPose(driveSimulation.getSimulatedDriveTrainPose())
-            : () -> m_drive
-                .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
-        m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
+        // Driver Left Trigger: Intake Coral
+        m_driver.leftTrigger(0.8).and(m_driver.rightBumper().negate()).whileTrue(
+            Commands.deadline(
+                Commands.waitUntil(m_laserClose),
+                m_roller.setStateCommand(ProfiledCoralRoller.State.INTAKE))
+                .andThen(
+                    m_roller.setStateCommandNoReset(ProfiledCoralRoller.State.POSITION)));
 
-        // Driver B Button: Reset gyro to 0°
-        // m_driver
-        // .b()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> m_drive.setPose(
-        // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-        // m_drive)
-        // .ignoringDisable(true));
-
-        // // Driver X Button: Run the Sample Roller in Eject direction when held
-        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-        // // Driver Y Button: Run the Sample Roller in Intake direction when held
-        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
-
-        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-        // held
-        m_driver
-            .leftBumper()
-            .whileTrue(
-                m_roller.setStateCommand(ProfiledCoralRoller.State.EJECT));
-        m_driver
-            .rightBumper()
-            .whileTrue(
-                m_roller.setStateCommand(ProfiledCoralRoller.State.INTAKE));
-
-        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-        // position
-        m_driver
-            .rightTrigger()
-            .whileTrue(
-                m_roller
-                    .setStateCommand(ProfiledCoralRoller.State.POSITION));
+        // Driver Left Trigger + Right Bumper: Intake Algae
+        m_driver.leftTrigger(0.8).and(m_driver.rightBumper())
+            .whileTrue(m_roller.setStateCommand(ProfiledCoralRoller.State.INTAKE));
 
         // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
@@ -323,10 +299,6 @@ public class RobotContainer {
                     m_arm.setStateCommand(Arm.State.LEVEL_3),
                     m_elevator
                         .setStateCommand(Elevator.State.LEVEL_3)));
-
-        // Operator Buttons A & B run the Complex and Simple subsystems when held
-        // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-        // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
     }
 
     /**
