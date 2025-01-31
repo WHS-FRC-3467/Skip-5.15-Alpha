@@ -15,17 +15,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Arm.ArmIO;
 import frc.robot.subsystems.Arm.ArmIOSim;
 import frc.robot.subsystems.Arm.ArmIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
+import frc.robot.subsystems.ProfiledCoralRoller.*;
 // import frc.robot.subsystems.SampleRollers.SampleRollers;
 // import frc.robot.subsystems.SampleRollers.SampleRollersIO;
 // import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
@@ -35,11 +31,8 @@ import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOPhotonVision;
 import frc.robot.subsystems.Vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
 import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.util.sensors.LaserCanSensor;
@@ -72,9 +65,10 @@ public class RobotContainer {
     // AK-enabled Subsystems
     private final Drive m_drive;
     // private final SampleRollers m_sampleRollersSubsystem;
-    private final SampleProfiledArm m_sampleArmSubsystem;
-    private final SampleProfiledElevator m_sampleElevatorSubsystem;
-    private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
+    private final Arm m_arm;
+    private final Elevator m_elevator;
+    private final ProfiledCoralRoller m_roller;
+    private final Vision m_vision;
 
     // Non-AK-enabled Subsystems
     // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
@@ -98,10 +92,10 @@ public class RobotContainer {
                     });
 
                 // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
-                m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
-                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
+                m_arm = new Arm(new ArmIOTalonFX(), false);
+                m_elevator = new Elevator(new ElevatorIOTalonFX(), false);
+                m_roller =
+                    new ProfiledCoralRoller(new ProfiledCoralRollerIOTalonFX(), false);
                 m_laserCanSensor = new LaserCanSensor(Ports.INTAKE_LASERCAN.getDeviceNumber(), 180);
 
                 m_vision = new Vision(
@@ -129,10 +123,10 @@ public class RobotContainer {
                     driveSimulation::setSimulationWorldPose);
                 // m_drive.setPose(startingPose);
                 // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
-                m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
-                m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
+                m_arm = new Arm(new ArmIOSim(), true);
+                m_elevator = new Elevator(new ElevatorIOSim(), true);
+                m_roller =
+                    new ProfiledCoralRoller(new ProfiledCoralRollerIOSim(), true);
                 m_laserCanSensor = null; // TODO
 
                 m_vision = new Vision(
@@ -146,19 +140,23 @@ public class RobotContainer {
 
             default:
                 // Replayed robot, disable IO implementations
-                m_drive =
-                    new Drive(
-                        new GyroIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {});
+                m_drive = new Drive(
+                    new GyroIOPigeon2(),
+                    new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                    new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                    new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                    new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                    (robotPose) -> {
+                    });
+
                 // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-                m_sampleArmSubsystem = new SampleProfiledArm(new SampleProfiledArmIO() {}, true);
-                m_sampleElevatorSubsystem =
-                    new SampleProfiledElevator(new SampleProfiledElevatorIO() {}, true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+                m_arm = new Arm(new ArmIO() {}, true);
+                m_elevator =
+                    new Elevator(new ElevatorIO() {}, true);
+                m_roller =
+                    new ProfiledCoralRoller(new ProfiledCoralRollerIO() {}, false);
+                m_laserCanSensor = null; // TODO
+                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
         }
@@ -277,54 +275,54 @@ public class RobotContainer {
         m_driver
             .leftBumper()
             .whileTrue(
-                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+                m_roller.setStateCommand(ProfiledCoralRoller.State.EJECT));
         m_driver
             .rightBumper()
             .whileTrue(
-                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.INTAKE));
+                m_roller.setStateCommand(ProfiledCoralRoller.State.INTAKE));
 
         // Driver Right Trigger: Run the Sample Profiled Roller to the requested
         // position
         m_driver
             .rightTrigger()
             .whileTrue(
-                m_sampleProfiledRollerSubsystem
-                    .setStateCommand(SampleProfiledRoller.State.POSITION));
+                m_roller
+                    .setStateCommand(ProfiledCoralRoller.State.POSITION));
 
         // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
             .povDown()
             .onTrue(
                 Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.HOME),
-                    m_sampleElevatorSubsystem.setStateCommand(SampleProfiledElevator.State.HOME)));
+                    m_arm.setStateCommand(Arm.State.HOME),
+                    m_elevator.setStateCommand(Elevator.State.HOME)));
 
         // Driver POV Left: Send Arm and Elevator to LEVEL_1
         m_driver
             .povLeft()
             .onTrue(
                 Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_1),
-                    m_sampleElevatorSubsystem
-                        .setStateCommand(SampleProfiledElevator.State.LEVEL_1)));
+                    m_arm.setStateCommand(Arm.State.LEVEL_1),
+                    m_elevator
+                        .setStateCommand(Elevator.State.LEVEL_1)));
 
         // Driver POV Up: Send Arm and Elevator to LEVEL_2
         m_driver
             .povUp()
             .onTrue(
                 Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_2),
-                    m_sampleElevatorSubsystem
-                        .setStateCommand(SampleProfiledElevator.State.LEVEL_2)));
+                    m_arm.setStateCommand(Arm.State.LEVEL_2),
+                    m_elevator
+                        .setStateCommand(Elevator.State.LEVEL_2)));
 
         // Driver POV Right: Send Arm and Elevator to LEVEL_3
         m_driver
             .povRight()
             .onTrue(
                 Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(SampleProfiledArm.State.LEVEL_3),
-                    m_sampleElevatorSubsystem
-                        .setStateCommand(SampleProfiledElevator.State.LEVEL_3)));
+                    m_arm.setStateCommand(Arm.State.LEVEL_3),
+                    m_elevator
+                        .setStateCommand(Elevator.State.LEVEL_3)));
 
         // Operator Buttons A & B run the Complex and Simple subsystems when held
         // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
