@@ -72,7 +72,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(1, tolerance));
+        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(0.0001, tolerance));
     }
 
     public Command homedAlertCommand()
