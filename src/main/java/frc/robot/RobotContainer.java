@@ -302,6 +302,28 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
+        // Driver B Button: Reset gyro to 0°
+        // m_driver
+        // .b()
+        // .onTrue(
+        // Commands.runOnce(
+        // () -> m_drive.setPose(
+        // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
+        // m_drive)
+        // .ignoringDisable(true));
+
+        // // Driver X Button: Run the Sample Roller in Eject direction when held
+        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
+        // // Driver Y Button: Run the Sample Roller in Intake direction when held
+        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
+
+        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
+        // held
+        // m_driver
+        // .leftBumper()
+        // .whileTrue(
+        // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+
         m_driver
             .povDown()
             .whileTrue(
@@ -316,7 +338,43 @@ public class RobotContainer {
                     () -> SimulatedArena.getInstance()
                         .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
 
+        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
+        // position
+        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
+        // position
+        m_driver
+            .povLeft()
+            .whileTrue(
+                Commands.runOnce(
+                    () -> SimulatedArena.getInstance()
+                        .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
 
+
+        m_driver
+            .rightBumper()
+            .onTrue(
+                Commands.runOnce(
+                    () -> SimulatedArena.getInstance()
+                        .addGamePieceProjectile(
+                            new ReefscapeCoralOnFly(
+                                // Obtain robot position from drive simulation
+                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+                                // The scoring mechanism is installed at (0.46, 0) (meters) on the
+                                // robot
+                                new Translation2d(0.48, 0),
+                                // Obtain robot speed from drive simulation
+                                m_driveSimulation
+                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+                                // Obtain robot facing from drive simulation
+                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+                                // The height at which the coral is ejected
+                                Meters.of(2.3),
+                                // The initial speed of the coral
+                                MetersPerSecond.of(1),
+                                // The coral is ejected vertically downwards
+                                Degrees.of(-75)))));
+
+        // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
             .rightBumper()
             .onTrue(
@@ -436,6 +494,8 @@ public class RobotContainer {
         if (Constants.currentMode != Constants.Mode.SIM)
             return;
 
+        // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
+        // 2)));
         Logger.recordOutput(
             "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
         Logger.recordOutput(
