@@ -9,14 +9,14 @@ import java.util.function.Supplier;
 /** Wrapper class for TalonFX config params (Recommend initializing in a static block!) */
 public class GenericRollerSubsystemConstants {
 
-  public String kName = "ERROR_ASSIGN_A_NAME";
+    public String kName = "ERROR_ASSIGN_A_NAME";
 
-  public List<CanDeviceId> kMotorIDs;
+    public List<CanDeviceId> kMotorIDs;
 
-  public TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
+    public TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
 
-  // Motor simulation
-  public Supplier<DCMotor> simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
-  public double simReduction = 1;
-  public double simMOI = 0.001;
+    // Motor simulation
+    public Supplier<DCMotor> simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(1);
+    public double simReduction = 1;
+    public double simMOI = 0.001;
 }

@@ -5,7 +5,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 public class SampleProfiledRollerIOTalonFX extends GenericMotionProfiledSubsystemIOImpl
     implements SampleProfiledRollerIO {
 
-  public SampleProfiledRollerIOTalonFX() {
-    super(SampleProfiledRollerConstants.kSubSysConstants, false);
-  }
+    public SampleProfiledRollerIOTalonFX()
+    {
+        super(SampleProfiledRollerConstants.kSubSysConstants, false);
+    }
 }

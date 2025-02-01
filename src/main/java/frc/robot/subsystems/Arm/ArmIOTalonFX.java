@@ -4,7 +4,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 
 public class ArmIOTalonFX extends GenericMotionProfiledSubsystemIOImpl implements ArmIO {
 
-  public ArmIOTalonFX() {
-    super(ArmConstants.kSubSysConstants, false);
-  }
+    public ArmIOTalonFX()
+    {
+        super(ArmConstants.kSubSysConstants, false);
+    }
 }
