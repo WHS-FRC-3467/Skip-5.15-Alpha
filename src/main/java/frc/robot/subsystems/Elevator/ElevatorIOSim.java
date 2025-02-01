@@ -4,7 +4,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 
 public class ElevatorIOSim extends GenericMotionProfiledSubsystemIOImpl implements ElevatorIO {
 
-  public ElevatorIOSim() {
-    super(ElevatorConstants.kSubSysConstants, true);
-  }
+    public ElevatorIOSim()
+    {
+        super(ElevatorConstants.kSubSysConstants, true);
+    }
 }
