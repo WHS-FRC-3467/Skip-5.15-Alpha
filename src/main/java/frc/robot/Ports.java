@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.util.drivers.CanDeviceId;
 
+// TODO: Decide which IDs are real and clean up the rest
+
 public class Ports {
     /*
      * LIST OF CHANNEL AND CAN IDS

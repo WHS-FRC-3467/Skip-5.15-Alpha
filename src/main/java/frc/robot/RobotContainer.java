@@ -8,10 +8,12 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -57,9 +59,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
-    private static final int RIGHT_STICK_HORIZONTAL = 4;
-    private static final int RIGHT_STICK_VERTICAL = 5;
-
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
     // private final CommandXboxController m_operator = new CommandXboxController(1);
@@ -68,25 +67,19 @@ public class RobotContainer {
     private final LoggedDashboardChooser<Command> m_autoChooser;
 
     // Maple Sim
-    private SwerveDriveSimulation driveSimulation = null;
+    private SwerveDriveSimulation m_driveSimulation = null;
 
     // AK-enabled Subsystems
     private final Drive m_drive;
-    // private final SampleRollers m_sampleRollersSubsystem;
-    private final Arm m_sampleArmSubsystem;
+    private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
     private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
 
     public final Vision m_vision;
 
-    // Non-AK-enabled Subsystems
-    // private final SimpleSubsystem m_simpleSubsystem = new SimpleSubsystem();
-    // private final ComplexSubsystem m_complexSubsystem = new ComplexSubsystem();
-
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
-
         switch (Constants.currentMode) {
             case REAL:
                 // Real robot, instantiate hardware IO implementations
@@ -100,8 +93,7 @@ public class RobotContainer {
                         (robotPose) -> {
                         });
 
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOTalonFX());
-                m_sampleArmSubsystem = new Arm(new ArmIOTalonFX(), false);
+                m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 m_sampleProfiledRollerSubsystem =
                     new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
@@ -116,25 +108,24 @@ public class RobotContainer {
 
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
-                driveSimulation =
+                m_driveSimulation =
                     new SwerveDriveSimulation(Drive.mapleSimConfig,
                         new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
                 m_drive =
                     new Drive(
-                        new GyroIOSim(this.driveSimulation.getGyroSimulation()),
+                        new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
                         new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, this.driveSimulation.getModules()[0]),
+                            TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
                         new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, this.driveSimulation.getModules()[1]),
+                            TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
                         new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, this.driveSimulation.getModules()[2]),
+                            TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
                         new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, this.driveSimulation.getModules()[3]),
-                        driveSimulation::setSimulationWorldPose);
-                // m_drive.setPose(startingPose);
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIOSim());
-                m_sampleArmSubsystem = new Arm(new ArmIOSim(), true);
+                            TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
+                        m_driveSimulation::setSimulationWorldPose);
+
+                m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
                 m_sampleProfiledRollerSubsystem =
                     new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
@@ -144,10 +135,10 @@ public class RobotContainer {
                         m_drive,
                         new VisionIOPhotonVisionSim(
                             camera0Name, robotToCamera0,
-                            driveSimulation::getSimulatedDriveTrainPose),
+                            m_driveSimulation::getSimulatedDriveTrainPose),
                         new VisionIOPhotonVisionSim(
                             camera1Name, robotToCamera1,
-                            driveSimulation::getSimulatedDriveTrainPose));
+                            m_driveSimulation::getSimulatedDriveTrainPose));
 
                 break;
 
@@ -162,8 +153,8 @@ public class RobotContainer {
                         new ModuleIO() {},
                         (robotPose) -> {
                         });
-                // m_sampleRollersSubsystem = new SampleRollers(new SampleRollersIO() {});
-                m_sampleArmSubsystem = new Arm(new ArmIO() {}, true);
+
+                m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_sampleProfiledRollerSubsystem =
                     new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
@@ -173,6 +164,7 @@ public class RobotContainer {
         }
 
         // Logic Triggers
+        registerNamedCommands();
 
         // Set up auto routines
         m_autoChooser =
@@ -197,8 +189,6 @@ public class RobotContainer {
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
-        // Configure the controller button and joystick bindings
-        configureControllerBindings();
 
         // Detect if controllers are missing / Stop multiple warnings
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -207,7 +197,6 @@ public class RobotContainer {
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
-
         // Default command, normal field-relative drive
         m_drive.setDefaultCommand(
             DriveCommands.joystickDrive(
@@ -216,17 +205,71 @@ public class RobotContainer {
                 () -> -m_driver.getLeftX(),
                 () -> -m_driver.getRightX()));
 
-        // Driver A Button: Lock to 0°
-        // m_driver
-        // .a()
-        // .whileTrue(
-        // DriveCommands.joystickDriveAtAngle(
-        // m_drive,
-        // () -> -m_driver.getLeftY(),
-        // () -> -m_driver.getLeftX(),
-        // () -> new Rotation2d()));
-        // Driver A Button: Lock to 0°
+        // Driver Back Button: Reset gyro / odometry
+        final Runnable setPose =
+            Constants.currentMode == Constants.Mode.SIM
+                ? () -> m_drive.setPose(m_driveSimulation.getSimulatedDriveTrainPose())
+                : () -> m_drive
+                    .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
+        m_driver
+            .back()
+            .onTrue(
+                Commands.runOnce(setPose).ignoringDisable(true));
 
+        // Driver Start Button: Run Homing Sequence
+        m_driver
+            .start()
+            .onTrue(
+                m_profiledElevator
+                    .setStateCommand(Elevator.State.HOMING)
+                    .until(m_profiledElevator.getHomedTrigger())
+                    .andThen(m_profiledElevator.zeroSensorCommand()));
+        m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
+
+        // Driver Left Trigger: Bring Arm and Elevator to INTAKE position
+        m_driver
+            .leftTrigger()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.INTAKE),
+                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
+
+        // Driver A Button: Send Arm and Elevator to LEVEL_1
+        m_driver
+            .a()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_1),
+                    Commands.waitUntil(() -> m_profiledArm.atPosition(0))
+                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
+
+        // Driver X Button: Send Arm and Elevator to LEVEL_2
+        m_driver
+            .x()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_2),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
+
+        // Driver B Button: Send Arm and Elevator to LEVEL_3
+        m_driver
+            .b()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_3),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+
+        // Driver Y Button: Send Arm and Elevator to LEVEL_4
+        m_driver
+            .y()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
+
+
+        // Driver uses Left Bumper for orbitting and targeting maneuvers
         m_driver
             .leftBumper()
             .whileTrue(
@@ -239,7 +282,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisGreaterThan(RIGHT_STICK_HORIZONTAL, 0.8))
+            .and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value, 0.8))
             .onTrue(
                 Commands.runOnce(
                     () -> RobotState.getInstance()
@@ -247,7 +290,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisLessThan(RIGHT_STICK_HORIZONTAL, -0.8))
+            .and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
             .onTrue(
                 Commands.runOnce(
                     () -> RobotState.getInstance()
@@ -255,7 +298,7 @@ public class RobotContainer {
 
         m_driver
             .leftBumper()
-            .and(m_driver.axisLessThan(RIGHT_STICK_VERTICAL, -0.8))
+            .and(m_driver.axisLessThan(XboxController.Axis.kRightY.value, -0.8))
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
@@ -295,7 +338,7 @@ public class RobotContainer {
             .povDown()
             .whileTrue(
                 Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(Arm.State.GROUND),
+                    m_profiledArm.setStateCommand(Arm.State.GROUND),
                     m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
         m_driver
@@ -310,9 +353,12 @@ public class RobotContainer {
         // Driver Right Trigger: Run the Sample Profiled Roller to the requested
         // position
         m_driver
-            .rightTrigger()
+            .povLeft()
             .whileTrue(
-                m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
+                Commands.runOnce(
+                    () -> SimulatedArena.getInstance()
+                        .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
+
 
         m_driver
             .rightBumper()
@@ -339,60 +385,89 @@ public class RobotContainer {
 
         // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
-            .leftTrigger()
+            .rightBumper()
             .onTrue(
-                Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(Arm.State.INTAKE),
-                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
+                Commands.runOnce(
+                    () -> SimulatedArena.getInstance()
+                        .addGamePieceProjectile(
+                            new ReefscapeCoralOnFly(
+                                // Obtain robot position from drive simulation
+                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+                                // The scoring mechanism is installed at (0.46, 0) (meters) on the
+                                // robot
+                                new Translation2d(0.48, 0),
+                                // Obtain robot speed from drive simulation
+                                m_driveSimulation
+                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+                                // Obtain robot facing from drive simulation
+                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+                                // The height at which the coral is ejected
+                                Meters.of(2.3),
+                                // The initial speed of the coral
+                                MetersPerSecond.of(1),
+                                // The coral is ejected vertically downwards
+                                Degrees.of(-75)))));
 
-        // Driver POV Left: Send Arm and Elevator to LEVEL_1
-        m_driver
-            .a()
-            .onTrue(
-                Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_1),
-                    Commands.waitUntil(() -> m_sampleArmSubsystem.atPosition(0))
-                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
+    }
 
-        // Driver POV Up: Send Arm and Elevator to LEVEL_2
-        m_driver
-            .x()
-            .onTrue(
-                Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_2),
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
+    /**
+     * Register Named commands for use in PathPlanner
+     */
+    private void registerNamedCommands()
+    {
+        // Go to the L1 Position
+        NamedCommands.registerCommand(
+            "L1",
+            Commands.parallel(
+                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1),
+                m_profiledArm.setStateCommand(Arm.State.LEVEL_1)));
+        // Go to the L2 Position
+        NamedCommands.registerCommand(
+            "L2",
+            Commands.parallel(
+                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2),
+                m_profiledArm.setStateCommand(Arm.State.LEVEL_2)));
+        // Go to the L3 Position
+        NamedCommands.registerCommand(
+            "L3",
+            Commands.parallel(
+                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3),
+                m_profiledArm.setStateCommand(Arm.State.LEVEL_3)));
+        // Go to the L4 Position
+        NamedCommands.registerCommand(
+            "L4",
+            Commands.parallel(
+                m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
+                Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                    .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
+        // Go to the Home Position
+        NamedCommands.registerCommand(
+            "Home",
+            Commands.parallel(
+                m_profiledElevator.setStateCommand(Elevator.State.HOME),
+                m_profiledArm.setStateCommand(Arm.State.HOME)));
 
-        // Driver POV Right: Send Arm and Elevator to LEVEL_3
-        m_driver
-            .y()
-            .onTrue(
-                Commands.parallel(
-                    m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_3),
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
-
-        // Driver BACK: Send Arm to LEVEL_3 and Elevator to LEVEL_4
-        m_driver
-            .b()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                        .andThen(m_sampleArmSubsystem.setStateCommand(Arm.State.LEVEL_4))));
-
-        // Driver POV Center: Send Elevator to Homing
-        m_driver
-            .start()
-            .onTrue(
-                m_profiledElevator
-                    .setStateCommand(Elevator.State.HOMING)
-                    .until(m_profiledElevator.getHomedTrigger())
-                    .andThen(m_profiledElevator.zeroSensorCommand()));
-
-        m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
-
-        // Operator Buttons A & B run the Complex and Simple subsystems when held
-        // m_operator.a().whileTrue(m_complexSubsystem.setStateCommand(ComplexSubsystem.State.SCORE));
-        // m_operator.b().whileTrue(m_simpleSubsystem.setStateCommand(SimpleSubsystem.State.ON));
+        NamedCommands.registerCommand(
+            "SIMScore",
+            Commands.runOnce(
+                () -> SimulatedArena.getInstance()
+                    .addGamePieceProjectile(
+                        new ReefscapeCoralOnFly(
+                            // Obtain robot position from drive simulation
+                            m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+                            // The scoring mechanism is installed at (0.46, 0) (meters) on the
+                            // robot
+                            new Translation2d(0.48, 0),
+                            // Obtain robot speed from drive simulation
+                            m_driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+                            // Obtain robot facing from drive simulation
+                            m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+                            // The height at which the coral is ejected
+                            Meters.of(2.3),
+                            // The initial speed of the coral
+                            MetersPerSecond.of(1),
+                            // The coral is ejected vertically downwards
+                            Degrees.of(-75)))));
     }
 
     /**
@@ -405,6 +480,9 @@ public class RobotContainer {
         return m_autoChooser.get();
     }
 
+    /*
+     * Simulation-specific routines
+     */
     public void resetSimulation()
     {
         if (Constants.currentMode != Constants.Mode.SIM)
@@ -428,7 +506,7 @@ public class RobotContainer {
         // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
         // 2)));
         Logger.recordOutput(
-            "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+            "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
         Logger.recordOutput(
             "FieldSimulation/Coral",
             SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));

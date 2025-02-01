@@ -81,8 +81,8 @@ public final class ElevatorConstants {
         kSubSysConstants.kSimMotorConfig.Slot0.kS = 0;
         kSubSysConstants.kSimMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kSimMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 1000;
-        kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicAcceleration = 1000;
+        kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 2000;
+        kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicAcceleration = 2000;
         kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         // Simulation Type

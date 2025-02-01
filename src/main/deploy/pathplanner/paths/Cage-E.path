@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.122174657534247,
+        "y": 1.8387628424657532
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.084633895714418,
+        "y": 2.0930032077246756
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.988527397260274,
+        "y": 2.7703553082191785
+      },
+      "prevControl": {
+        "x": 5.387010151403892,
+        "y": 2.6290007034414686
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ReefE"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "L3",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "L3"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "L4",
+      "waypointRelativePos": 0.6642066420664203,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "L4"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 118.17859010995923
+  },
+  "reversed": false,
+  "folder": "3 Piece Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}
