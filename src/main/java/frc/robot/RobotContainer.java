@@ -218,7 +218,7 @@ public class RobotContainer {
                 Commands.parallel(
                     // m_profiledArm.setStateCommand(Arm.State.LEVEL_1)
                     m_profiledElevator.setStateCommand(Elevator.State.INTAKE),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.01))
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.INTAKE))));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
@@ -252,7 +252,7 @@ public class RobotContainer {
             .onTrue(
                 Commands.parallel(
                     m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.9))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
 
 
