@@ -398,7 +398,30 @@ public class RobotContainer {
                                 MetersPerSecond.of(1),
                                 // The coral is ejected vertically downwards
                                 Degrees.of(-75)))));
+                 
+        // Driver START Button: Auto Angle to closest Reef target TODO: FIX
+        m_driver
+            .povRight()
+            .whileTrue(
+                Commands.parallel(
+                    RobotState.getInstance().setTargetCommand(RobotState.getInstance().chooseReefTarget()),
+                    DriveCommands.joystickDriveAtAngle(
+                        m_drive,
+                        () -> -m_driver.getLeftY(),
+                        () -> -m_driver.getLeftX(),
+                        () -> RobotState.getInstance().getAngleToTarget(m_drive.getPose().getTranslation()))));
 
+        // Driver Right bumper: Cardinal direction to PROCESSOR
+        m_driver
+            .povUp()
+            .whileTrue(
+                Commands.parallel(
+                    RobotState.getInstance().setTargetCommand(RobotState.TARGET.PROCESSOR),
+                    DriveCommands.joystickDriveAtAngle(
+                        m_drive,
+                        () -> -m_driver.getLeftY(),
+                        () -> -m_driver.getLeftX(),
+                        () -> RobotState.getInstance().getAngleOfTarget().plus(Rotation2d.fromDegrees(180)))));
     }
 
     /**
