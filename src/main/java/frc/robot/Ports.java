@@ -33,6 +33,8 @@ public class Ports {
     public static final CanDeviceId PROFROLLER_MAIN = new CanDeviceId(24, "rio");
     public static final CanDeviceId PROFROLLER_FOLLOWER = new CanDeviceId(25, "rio");
 
+    public static final CanDeviceId CLIMBER = new CanDeviceId(26, "rio");
+
     /*
      * public static final CanDeviceId INTAKE_PIVOT = new CanDeviceId(8, "canivore1"); public static
      * final CanDeviceId INTAKE_ROLLER = new CanDeviceId(15, "rio");

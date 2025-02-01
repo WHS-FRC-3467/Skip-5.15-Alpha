@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -24,6 +25,10 @@ import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Arm.ArmIO;
 import frc.robot.subsystems.Arm.ArmIOSim;
 import frc.robot.subsystems.Arm.ArmIOTalonFX;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
@@ -65,6 +70,7 @@ public class RobotContainer {
     private final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
+    private final Climber m_profiledClimber;
 
     public final Vision m_vision;
 
@@ -86,6 +92,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
 
                 m_vision =
                     new Vision(
@@ -116,6 +123,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
+                m_profiledClimber = new Climber(new ClimberIOSim(), true);
 
                 m_vision =
                     new Vision(
@@ -143,6 +151,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -179,6 +188,15 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
+    //Climbing Triggers
+	private boolean climbRequested = false; //Whether or not a climb request is active
+	private Trigger climbRequest = new Trigger(() -> climbRequested); //Trigger for climb request
+	private int climbStep = 0; //Tracking what step in the climb sequence we are on
+
+	//Triggers for each step of the climb sequence
+	private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
+	private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
@@ -201,9 +219,9 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(setPose).ignoringDisable(true));
 
-        // Driver Start Button: Run Homing Sequence
+        // POV Up Button: Run Homing Sequence
         m_driver
-            .start()
+            .povUp()
             .onTrue(
                 m_profiledElevator
                     .setStateCommand(Elevator.State.HOMING)
@@ -253,6 +271,42 @@ public class RobotContainer {
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
 
+
+        // Driver Start Button: Climb Request (toggle)
+		m_driver.start().onTrue(Commands.runOnce(() -> {
+            climbRequested = true;
+            climbStep += 1;
+            }));
+
+		//Climb step 1: Raise shooter and move climber to prep
+		climbRequest.and(climbStep1).whileTrue(
+				m_profiledClimber.setStateCommand(Climber.State.PREP));
+
+		//Climb step 2: Move climber to climb
+		climbRequest.and(climbStep2)
+            .whileTrue(
+                m_profiledClimber.setStateCommand(Climber.State.CLIMB)
+                    .until(m_profiledClimber.climbedTrigger));
+            
+        m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
+
+        // Driver POV Right: End Climbing Sequence if needed
+        m_driver
+            .povRight()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                        climbRequested = false;
+                        climbStep = 0;
+                    }));
+
+		//Slow drivetrain to 25% while climbing
+        climbRequest.whileTrue(
+            DriveCommands.joystickDrive(
+                m_drive,
+                () -> -m_driver.getLeftY() * 0.25,
+                () -> -m_driver.getLeftX() * 0.25,
+                () -> -m_driver.getRightX() * 0.25));
 
         // Driver uses Left Bumper for orbitting and targeting maneuvers
         m_driver
