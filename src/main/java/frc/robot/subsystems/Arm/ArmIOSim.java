@@ -4,7 +4,8 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 
 public class ArmIOSim extends GenericMotionProfiledSubsystemIOImpl implements ArmIO {
 
-  public ArmIOSim() {
-    super(ArmConstants.kSubSysConstants, true);
-  }
+    public ArmIOSim()
+    {
+        super(ArmConstants.kSubSysConstants, true);
+    }
 }

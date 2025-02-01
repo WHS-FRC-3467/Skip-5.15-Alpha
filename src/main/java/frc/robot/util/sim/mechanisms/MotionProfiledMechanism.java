@@ -7,9 +7,12 @@ package frc.robot.util.sim.mechanisms;
 /** Add your docs here. */
 public interface MotionProfiledMechanism {
 
-  public default void updateArm(double angle) {}
+    public default void updateArm(double angle)
+    {}
 
-  public default void updateElevator(double height) {}
+    public default void updateElevator(double height)
+    {}
 
-  public default void updateVelocity(double velocity) {}
+    public default void updateVelocity(double velocity)
+    {}
 }

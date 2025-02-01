@@ -19,61 +19,69 @@ import lombok.Setter;
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
-  @RequiredArgsConstructor
-  @Getter
-  public enum State implements TargetState {
-    HOMING(
-        -0.2, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: Test Voltage and position values (rotations)
-    // (elevator)
-    HOME(0.15, 0.0, ProfileType.MM_POSITION),
-    INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
-    LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
-    LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
-    LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
-    LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
-    CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
-    ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
-    ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
-    NET(9.0, 0.0, ProfileType.MM_POSITION);
+    @RequiredArgsConstructor
+    @Getter
+    public enum State implements TargetState {
+        HOMING(
+            -0.2, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: Test Voltage and position values
+                                                  // (rotations)
+        // (elevator)
+        HOME(0.15, 0.0, ProfileType.MM_POSITION),
+        INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
+        LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
+        LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
+        LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
+        LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
+        CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
+        ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
+        ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
+        NET(9.0, 0.0, ProfileType.MM_POSITION);
 
-    private final double output;
-    private final double feedFwd;
-    private final ProfileType profileType;
-  }
+        private final double output;
+        private final double feedFwd;
+        private final ProfileType profileType;
+    }
 
-  @Getter @Setter private State state = State.HOME;
+    @Getter
+    @Setter
+    private State state = State.HOME;
 
-  @Getter public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
+    @Getter
+    public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
 
-  /** Constructor */
-  public Elevator(ElevatorIO io, boolean isSim) {
-    super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
-  }
+    /** Constructor */
+    public Elevator(ElevatorIO io, boolean isSim)
+    {
+        super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
+    }
 
-  public Command setStateCommand(State state) {
-    return startEnd(() -> this.state = state, () -> this.state = State.HOME);
-  }
+    public Command setStateCommand(State state)
+    {
+        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+    }
 
-  private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
 
-  public Trigger homedTrigger =
-      new Trigger(
-          () ->
-              homedDebouncer.calculate(
-                  (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
+    public Trigger homedTrigger =
+        new Trigger(
+            () -> homedDebouncer.calculate(
+                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
 
-  public Command zeroSensorCommand() {
-    return new InstantCommand(() -> io.zeroSensors());
-  }
+    public Command zeroSensorCommand()
+    {
+        return new InstantCommand(() -> io.zeroSensors());
+    }
 
-  public boolean atPosition(double tolerance) {
-    return Util.epsilonEquals(io.getPosition(), state.output, Math.max(1, tolerance));
-  }
+    public boolean atPosition(double tolerance)
+    {
+        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(1, tolerance));
+    }
 
-  public Command homedAlertCommand() {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> homedAlert.set(true)),
-        Commands.waitSeconds(1),
-        new InstantCommand(() -> homedAlert.set(false)));
-  }
+    public Command homedAlertCommand()
+    {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> homedAlert.set(true)),
+            Commands.waitSeconds(1),
+            new InstantCommand(() -> homedAlert.set(false)));
+    }
 }
