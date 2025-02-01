@@ -25,14 +25,6 @@ import frc.robot.subsystems.Arm.ArmIO;
 import frc.robot.subsystems.Arm.ArmIOSim;
 import frc.robot.subsystems.Arm.ArmIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
-// import frc.robot.subsystems.SampleRollers.SampleRollers;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIO;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOPhotonVision;
@@ -73,7 +65,6 @@ public class RobotContainer {
     private final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
-    private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
 
     public final Vision m_vision;
 
@@ -95,8 +86,6 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
 
                 m_vision =
                     new Vision(
@@ -127,8 +116,6 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
 
                 m_vision =
                     new Vision(
@@ -156,8 +143,6 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -302,28 +287,6 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
-        // Driver B Button: Reset gyro to 0°
-        // m_driver
-        // .b()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> m_drive.setPose(
-        // new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())),
-        // m_drive)
-        // .ignoringDisable(true));
-
-        // // Driver X Button: Run the Sample Roller in Eject direction when held
-        // m_driver.x().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.EJECT));
-        // // Driver Y Button: Run the Sample Roller in Intake direction when held
-        // m_driver.y().whileTrue(m_sampleRollersSubsystem.setStateCommand(SampleRollers.State.INTAKE));
-
-        // Driver Left & Right Bumpers: Run the Sample Profiled Roller out and in when
-        // held
-        // m_driver
-        // .leftBumper()
-        // .whileTrue(
-        // m_sampleProfiledRollerSubsystem.setStateCommand(SampleProfiledRoller.State.EJECT));
-
         m_driver
             .povDown()
             .whileTrue(
@@ -338,43 +301,6 @@ public class RobotContainer {
                     () -> SimulatedArena.getInstance()
                         .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
 
-        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-        // position
-        // Driver Right Trigger: Run the Sample Profiled Roller to the requested
-        // position
-        m_driver
-            .povLeft()
-            .whileTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
-
-
-        m_driver
-            .rightBumper()
-            .onTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePieceProjectile(
-                            new ReefscapeCoralOnFly(
-                                // Obtain robot position from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
-                                // The scoring mechanism is installed at (0.46, 0) (meters) on the
-                                // robot
-                                new Translation2d(0.48, 0),
-                                // Obtain robot speed from drive simulation
-                                m_driveSimulation
-                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                                // Obtain robot facing from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
-                                // The height at which the coral is ejected
-                                Meters.of(2.3),
-                                // The initial speed of the coral
-                                MetersPerSecond.of(1),
-                                // The coral is ejected vertically downwards
-                                Degrees.of(-75)))));
-
-        // Driver POV Down: Bring Arm and Elevator to Home position
         m_driver
             .rightBumper()
             .onTrue(
