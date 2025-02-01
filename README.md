@@ -4,7 +4,7 @@
 First code for the 2025 Reefscape robot
 
 ## Planned Controls
-![controls diagram on an xbox 360 controller](images/controls.png)
+![controls diagram on an xbox 360 controller](controls.png)
 
 LB: Align to Nearest Reef Face
 
