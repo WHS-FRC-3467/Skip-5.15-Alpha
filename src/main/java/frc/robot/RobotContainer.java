@@ -214,10 +214,12 @@ public class RobotContainer {
         // Driver Left Trigger: Bring Arm and Elevator to INTAKE position
         m_driver
             .leftTrigger()
-            .onTrue(
+            .whileTrue(
                 Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.INTAKE),
-                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
+                    // m_profiledArm.setStateCommand(Arm.State.LEVEL_1)
+                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.01))
+                        .andThen(m_profiledArm.setStateCommand(Arm.State.INTAKE))));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
