@@ -6,7 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
-
+import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -194,6 +194,24 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
+
+    private static Pose2d getNearestReefFace(Pose2d currentPose)
+    {
+        return currentPose.nearest(List.of(FieldConstants.Reef.centerFaces));
+    }
+
+    public enum Side {
+        Left,
+        Right
+    }
+
+    private static Pose2d getNearestReefBranch(Pose2d currentPose, Side side)
+    {
+        return FieldConstants.Reef.branchPositions
+            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose)))
+            .get(FieldConstants.ReefHeight.L1).toPose2d();
+    }
+
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
@@ -216,131 +234,11 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(setPose).ignoringDisable(true));
 
-        // Driver Start Button: Run Homing Sequence
-        m_driver
-            .start()
-            .onTrue(
-                m_profiledElevator
-                    .setStateCommand(Elevator.State.HOMING)
-                    .until(m_profiledElevator.getHomedTrigger())
-                    .andThen(m_profiledElevator.zeroSensorCommand()));
-        m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
-
-        // Driver Left Trigger: Bring Arm and Elevator to INTAKE position
-        m_driver
-            .leftTrigger()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.INTAKE),
-                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
-
-        // Driver A Button: Send Arm and Elevator to LEVEL_1
-        m_driver
-            .a()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.LEVEL_1),
-                    Commands.waitUntil(() -> m_profiledArm.atPosition(0))
-                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
-
-        // Driver X Button: Send Arm and Elevator to LEVEL_2
-        m_driver
-            .x()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.LEVEL_2),
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
-
-        // Driver B Button: Send Arm and Elevator to LEVEL_3
-        m_driver
-            .b()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.LEVEL_3),
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
-
-        // Driver Y Button: Send Arm and Elevator to LEVEL_4
-        m_driver
-            .y()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
-
-
-        // Driver uses Left Bumper for orbitting and targeting maneuvers
-        m_driver
-            .leftBumper()
-            .whileTrue(
-                DriveCommands.joystickOrbitAtAngle(
-                    m_drive,
-                    () -> m_driver.getLeftY(),
-                    () -> m_driver.getLeftX(),
-                    () -> RobotState.getInstance()
-                        .getAngleToTarget(m_drive.getPose().getTranslation())));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value, 0.8))
-            .onTrue(
-                Commands.runOnce(
-                    () -> RobotState.getInstance()
-                        .setTarget(RobotState.TARGET.RIGHT_CORAL_STATION)));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
-            .onTrue(
-                Commands.runOnce(
-                    () -> RobotState.getInstance()
-                        .setTarget(RobotState.TARGET.LEFT_CORAL_STATION)));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisLessThan(XboxController.Axis.kRightY.value, -0.8))
-            .onTrue(
-                Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
-
-        m_driver
-            .povDown()
-            .whileTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.GROUND),
-                    m_profiledElevator.setStateCommand(Elevator.State.HOME)));
-
-        m_driver
-            .povLeft()
-            .whileTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
-
-
-        m_driver
-            .rightBumper()
-            .onTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePieceProjectile(
-                            new ReefscapeCoralOnFly(
-                                // Obtain robot position from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
-                                // The scoring mechanism is installed at (0.46, 0) (meters) on the
-                                // robot
-                                new Translation2d(0.48, 0),
-                                // Obtain robot speed from drive simulation
-                                m_driveSimulation
-                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                                // Obtain robot facing from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
-                                // The height at which the coral is ejected
-                                Meters.of(2.3),
-                                // The initial speed of the coral
-                                MetersPerSecond.of(1),
-                                // The coral is ejected vertically downwards
-                                Degrees.of(-75)))));
-
+        m_driver.leftBumper().whileTrue(
+            DriveCommands.joystickApproach(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> FieldConstants.Reef.centerFaces[3]));
     }
 
     /**

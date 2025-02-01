@@ -23,11 +23,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
@@ -162,11 +166,10 @@ public class DriveCommands {
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
-    public static Command joystickOrbitAtAngle(
+    public static Command joystickApproach(
         Drive drive,
-        DoubleSupplier xSupplier,
         DoubleSupplier ySupplier,
-        Supplier<Rotation2d> rotationSupplier)
+        Supplier<Pose2d> approachSupplier)
     {
 
         // Create PID controller
@@ -178,18 +181,50 @@ public class DriveCommands {
                 new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
+        ProfiledPIDController alignController =
+            new ProfiledPIDController(
+                100,
+                0.0,
+                0,
+                new TrapezoidProfile.Constraints(20, 8));
+
         // Construct command
         return Commands.run(
             () -> {
+
+                Translation2d currentTranslation = drive.getPose().getTranslation();
+
+                Rotation2d angleToTarget =
+                    currentTranslation.minus(approachSupplier.get().getTranslation()).getAngle();
+                Rotation2d theta = Rotation2d.kCCW_90deg.minus(angleToTarget);
+
+                double distanceFromGoal =
+                    currentTranslation.getDistance(approachSupplier.get().getTranslation())
+                        * theta.getCos();
+
+                Translation2d offsetVector = new Translation2d(
+                    alignController.calculate(distanceFromGoal * -1, 0), 0)
+                        .rotateBy(approachSupplier.get().getRotation())
+                        .rotateBy(Rotation2d.kCCW_90deg);
+
                 // Get linear velocity
                 Translation2d linearVelocity =
-                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
-                        .rotateBy(rotationSupplier.get());
+                    getLinearVelocityFromJoysticks(0,
+                        ySupplier.getAsDouble()).rotateBy(
+                            approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
+                            .plus(offsetVector);
+
+                SmartDashboard.putData(alignController);
+                Logger.recordOutput("test/linearVelocity", linearVelocity);
+                Logger.recordOutput("test/distanceFromGoal", distanceFromGoal);
+                Logger.recordOutput("test/PIDOutput", offsetVector.getY());
+                Logger.recordOutput("test/goal", approachSupplier.get());
 
                 // Calculate angular speed
                 double omega =
                     angleController.calculate(
-                        drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                        drive.getRotation().getRadians(), approachSupplier.get().getRotation()
+                            .rotateBy(Rotation2d.k180deg).getRadians());
 
                 // Convert to field relative speeds & send command
                 ChassisSpeeds speeds =
