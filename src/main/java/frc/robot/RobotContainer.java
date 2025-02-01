@@ -302,16 +302,6 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
 
-        // Driver X Button: Switch wheel modules to X pattern
-        // m_driver.x().onTrue(Commands.runOnce(m_drive::stopWithX, m_drive));
-        // Reset gyro / odometry
-        final Runnable setPose =
-            Constants.currentMode == Constants.Mode.SIM
-                ? () -> m_drive.setPose(driveSimulation.getSimulatedDriveTrainPose())
-                : () -> m_drive
-                    .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
-        m_driver.x().onTrue(Commands.runOnce(setPose).ignoringDisable(true));
-
         // Driver B Button: Reset gyro to 0°
         // m_driver
         // .b()
@@ -368,14 +358,15 @@ public class RobotContainer {
                         .addGamePieceProjectile(
                             new ReefscapeCoralOnFly(
                                 // Obtain robot position from drive simulation
-                                driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
                                 // The scoring mechanism is installed at (0.46, 0) (meters) on the
                                 // robot
                                 new Translation2d(0.48, 0),
                                 // Obtain robot speed from drive simulation
-                                driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+                                m_driveSimulation
+                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
                                 // Obtain robot facing from drive simulation
-                                driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
                                 // The height at which the coral is ejected
                                 Meters.of(2.3),
                                 // The initial speed of the coral
