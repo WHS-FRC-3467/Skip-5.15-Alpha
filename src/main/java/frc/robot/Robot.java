@@ -12,6 +12,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -142,6 +145,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic()
     {
+        // Test
+        var alliance = DriverStation.getAlliance();
+        Pose2d test;
+        // Test
         // Get currently selected command
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         // Check if is the same as the last one
@@ -164,8 +171,18 @@ public class Robot extends LoggedRobot {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                // Displays all poses on Field2d widget
-                m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
+                // Displays all poses on Field2d widget depending on Alliance Side
+                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                    m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
+                } else {
+                    for (int i = 0; i < m_pathsToShow.size(); i++) {
+                        test = m_pathsToShow.get(0).transformBy(
+                            new Transform2d());
+                        Logger.recordOutput("m_pathsToShow" + i, m_pathsToShow.get(i));
+                        Logger.recordOutput("NEW_m_pathsToShow" + i, test);
+                    }
+                }
+                //
                 m_autoTraj.setRobotPose(m_pathsToShow.get(0));
             }
         }
