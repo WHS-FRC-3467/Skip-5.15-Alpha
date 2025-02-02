@@ -205,12 +205,11 @@ public class DriveCommands {
 
                 Translation2d distanceToGoal = currentTranslation.minus(goalTranslation);
                 double distanceToGoalValue =
-                    Math.hypot(distanceToGoal.getX(), distanceToGoal.getY())
-                        * (distanceToGoal.getX() * distanceToGoal.getY() > 0 ? -1 : 1);
+                    Math.hypot(distanceToGoal.getX(), distanceToGoal.getY());
 
                 Translation2d offsetVector =
                     new Translation2d(alignController.calculate(distanceToGoalValue), 0)
-                        .rotateBy(perpendicularLine.plus(Rotation2d.kCCW_90deg));
+                        .rotateBy(distanceToGoal.getAngle());
 
                 // Get linear velocity
                 Translation2d linearVelocity =

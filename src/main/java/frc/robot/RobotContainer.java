@@ -59,6 +59,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
+    private final int RIGHT_STICK_X = 4;
+
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
     // private final CommandXboxController m_operator = new CommandXboxController(1);
@@ -208,7 +210,8 @@ public class RobotContainer {
     private static Pose2d getNearestReefBranch(Pose2d currentPose, Side side)
     {
         return FieldConstants.Reef.branchPositions
-            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose)))
+            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
+                * 2 + (side == Side.Left ? 1 : 0))
             .get(FieldConstants.ReefHeight.L1).toPose2d();
     }
 
@@ -235,10 +238,24 @@ public class RobotContainer {
                 Commands.runOnce(setPose).ignoringDisable(true));
 
         m_driver.leftBumper().whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
+                () -> getNearestReefFace(m_drive.getPose()).getRotation()
+                    .rotateBy(Rotation2d.k180deg)));
+
+        m_driver.leftBumper().and(m_driver.axisGreaterThan(RIGHT_STICK_X, 0.8)).whileTrue(
             DriveCommands.joystickApproach(
                 m_drive,
                 () -> -m_driver.getLeftY(),
-                () -> getNearestReefFace(m_drive.getPose())));
+                () -> getNearestReefBranch(m_drive.getPose(), Side.Right)));
+
+        m_driver.leftBumper().and(m_driver.axisLessThan(RIGHT_STICK_X, -0.8)).whileTrue(
+            DriveCommands.joystickApproach(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> getNearestReefBranch(m_drive.getPose(), Side.Left)));
     }
 
     /**
