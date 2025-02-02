@@ -23,14 +23,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -39,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
@@ -167,6 +164,12 @@ public class DriveCommands {
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
+    /**
+     * Robot relative drive command using joystick for linear control towards the approach target,
+     * PID for aligning with the target laterally, and PID for angular control. Used for approaching
+     * a known target, usually from a short distance. The approachSupplier must supply a Pose2d with
+     * a rotation facing away from the target
+     */
     public static Command joystickApproach(
         Drive drive,
         DoubleSupplier ySupplier,
@@ -195,33 +198,35 @@ public class DriveCommands {
         // Construct command
         return Commands.run(
             () -> {
-
+                // Name constants
                 Translation2d currentTranslation = drive.getPose().getTranslation();
-                Translation2d targetTranslation = approachSupplier.get().getTranslation();
-                double distanceToTarget = currentTranslation.getDistance(targetTranslation);
+                Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 
                 Rotation2d perpendicularLine = approachSupplier.get().getRotation();
 
+                // Find lateral distance from goal
                 Translation2d goalTranslation = new Translation2d(
-                    perpendicularLine.getCos() * distanceToTarget + targetTranslation.getX(),
-                    perpendicularLine.getSin() * distanceToTarget + targetTranslation.getY());
+                    perpendicularLine.getCos() * distanceToApproach + approachTranslation.getX(),
+                    perpendicularLine.getSin() * distanceToApproach + approachTranslation.getY());
 
                 Translation2d distanceToGoal = currentTranslation.minus(goalTranslation);
                 double distanceToGoalValue =
                     Math.hypot(distanceToGoal.getX(), distanceToGoal.getY());
 
+                // Calculate lateral linear velocity
                 Translation2d offsetVector =
                     new Translation2d(alignController.calculate(distanceToGoalValue), 0)
                         .rotateBy(distanceToGoal.getAngle());
 
-                // Get linear velocity
+                // Calculate total linear velocity
                 Translation2d linearVelocity =
                     getLinearVelocityFromJoysticks(0,
                         ySupplier.getAsDouble()).rotateBy(
                             approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
-                SmartDashboard.putData(alignController);
+                SmartDashboard.putData(alignController); // TODO: Calibrate PID
 
                 // Calculate angular speed
                 double omega =

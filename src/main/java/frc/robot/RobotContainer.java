@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -240,6 +239,7 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(setPose).ignoringDisable(true));
 
+        // Driver Left Button: Face Nearest Reef Face
         m_driver.leftBumper().whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 m_drive,
@@ -248,12 +248,14 @@ public class RobotContainer {
                 () -> getNearestReefFace(m_drive.getPose()).getRotation()
                     .rotateBy(Rotation2d.k180deg)));
 
+        // Driver Left Button + Right Stick Right: Approach Nearest Right-Side Reef Branch
         m_driver.leftBumper().and(m_driver.axisGreaterThan(RIGHT_STICK_X, 0.8)).whileTrue(
             DriveCommands.joystickApproach(
                 m_drive,
                 () -> -m_driver.getLeftY(),
                 () -> getNearestReefBranch(m_drive.getPose(), Side.Right)));
 
+        // Driver Left Button + Right Stick Left: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(m_driver.axisLessThan(RIGHT_STICK_X, -0.8)).whileTrue(
             DriveCommands.joystickApproach(
                 m_drive,
