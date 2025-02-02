@@ -183,29 +183,34 @@ public class DriveCommands {
 
         ProfiledPIDController alignController =
             new ProfiledPIDController(
-                100,
+                1,
                 0.0,
                 0,
                 new TrapezoidProfile.Constraints(20, 8));
+        alignController.setGoal(0);
 
         // Construct command
         return Commands.run(
             () -> {
 
                 Translation2d currentTranslation = drive.getPose().getTranslation();
+                Translation2d targetTranslation = approachSupplier.get().getTranslation();
+                double distanceToTarget = currentTranslation.getDistance(targetTranslation);
 
-                Rotation2d angleToTarget =
-                    currentTranslation.minus(approachSupplier.get().getTranslation()).getAngle();
-                Rotation2d theta = Rotation2d.kCCW_90deg.minus(angleToTarget);
+                Rotation2d perpendicularLine = approachSupplier.get().getRotation();
 
-                double distanceFromGoal =
-                    currentTranslation.getDistance(approachSupplier.get().getTranslation())
-                        * theta.getCos();
+                Translation2d goalTranslation = new Translation2d(
+                    perpendicularLine.getCos() * distanceToTarget + targetTranslation.getX(),
+                    perpendicularLine.getSin() * distanceToTarget + targetTranslation.getY());
 
-                Translation2d offsetVector = new Translation2d(
-                    alignController.calculate(distanceFromGoal * -1, 0), 0)
-                        .rotateBy(approachSupplier.get().getRotation())
-                        .rotateBy(Rotation2d.kCCW_90deg);
+                Translation2d distanceToGoal = currentTranslation.minus(goalTranslation);
+                double distanceToGoalValue =
+                    Math.hypot(distanceToGoal.getX(), distanceToGoal.getY())
+                        * (distanceToGoal.getX() < 0 ? -1 : 1);
+
+                Translation2d offsetVector =
+                    new Translation2d(alignController.calculate(distanceToGoalValue), 0)
+                        .rotateBy(perpendicularLine.plus(Rotation2d.kCCW_90deg));
 
                 // Get linear velocity
                 Translation2d linearVelocity =
@@ -215,10 +220,10 @@ public class DriveCommands {
                             .plus(offsetVector);
 
                 SmartDashboard.putData(alignController);
-                Logger.recordOutput("test/linearVelocity", linearVelocity);
-                Logger.recordOutput("test/distanceFromGoal", distanceFromGoal);
-                Logger.recordOutput("test/PIDOutput", offsetVector.getY());
-                Logger.recordOutput("test/goal", approachSupplier.get());
+                Logger.recordOutput("test/face", approachSupplier.get());
+                Logger.recordOutput("test/zero", Pose2d.kZero);
+                Logger.recordOutput("test/goalTranslation", goalTranslation);
+                Logger.recordOutput("test/offsetVector", offsetVector);
 
                 // Calculate angular speed
                 double omega =

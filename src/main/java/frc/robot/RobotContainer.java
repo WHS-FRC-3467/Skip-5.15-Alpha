@@ -238,7 +238,7 @@ public class RobotContainer {
             DriveCommands.joystickApproach(
                 m_drive,
                 () -> -m_driver.getLeftY(),
-                () -> FieldConstants.Reef.centerFaces[3]));
+                () -> getNearestReefFace(m_drive.getPose())));
     }
 
     /**
