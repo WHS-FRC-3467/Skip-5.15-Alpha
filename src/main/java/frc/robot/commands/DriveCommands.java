@@ -206,7 +206,7 @@ public class DriveCommands {
                 Translation2d distanceToGoal = currentTranslation.minus(goalTranslation);
                 double distanceToGoalValue =
                     Math.hypot(distanceToGoal.getX(), distanceToGoal.getY())
-                        * (distanceToGoal.getX() < 0 ? -1 : 1);
+                        * (distanceToGoal.getX() * distanceToGoal.getY() > 0 ? -1 : 1);
 
                 Translation2d offsetVector =
                     new Translation2d(alignController.calculate(distanceToGoalValue), 0)
