@@ -25,13 +25,13 @@ public final class ElevatorConstants {
 
         kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
         kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
-        kSubSysConstants.kFollowerOpposesMain = true;
+        kSubSysConstants.kFollowerOpposesMain = false;
 
         // Using TalonFX internal encoder
         kSubSysConstants.kCANcoder = null;
         kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
             FeedbackSensorSourceValue.RotorSensor;
-        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
+        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 9.6;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
         // Using a remote CANcoder
@@ -50,7 +50,7 @@ public final class ElevatorConstants {
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-            InvertedValue.CounterClockwise_Positive;
+            InvertedValue.Clockwise_Positive;
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 

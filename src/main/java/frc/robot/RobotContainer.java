@@ -69,7 +69,7 @@ public class RobotContainer {
     // AK-enabled Subsystems
     private final Drive m_drive;
     private final Arm m_profiledArm;
-    private final Elevator m_profiledElevator;
+    private Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
 
     public final Vision m_vision;
@@ -79,63 +79,97 @@ public class RobotContainer {
     {
         switch (Constants.currentMode) {
             case REAL:
-                // Real robot, instantiate hardware IO implementations
-                m_drive =
-                    new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (robotPose) -> {
-                        });
-
-                m_profiledArm = new Arm(new ArmIOTalonFX(), false);
-                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
-
-                m_vision =
-                    new Vision(
-                        m_drive,
-                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
-
-                break;
-
-            case SIM:
+                // Modified REAL so we can test one subsystem at a time
                 // Sim robot, instantiate physics sim IO implementations
-                m_driveSimulation =
-                    new SwerveDriveSimulation(Drive.mapleSimConfig,
-                        new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
-                m_drive =
-                    new Drive(
-                        new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
-                        m_driveSimulation::setSimulationWorldPose);
+                // m_driveSimulation =
+                // new SwerveDriveSimulation(Drive.mapleSimConfig,
+                // new Pose2d(3, 3, new Rotation2d()));
+                // // SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
+                // m_drive =
+                // new Drive(
+                // new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
+                // m_driveSimulation::setSimulationWorldPose);
 
-                m_profiledArm = new Arm(new ArmIOSim(), true);
-                m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                m_profiledClimber = new Climber(new ClimberIOSim(), true);
+                // m_profiledArm = new Arm(new ArmIOSim(), true);
+                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOSim(), true);
 
-                m_vision =
-                    new Vision(
-                        m_drive,
-                        new VisionIOPhotonVisionSim(
-                            camera0Name, robotToCamera0,
-                            m_driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                            camera1Name, robotToCamera1,
-                            m_driveSimulation::getSimulatedDriveTrainPose));
+                // m_vision =
+                // new Vision(
+                // m_drive,
+                // new VisionIOPhotonVisionSim(
+                // camera0Name, robotToCamera0,
+                // m_driveSimulation::getSimulatedDriveTrainPose),
+                // new VisionIOPhotonVisionSim(
+                // camera1Name, robotToCamera1,
+                // m_driveSimulation::getSimulatedDriveTrainPose));
 
-                break;
+                // break;
+                // // Real robot, instantiate hardware IO implementations
+                // m_drive =
+                // new Drive(
+                // new GyroIOPigeon2(),
+                // new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                // new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                // new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                // new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                // (robotPose) -> {
+                // });
+
+                // m_profiledArm = new Arm(new ArmIOTalonFX(), false);
+                // m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+
+                // m_vision =
+                // new Vision(
+                // m_drive,
+                // new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                // new VisionIOPhotonVision(camera1Name, robotToCamera1));
+
+                // break;
+
+                // case SIM:
+                // // Sim robot, instantiate physics sim IO implementations
+                // m_driveSimulation =
+                // new SwerveDriveSimulation(Drive.mapleSimConfig,
+                // new Pose2d(3, 3, new Rotation2d()));
+                // SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
+                // m_drive =
+                // new Drive(
+                // new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
+                // new ModuleIOTalonFXSim(
+                // TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
+                // m_driveSimulation::setSimulationWorldPose);
+
+                // m_profiledArm = new Arm(new ArmIOSim(), true);
+                // m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
+                // m_profiledClimber = new Climber(new ClimberIOSim(), true);
+
+                // m_vision =
+                // new Vision(
+                // m_drive,
+                // new VisionIOPhotonVisionSim(
+                // camera0Name, robotToCamera0,
+                // m_driveSimulation::getSimulatedDriveTrainPose),
+                // new VisionIOPhotonVisionSim(
+                // camera1Name, robotToCamera1,
+                // m_driveSimulation::getSimulatedDriveTrainPose));
+
+                // break;
 
             default:
                 // Replayed robot, disable IO implementations
@@ -188,14 +222,14 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    //Climbing Triggers
-	private boolean climbRequested = false; //Whether or not a climb request is active
-	private Trigger climbRequest = new Trigger(() -> climbRequested); //Trigger for climb request
-	private int climbStep = 0; //Tracking what step in the climb sequence we are on
+    // Climbing Triggers
+    private boolean climbRequested = false; // Whether or not a climb request is active
+    private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
+    private int climbStep = 0; // Tracking what step in the climb sequence we are on
 
-	//Triggers for each step of the climb sequence
-	private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
-	private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+    // Triggers for each step of the climb sequence
+    private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
+    private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
 
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
@@ -273,21 +307,21 @@ public class RobotContainer {
 
 
         // Driver Start Button: Climb Request (toggle)
-		m_driver.start().onTrue(Commands.runOnce(() -> {
+        m_driver.start().onTrue(Commands.runOnce(() -> {
             climbRequested = true;
             climbStep += 1;
-            }));
+        }));
 
-		//Climb step 1: Raise shooter and move climber to prep
-		climbRequest.and(climbStep1).whileTrue(
-				m_profiledClimber.setStateCommand(Climber.State.PREP));
+        // Climb step 1: Raise shooter and move climber to prep
+        climbRequest.and(climbStep1).whileTrue(
+            m_profiledClimber.setStateCommand(Climber.State.PREP));
 
-		//Climb step 2: Move climber to climb
-		climbRequest.and(climbStep2)
+        // Climb step 2: Move climber to climb
+        climbRequest.and(climbStep2)
             .whileTrue(
                 m_profiledClimber.setStateCommand(Climber.State.CLIMB)
                     .until(m_profiledClimber.climbedTrigger));
-            
+
         m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
 
         // Driver POV Right: End Climbing Sequence if needed
@@ -300,7 +334,7 @@ public class RobotContainer {
                         climbStep = 0;
                     }));
 
-		//Slow drivetrain to 25% while climbing
+        // Slow drivetrain to 25% while climbing
         climbRequest.whileTrue(
             DriveCommands.joystickDrive(
                 m_drive,
@@ -378,18 +412,20 @@ public class RobotContainer {
                                 MetersPerSecond.of(1),
                                 // The coral is ejected vertically downwards
                                 Degrees.of(-75)))));
-                 
+
         // Driver START Button: Auto Angle to closest Reef target TODO: FIX
         m_driver
             .povRight()
             .whileTrue(
                 Commands.parallel(
-                    RobotState.getInstance().setTargetCommand(RobotState.getInstance().chooseReefTarget()),
+                    RobotState.getInstance()
+                        .setTargetCommand(RobotState.getInstance().chooseReefTarget()),
                     DriveCommands.joystickDriveAtAngle(
                         m_drive,
                         () -> -m_driver.getLeftY(),
                         () -> -m_driver.getLeftX(),
-                        () -> RobotState.getInstance().getAngleToTarget(m_drive.getPose().getTranslation()))));
+                        () -> RobotState.getInstance()
+                            .getAngleToTarget(m_drive.getPose().getTranslation()))));
 
         // Driver Right bumper: Cardinal direction to PROCESSOR
         m_driver
@@ -401,7 +437,8 @@ public class RobotContainer {
                         m_drive,
                         () -> -m_driver.getLeftY(),
                         () -> -m_driver.getLeftX(),
-                        () -> RobotState.getInstance().getAngleOfTarget().plus(Rotation2d.fromDegrees(180)))));
+                        () -> RobotState.getInstance().getAngleOfTarget()
+                            .plus(Rotation2d.fromDegrees(180)))));
     }
 
     /**
