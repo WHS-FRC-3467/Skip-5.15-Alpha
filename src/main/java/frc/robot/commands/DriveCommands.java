@@ -207,8 +207,8 @@ public class DriveCommands {
 
                 // Find lateral distance from goal
                 Translation2d goalTranslation = new Translation2d(
-                    perpendicularLine.getCos() * distanceToApproach + approachTranslation.getX(),
-                    perpendicularLine.getSin() * distanceToApproach + approachTranslation.getY());
+                    alignmentDirection.getCos() * distanceToApproach + approachTranslation.getX(),
+                    alignmentDirection.getSin() * distanceToApproach + approachTranslation.getY());
 
                 Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
                 double distanceToGoal =
