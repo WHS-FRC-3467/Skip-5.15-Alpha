@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -24,15 +25,11 @@ import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Arm.ArmIO;
 import frc.robot.subsystems.Arm.ArmIOSim;
 import frc.robot.subsystems.Arm.ArmIOTalonFX;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRoller;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIO;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOSim;
-import frc.robot.subsystems.SampleProfiledRoller.SampleProfiledRollerIOTalonFX;
-// import frc.robot.subsystems.SampleRollers.SampleRollers;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIO;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIOSim;
-// import frc.robot.subsystems.SampleRollers.SampleRollersIOTalonFX;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOPhotonVision;
@@ -75,7 +72,7 @@ public class RobotContainer {
     private final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
-    private final SampleProfiledRoller m_sampleProfiledRollerSubsystem;
+    private final Climber m_profiledClimber;
 
     public final Vision m_vision;
 
@@ -97,8 +94,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
 
                 m_vision =
                     new Vision(
@@ -129,8 +125,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIOSim(), true);
+                m_profiledClimber = new Climber(new ClimberIOSim(), true);
 
                 m_vision =
                     new Vision(
@@ -158,8 +153,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_sampleProfiledRollerSubsystem =
-                    new SampleProfiledRoller(new SampleProfiledRollerIO() {}, false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -195,6 +189,15 @@ public class RobotContainer {
         // Detect if controllers are missing / Stop multiple warnings
         DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    // Climbing Triggers
+    private boolean climbRequested = false; // Whether or not a climb request is active
+    private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
+    private int climbStep = 0; // Tracking what step in the climb sequence we are on
+
+    // Triggers for each step of the climb sequence
+    private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
+    private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
 
 
     private static Pose2d getNearestReefFace(Pose2d currentPose)
@@ -385,6 +388,8 @@ public class RobotContainer {
         if (Constants.currentMode != Constants.Mode.SIM)
             return;
 
+        // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
+        // 2)));
         Logger.recordOutput(
             "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
         Logger.recordOutput(
