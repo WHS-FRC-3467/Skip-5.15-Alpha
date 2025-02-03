@@ -6,21 +6,25 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
-
+import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm.*;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
@@ -40,6 +44,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
+    private final int RIGHT_STICK_X = 4;
+
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
 
@@ -53,6 +59,7 @@ public class RobotContainer {
     private final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
+    private final Climber m_profiledClimber;
 
     public final Vision m_vision;
 
@@ -79,6 +86,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
 
                 m_vision =
                     new Vision(
@@ -109,6 +117,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
+                m_profiledClimber = new Climber(new ClimberIOSim(), true);
 
                 m_vision =
                     new Vision(
@@ -136,6 +145,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -172,6 +182,34 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
+    // Climbing Triggers
+    private boolean climbRequested = false; // Whether or not a climb request is active
+    private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
+    private int climbStep = 0; // Tracking what step in the climb sequence we are on
+
+    // Triggers for each step of the climb sequence
+    private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
+    private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+
+
+    private static Pose2d getNearestReefFace(Pose2d currentPose)
+    {
+        return currentPose.nearest(List.of(FieldConstants.Reef.centerFaces));
+    }
+
+    public enum Side {
+        Left,
+        Right
+    }
+
+    private static Pose2d getNearestReefBranch(Pose2d currentPose, Side side)
+    {
+        return FieldConstants.Reef.branchPositions
+            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
+                * 2 + (side == Side.Left ? 1 : 0))
+            .get(FieldConstants.ReefHeight.L1).toPose2d();
+    }
+
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
@@ -194,23 +232,28 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(setPose).ignoringDisable(true));
 
-        // Driver Start Button: Run Homing Sequence
-        m_driver
-            .start()
-            .onTrue(
-                m_profiledElevator
-                    .setStateCommand(Elevator.State.HOMING)
-                    .until(m_profiledElevator.getHomedTrigger())
-                    .andThen(m_profiledElevator.zeroSensorCommand()));
-        m_profiledElevator.getHomedTrigger().onTrue(m_profiledElevator.homedAlertCommand());
+        // Driver Left Button: Face Nearest Reef Face
+        m_driver.leftBumper().whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> -m_driver.getLeftX(),
+                () -> getNearestReefFace(m_drive.getPose()).getRotation()
+                    .rotateBy(Rotation2d.k180deg)));
 
-        // Driver Left Trigger: Bring Arm and Elevator to INTAKE position
-        m_driver
-            .leftTrigger()
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.INTAKE),
-                    m_profiledElevator.setStateCommand(Elevator.State.INTAKE)));
+        // Driver Left Button + Right Stick Right: Approach Nearest Right-Side Reef Branch
+        m_driver.leftBumper().and(m_driver.axisGreaterThan(RIGHT_STICK_X, 0.8)).whileTrue(
+            DriveCommands.joystickApproach(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> getNearestReefBranch(m_drive.getPose(), Side.Right)));
+
+        // Driver Left Button + Right Stick Left: Approach Nearest Left-Side Reef Branch
+        m_driver.leftBumper().and(m_driver.axisLessThan(RIGHT_STICK_X, -0.8)).whileTrue(
+            DriveCommands.joystickApproach(
+                m_drive,
+                () -> -m_driver.getLeftY(),
+                () -> getNearestReefBranch(m_drive.getPose(), Side.Left)));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
@@ -245,79 +288,6 @@ public class RobotContainer {
                     m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
-
-
-        // Driver uses Left Bumper for orbitting and targeting maneuvers
-        m_driver
-            .leftBumper()
-            .whileTrue(
-                DriveCommands.joystickOrbitAtAngle(
-                    m_drive,
-                    () -> m_driver.getLeftY(),
-                    () -> m_driver.getLeftX(),
-                    () -> RobotState.getInstance()
-                        .getAngleToTarget(m_drive.getPose().getTranslation())));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value, 0.8))
-            .onTrue(
-                Commands.runOnce(
-                    () -> RobotState.getInstance()
-                        .setTarget(RobotState.TARGET.RIGHT_CORAL_STATION)));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
-            .onTrue(
-                Commands.runOnce(
-                    () -> RobotState.getInstance()
-                        .setTarget(RobotState.TARGET.LEFT_CORAL_STATION)));
-
-        m_driver
-            .leftBumper()
-            .and(m_driver.axisLessThan(XboxController.Axis.kRightY.value, -0.8))
-            .onTrue(
-                Commands.runOnce(() -> RobotState.getInstance().setTarget(RobotState.TARGET.REEF)));
-
-        m_driver
-            .povDown()
-            .whileTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.GROUND),
-                    m_profiledElevator.setStateCommand(Elevator.State.HOME)));
-
-        m_driver
-            .povLeft()
-            .whileTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2, 2)))));
-
-        m_driver
-            .rightBumper()
-            .onTrue(
-                Commands.runOnce(
-                    () -> SimulatedArena.getInstance()
-                        .addGamePieceProjectile(
-                            new ReefscapeCoralOnFly(
-                                // Obtain robot position from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
-                                // The scoring mechanism is installed at (0.46, 0) (meters) on the
-                                // robot
-                                new Translation2d(0.48, 0),
-                                // Obtain robot speed from drive simulation
-                                m_driveSimulation
-                                    .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                                // Obtain robot facing from drive simulation
-                                m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
-                                // The height at which the coral is ejected
-                                Meters.of(2.3),
-                                // The initial speed of the coral
-                                MetersPerSecond.of(1),
-                                // The coral is ejected vertically downwards
-                                Degrees.of(-75)))));
-
     }
 
     /**
