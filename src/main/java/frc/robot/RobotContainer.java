@@ -256,6 +256,40 @@ public class RobotContainer {
                 m_drive,
                 () -> -m_driver.getLeftY(),
                 () -> getNearestReefBranch(m_drive.getPose(), Side.Left)));
+
+        // Driver A Button: Send Arm and Elevator to LEVEL_1
+        m_driver
+            .a()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_1),
+                    Commands.waitUntil(() -> m_profiledArm.atPosition(0))
+                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
+
+        // Driver X Button: Send Arm and Elevator to LEVEL_2
+        m_driver
+            .x()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_2),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_2)));
+
+        // Driver B Button: Send Arm and Elevator to LEVEL_3
+        m_driver
+            .b()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.LEVEL_3),
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_3)));
+
+        // Driver Y Button: Send Arm and Elevator to LEVEL_4
+        m_driver
+            .y()
+            .onTrue(
+                Commands.parallel(
+                    m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
     }
 
     /**

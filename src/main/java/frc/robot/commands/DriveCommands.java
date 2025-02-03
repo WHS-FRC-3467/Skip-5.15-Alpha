@@ -218,12 +218,6 @@ public class DriveCommands {
                             approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
-                SmartDashboard.putData(alignController);
-                Logger.recordOutput("test/face", approachSupplier.get());
-                Logger.recordOutput("test/zero", Pose2d.kZero);
-                Logger.recordOutput("test/goalTranslation", goalTranslation);
-                Logger.recordOutput("test/offsetVector", offsetVector);
-
                 // Calculate angular speed
                 double omega =
                     angleController.calculate(

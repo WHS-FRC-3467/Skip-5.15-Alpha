@@ -162,14 +162,6 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-
-        Logger.recordOutput("test/faces", FieldConstants.Reef.centerFaces);
-        List<Pose2d> branchPositions = new ArrayList<>();
-        for (int i = 0; i < FieldConstants.Reef.branchPositions.size(); i++) {
-            branchPositions.add(FieldConstants.Reef.branchPositions.get(i)
-                .get(FieldConstants.ReefHeight.L1).toPose2d());
-        }
-        Logger.recordOutput("test/branches", branchPositions.toArray(new Pose2d[0]));
     }
 
     /** This function is called periodically during operator control. */
