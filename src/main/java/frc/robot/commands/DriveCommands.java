@@ -210,14 +210,14 @@ public class DriveCommands {
                     perpendicularLine.getCos() * distanceToApproach + approachTranslation.getX(),
                     perpendicularLine.getSin() * distanceToApproach + approachTranslation.getY());
 
-                Translation2d distanceToGoal = currentTranslation.minus(goalTranslation);
-                double distanceToGoalValue =
-                    Math.hypot(distanceToGoal.getX(), distanceToGoal.getY());
+                Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
+                double distanceToGoal =
+                    Math.hypot(robotToGoal.getX(), robotToGoal.getY());
 
                 // Calculate lateral linear velocity
                 Translation2d offsetVector =
-                    new Translation2d(alignController.calculate(distanceToGoalValue), 0)
-                        .rotateBy(distanceToGoal.getAngle());
+                    new Translation2d(alignController.calculate(distanceToGoal), 0)
+                        .rotateBy(robotToGoal.getAngle());
 
                 // Calculate total linear velocity
                 Translation2d linearVelocity =
