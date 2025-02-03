@@ -20,26 +20,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Arm.Arm;
-import frc.robot.subsystems.Arm.ArmIO;
-import frc.robot.subsystems.Arm.ArmIOSim;
-import frc.robot.subsystems.Arm.ArmIOTalonFX;
+import frc.robot.subsystems.Arm.*;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.Vision.Vision;
-import frc.robot.subsystems.Vision.VisionIO;
-import frc.robot.subsystems.Vision.VisionIOPhotonVision;
-import frc.robot.subsystems.Vision.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.GyroIOSim;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
-import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.subsystems.Vision.*;
+import frc.robot.subsystems.drive.*;
+import frc.robot.util.drivers.LaserCANSensor;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
@@ -59,7 +48,6 @@ public class RobotContainer {
 
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
-    // private final CommandXboxController m_operator = new CommandXboxController(1);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -74,6 +62,11 @@ public class RobotContainer {
     private final Climber m_profiledClimber;
 
     public final Vision m_vision;
+
+    private final LaserCANSensor m_clawLaserCAN =
+        new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
+    private final LaserCANSensor m_rampLaserCAN =
+        new LaserCANSensor(Ports.RAMP_LASERCAN.getDeviceNumber(), Inches.of(6));
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
