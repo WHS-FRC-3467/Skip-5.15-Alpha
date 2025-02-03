@@ -13,12 +13,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import lombok.Getter;
 import edu.wpi.first.wpilibj.Alert;
 import static edu.wpi.first.units.Units.*;
+import org.littletonrobotics.junction.Logger;
 
 
 public class LaserCANSensor {
     private LaserCan lc;
     private int CAN_ID;
     private Distance triggerDistance = Inches.zero();
+    private Distance currentDistance = Millimeters.of(Double.POSITIVE_INFINITY);
 
     @Getter
     public Trigger nearTrigger = new Trigger(() -> getMeasurement().lte(triggerDistance));
@@ -61,18 +63,20 @@ public class LaserCANSensor {
         if (measurement != null
             && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
             sensorAlert.set(false);
-            return Millimeters.of(measurement.distance_mm);
+            currentDistance = Millimeters.of(measurement.distance_mm);
         } else if (measurement != null
             && measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
             sensorAlert
                 .setText("Failed to get LaserCAN ID: " + this.CAN_ID + ", no valid measurement");
             sensorAlert.set(true);
-            return Millimeters.of(Double.POSITIVE_INFINITY);
+            currentDistance = Millimeters.of(Double.POSITIVE_INFINITY);
         } else {
             sensorAlert.setText("Failed to get LaserCAN ID: " + this.CAN_ID + ", measurement null");
             sensorAlert.set(true);
-            return Millimeters.of(Double.POSITIVE_INFINITY);
+            currentDistance = Millimeters.of(Double.POSITIVE_INFINITY);
         }
+        Logger.recordOutput("LaserCANSensors/LaserCAN" + this.CAN_ID, currentDistance.in(Inches));
+        return currentDistance;
     }
 
 }
