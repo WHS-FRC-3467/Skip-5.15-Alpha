@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -181,12 +182,14 @@ public class DriveCommands {
                 new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-        ProfiledPIDController alignController =
-            new ProfiledPIDController(
+        TuneableProfiledPID alignController =
+            new TuneableProfiledPID(
+                "alignController",
                 1,
                 0.0,
                 0,
-                new TrapezoidProfile.Constraints(20, 8));
+                20,
+                8);
         alignController.setGoal(0);
 
         // Construct command
@@ -217,6 +220,8 @@ public class DriveCommands {
                         ySupplier.getAsDouble()).rotateBy(
                             approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
+
+                SmartDashboard.putData(alignController);
 
                 // Calculate angular speed
                 double omega =
