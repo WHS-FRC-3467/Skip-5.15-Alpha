@@ -203,7 +203,7 @@ public class DriveCommands {
                 Translation2d approachTranslation = approachSupplier.get().getTranslation();
                 double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 
-                Rotation2d perpendicularLine = approachSupplier.get().getRotation();
+                Rotation2d alignmentDirection = approachSupplier.get().getRotation();
 
                 // Find lateral distance from goal
                 Translation2d goalTranslation = new Translation2d(
