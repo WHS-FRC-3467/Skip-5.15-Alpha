@@ -174,6 +174,8 @@ public class RobotContainer {
             "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         m_autoChooser.addOption(
             "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        m_autoChooser.addOption("Elevator static", m_profiledElevator.staticCharacterization(2.0));
+        m_autoChooser.addOption("Arm static", m_profiledArm.staticCharacterization(2.0));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();

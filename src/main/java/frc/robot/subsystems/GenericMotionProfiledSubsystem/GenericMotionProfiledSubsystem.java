@@ -19,7 +19,8 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         MM_POSITION,
         MM_VELOCITY,
         OPEN_VOLTAGE,
-        OPEN_CURRENT
+        OPEN_CURRENT, 
+        CHARACTERIZATION
     }
 
     public interface TargetState {
@@ -154,6 +155,9 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             case OPEN_CURRENT:
                 /* Run Open Loop using specified current in amps */
                 io.runCurrent(getState().getOutput());
+                break;
+            case CHARACTERIZATION:
+                /* Run Open Loop for characterization in the child subsystem class's characterization command. Do nothing here.*/
                 break;
         }
 
