@@ -17,10 +17,7 @@ public class Ports {
     // "canivore1");
 
     /* SUBSYSTEM CAN DEVICE IDS */
-    public static final CanDeviceId SAMPLE_ROLLER = new CanDeviceId(15, "rio");
-
-    public static final CanDeviceId TWO_ROLLER_1 = new CanDeviceId(16, "rio");
-    public static final CanDeviceId TWO_ROLLER_2 = new CanDeviceId(17, "rio");
+    public static final CanDeviceId CLAW_ROLLER = new CanDeviceId(16, "rio");
 
     public static final CanDeviceId ELEVATOR_MAIN = new CanDeviceId(18, "rio");
     public static final CanDeviceId ELEVATOR_FOLLOWER = new CanDeviceId(19, "rio");
@@ -32,6 +29,9 @@ public class Ports {
 
     public static final CanDeviceId PROFROLLER_MAIN = new CanDeviceId(24, "rio");
     public static final CanDeviceId PROFROLLER_FOLLOWER = new CanDeviceId(25, "rio");
+
+    public static final CanDeviceId CLAW_LASERCAN = new CanDeviceId(33, "rio");
+    public static final CanDeviceId RAMP_LASERCAN = new CanDeviceId(34, "rio");
 
     public static final CanDeviceId CLIMBER = new CanDeviceId(26, "rio");
 
