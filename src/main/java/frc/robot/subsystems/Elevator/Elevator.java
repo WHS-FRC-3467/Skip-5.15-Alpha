@@ -1,8 +1,10 @@
 package frc.robot.subsystems.Elevator;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -10,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +36,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
         ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
         ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
-        NET(9.0, 0.0, ProfileType.MM_POSITION);
+        NET(9.0, 0.0, ProfileType.MM_POSITION),
+        CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
 
         private final double output;
         private final double feedFwd;
@@ -46,6 +50,10 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     @Getter
     public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
+
+    /* For adjusting the Arm's static characterization velocity threshold */
+    private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
+    new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
@@ -81,5 +89,32 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             new InstantCommand(() -> homedAlert.set(true)),
             Commands.waitSeconds(1),
             new InstantCommand(() -> homedAlert.set(false)));
+    }
+
+    public Command staticCharacterization(double outputRampRate) {
+        final StaticCharacterizationState state = new StaticCharacterizationState();
+        Timer timer = new Timer();
+        return Commands.startRun(
+            () -> {
+              this.state = State.CHARACTERIZATION;
+              timer.restart(); // Starts the timer that tracks the time of the characterization
+            },
+            () -> {
+              state.characterizationOutput = outputRampRate * timer.get();
+              io.runCurrent(state.characterizationOutput);
+              Logger.recordOutput(
+                  "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
+            })
+        .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh.get())
+        .finallyDo(
+            () -> {
+              timer.stop();
+              Logger.recordOutput("Elevator/CharacterizationOutput", state.characterizationOutput);
+              this.state = State.HOME;
+            });
+    }
+
+    private static class StaticCharacterizationState {
+        public double characterizationOutput = 0.0;
     }
 }
