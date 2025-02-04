@@ -23,12 +23,18 @@ import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Ports;
 
 
 public class LED extends SubsystemBase {
+
+    // Driver controller to query
+    private final CommandXboxController m_controller;
+    private final GenericHID m_driveRmbl;
 
     // Subsystems to query
     Arm m_Arm;
@@ -69,20 +75,59 @@ public class LED extends SubsystemBase {
     Color magenta = new Color(255, 0, 255);
     
     /*
+     * LED Segments
+     */
+    class LEDSegment {
+
+        int startIndex;
+        int segmentSize;
+        int animationSlot;
+
+        private LEDSegment(int startIndex, int segmentSize, int animationSlot) {
+            this.startIndex = startIndex;
+            this.segmentSize = segmentSize;
+            this.animationSlot = animationSlot;
+        }
+
+        public void setColor(Color color) {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.setLEDs(color.r, color.g, color.b, 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.95);
+        }
+
+        private void setAnimation(Animation animation) {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.animate(animation, animationSlot);
+            m_candle.modulateVBatOutput(0.95);
+        }
+
+        public void setOff() {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.setLEDs(0, 0, 0, 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.0);
+
+        }
+
+    }
+
+    /*
      * Constructor
      * Creates a new LEDSubsystem
      */
-    public LED(Arm arm,
+    public LED(CommandXboxController controller, Arm arm,
                         Climber climber,
                         Drive drive,
                         Elevator elevator,
                         Vision vision) {
         
+        m_controller = controller;
         m_Arm = arm;
         m_Climber = climber;
         m_Drive = drive;
         m_Elevator = elevator;
         m_Vision = vision;
+
+        m_driveRmbl = m_controller.getHID();
 
         m_candle.configFactoryDefault();
         
@@ -108,6 +153,21 @@ public class LED extends SubsystemBase {
     {
         // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
         // Flesh out periodic. Use the states of the subsystems to set the LED state
+        // Phase out the big if statement tree for use of Triggers
+        // Check to see which states have priority over others
+        LEDState newState = LEDState.DISABLED;
+
+        if (DriverStation.isAutonomousEnabled()) {
+            newState = LEDState.AUTONOMOUS;
+
+        } else if (!DriverStation.isDisabled()) {
+            // If not Disabled or in Auto, run MatchTimer
+            runMatchTimerPattern();
+
+            if (m_Climber.getState() == Climber.State.CLIMB) {
+
+            }
+        }
 
         // Use the LEDStateMachine to set the LEDs
         LEDStateMachine(m_currentState);
@@ -130,8 +190,11 @@ public class LED extends SubsystemBase {
                 case CLIMBING:
                     break;
                 case HAVEALGAE:
+                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
                     break;
                 case HAVECORAL:
+                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+
                     break;
                 case AIMING:
                     break;
@@ -140,5 +203,50 @@ public class LED extends SubsystemBase {
                 default:
                     break;
             }
+    }
+   /* Match Timer Strip
+    * Autonomous (15 sec): Yellow Ping-pong
+    * 2:15 -> 1:00: Solid Green
+    * 1:00 -> 0:20: Solid Yellow
+    * 0:20 -> 0:10: Solid Red
+    * 0:10 -> 0:00: Strobing Red
+    * Non-auto periods & Disabled: White
+    */
+    Timer m_pseudoTimer = new Timer();
+    Color currentColor = black;
+    LEDSegment m_Timer = new LEDSegment(101, 27, 3);
+    Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Timer.segmentSize, m_Timer.startIndex);
+
+
+    private void runMatchTimerPattern() {
+
+        Color newColor = black;
+
+        double matchTime = DriverStation.getMatchTime();
+        if (matchTime < 0.0) {
+            m_pseudoTimer.start();            
+            matchTime = (int) (150.0 - m_pseudoTimer.get());
+        }
+
+        if (matchTime > 60.0) {
+            newColor = green;
+        } else if (matchTime > 20.0) {
+            newColor = yellow;
+        } else if (matchTime > 10.0) {
+            newColor = red;
+        } else if (matchTime > 0.0) {
+            newColor = magenta;
+        } else {
+            newColor = white;
+        }
+
+        if (newColor != currentColor) {
+            if (newColor == magenta) {
+                m_Timer.setAnimation(a_TimeExpiring);
+            } else {
+                m_Timer.setColor(newColor);
+            }
+            currentColor = newColor;
+        }
     }
 }
