@@ -110,6 +110,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             () -> {
               timer.stop();
               Logger.recordOutput("Elevator/CharacterizationOutput", state.characterizationOutput);
+              this.state = State.HOME;
             });
     }
 

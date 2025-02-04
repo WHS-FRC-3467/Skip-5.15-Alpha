@@ -158,6 +158,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
                 break;
             case CHARACTERIZATION:
                 /* Run Open Loop for characterization in the child subsystem class's characterization command. Do nothing here.*/
+                break;
         }
 
         displayInfo();
