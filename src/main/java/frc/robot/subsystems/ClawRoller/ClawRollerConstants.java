@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SampleProfiledRoller;
+package frc.robot.subsystems.ClawRoller;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -9,15 +9,15 @@ import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiled
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
 /** Add your docs here. */
-public final class SampleProfiledRollerConstants {
+public final class ClawRollerConstants {
 
     public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
         new GenericMotionProfiledSubsystemConstants();
 
     static {
-        kSubSysConstants.kName = "SampleProfiledRoller";
+        kSubSysConstants.kName = "ClawRoller";
 
-        kSubSysConstants.kLeaderMotor = Ports.PROFROLLER_MAIN;
+        kSubSysConstants.kLeaderMotor = Ports.CLAW_ROLLER;
         kSubSysConstants.kFollowMotor = null;
         kSubSysConstants.kFollowerOpposesMain = true;
 
@@ -28,20 +28,6 @@ public final class SampleProfiledRollerConstants {
             FeedbackSensorSourceValue.RotorSensor;
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
-
-        // Using a remote CANcoder
-        /*
-         * kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
-         * kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-         * FeedbackSensorSourceValue.FusedCANcoder;
-         * kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
-         * kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
-         * SensorDirectionValue.Clockwise_Positive;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-         * AbsoluteSensorRangeValue.Unsigned_0To1;
-         */
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
@@ -55,7 +41,7 @@ public final class SampleProfiledRollerConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 0; // TODO: tune on real robot
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
         kSubSysConstants.kMotorConfig.Slot0.kD = 0;
         kSubSysConstants.kMotorConfig.Slot0.kG = 0;
