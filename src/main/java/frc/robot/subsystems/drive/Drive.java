@@ -51,7 +51,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.LocalADStarAK;
@@ -252,8 +251,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
-
-        RobotState.getInstance().setRobotPose(getPose()); // Tell RobotState current pose
 
         fieldMap.setRobotPose(getPose());
 
