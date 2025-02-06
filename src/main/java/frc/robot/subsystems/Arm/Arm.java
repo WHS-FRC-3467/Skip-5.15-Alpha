@@ -22,6 +22,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public enum State implements TargetState {
         HOME(Units.degreesToRotations(20.0), 0.0, ProfileType.MM_POSITION),
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
+        CLIMB(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
         INTAKE(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
         LEVEL_1(Units.degreesToRotations(20.0), 0.0, ProfileType.MM_POSITION),
         LEVEL_2(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
