@@ -303,7 +303,7 @@ public class RobotContainer {
                 () -> getNearestReefBranch(m_drive.getPose(), Side.LEFT)));
 
         // Driver Left Bumper + Right Bumber: Approach Nearest Reef Face
-        m_driver.leftBumper()
+        m_driver.leftBumper().and(m_driver.rightBumper())
             .whileTrue(
                 joystickApproach(() -> getNearestReefFace(m_drive.getPose())));
 
@@ -346,7 +346,7 @@ public class RobotContainer {
         m_driver
             .leftTrigger()
             .whileTrue(
-                Commands.parallel(
+                Commands.sequence(
                     joystickDriveAtAngle(
                         () -> getNearestCoralStation(m_drive.getPose()).getRotation()
                             .rotateBy(Rotation2d.k180deg)),
@@ -364,7 +364,7 @@ public class RobotContainer {
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(m_driver.rightBumper()).whileTrue(
-            Commands.parallel(
+            Commands.sequence(
                 (getNearestReefBranch(m_drive.getPose(), Side.RIGHT).getTranslation().getX() > 0)
                     ? m_profiledElevator.setStateCommand(Elevator.State.ALGAE_UPPER)
                     : m_profiledElevator.setStateCommand(Elevator.State.ALGAE_LOWER),
