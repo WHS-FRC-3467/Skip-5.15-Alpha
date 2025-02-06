@@ -27,7 +27,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
         HOME(Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
         PREP(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION),;
+        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
 
         private final double output;
         private final double feedFwd;
@@ -52,6 +52,16 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         return startEnd(() -> this.state = state, () -> this.state = State.HOME);
     }
 
+    // Climbing Triggers
+    public boolean climbRequested = false; // Whether or not a climb request is active
+    private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
+    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when not climbing
+    
+    // Triggers for each step of the climb sequence
+    private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
+    private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+
+    // Debouncer and trigger checks to see if the climber has finished climbing
     private Debouncer climbedDebouncer = new Debouncer(.25, DebounceType.kRising);
 
     public Trigger climbedTrigger =
@@ -66,4 +76,6 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             Commands.waitSeconds(1),
             new InstantCommand(() -> climbedAlert.set(false)));
     }
+
+
 }

@@ -19,13 +19,13 @@ public class Ports {
     /* SUBSYSTEM CAN DEVICE IDS */
     public static final CanDeviceId CLAW_ROLLER = new CanDeviceId(16, "rio");
 
-    public static final CanDeviceId ELEVATOR_MAIN = new CanDeviceId(18, "rio");
-    public static final CanDeviceId ELEVATOR_FOLLOWER = new CanDeviceId(19, "rio");
+    public static final CanDeviceId ELEVATOR_MAIN = new CanDeviceId(21, "rio");
+    public static final CanDeviceId ELEVATOR_FOLLOWER = new CanDeviceId(22, "rio");
     public static final CanDeviceId ELEVATOR_CANCODER = new CanDeviceId(20, "rio");
 
-    public static final CanDeviceId ARM_MAIN = new CanDeviceId(21, "rio");
-    public static final CanDeviceId ARM_FOLLOWER = new CanDeviceId(22, "rio");
-    public static final CanDeviceId ARM_CANCODER = new CanDeviceId(23, "rio");
+    public static final CanDeviceId ARM_MAIN = new CanDeviceId(18, "rio");
+    public static final CanDeviceId ARM_FOLLOWER = new CanDeviceId(30, "rio"); // no arm follower
+    public static final CanDeviceId ARM_CANCODER = new CanDeviceId(17, "rio");
 
     public static final CanDeviceId PROFROLLER_MAIN = new CanDeviceId(24, "rio");
     public static final CanDeviceId PROFROLLER_FOLLOWER = new CanDeviceId(25, "rio");
@@ -33,7 +33,7 @@ public class Ports {
     public static final CanDeviceId CLAW_LASERCAN = new CanDeviceId(33, "rio");
     public static final CanDeviceId RAMP_LASERCAN = new CanDeviceId(34, "rio");
 
-    public static final CanDeviceId CLIMBER = new CanDeviceId(26, "rio");
+    public static final CanDeviceId CLIMBER = new CanDeviceId(23, "rio");
 
     public static final CanDeviceId CANDLE = new CanDeviceId(27, "rio");
     
