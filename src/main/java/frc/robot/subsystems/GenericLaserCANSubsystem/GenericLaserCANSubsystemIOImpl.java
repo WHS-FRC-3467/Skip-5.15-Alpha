@@ -48,17 +48,16 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
     public Distance getMeasurement()
     {
         Measurement measurement = lc.getMeasurement();
-        if (measurement != null
-            && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-            sensorAlert.set(false);
-            currentDistance = Millimeters.of(measurement.distance_mm);
-        } else if (measurement != null
-            && measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-            sensorAlert
-                .setText("Failed to get LaserCAN ID: " + name
+        if (measurement != null) {
+            if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+                sensorAlert.set(false);
+                currentDistance = Millimeters.of(measurement.distance_mm);
+            } else {
+                sensorAlert.setText("Failed to get LaserCAN ID: " + name
                     + ", no valid measurement");
-            sensorAlert.set(true);
-            currentDistance = Millimeters.of(Double.POSITIVE_INFINITY);
+                sensorAlert.set(true);
+                currentDistance = Millimeters.of(Double.POSITIVE_INFINITY);
+            }
         } else {
             sensorAlert.setText("Failed to get LaserCAN ID: " + name
                 + ", measurement null");

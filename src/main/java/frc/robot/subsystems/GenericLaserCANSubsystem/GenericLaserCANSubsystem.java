@@ -3,7 +3,6 @@ package frc.robot.subsystems.GenericLaserCANSubsystem;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.LaserCAN.LaserCANIOInputsAutoLogged;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
