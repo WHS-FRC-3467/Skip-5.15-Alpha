@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.List;
+import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -217,15 +218,15 @@ public class RobotContainer {
     }
 
     public enum Side {
-        Left,
-        Right
+        LEFT,
+        RIGHT
     }
 
     private static Pose2d getNearestReefBranch(Pose2d currentPose, Side side)
     {
         return FieldConstants.Reef.branchPositions
             .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
-                * 2 + (side == Side.Left ? 1 : 0))
+                * 2 + (side == Side.LEFT ? 1 : 0))
             .get(FieldConstants.ReefHeight.L1).toPose2d();
     }
 
@@ -243,16 +244,37 @@ public class RobotContainer {
         }
     }
 
+    private Command joystickDrive()
+    {
+        return DriveCommands.joystickDrive(
+            m_drive,
+            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getRightX());
+    }
+
+    private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
+    {
+        return DriveCommands.joystickDriveAtAngle(
+            m_drive,
+            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftX(),
+            angle);
+    }
+
+    private Command joystickApproach(Supplier<Pose2d> approachPose)
+    {
+        return DriveCommands.joystickApproach(
+            m_drive,
+            () -> -m_driver.getLeftY(),
+            approachPose);
+    }
+
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
         // Default command, normal field-relative drive
-        m_drive.setDefaultCommand(
-            DriveCommands.joystickDrive(
-                m_drive,
-                () -> -m_driver.getLeftY(),
-                () -> -m_driver.getLeftX(),
-                () -> -m_driver.getRightX()));
+        m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Back Button: Reset gyro / odometry
         final Runnable setPose =
@@ -265,28 +287,25 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(setPose).ignoringDisable(true));
 
-        // Driver Left Button: Face Nearest Reef Face
-        m_driver.leftBumper().whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                m_drive,
-                () -> -m_driver.getLeftY(),
-                () -> -m_driver.getLeftX(),
-                () -> getNearestReefFace(m_drive.getPose()).getRotation()
+        // Driver Left Bumper: Face Nearest Reef Face
+        m_driver.leftBumper()
+            .whileTrue(
+                joystickDriveAtAngle(() -> getNearestReefFace(m_drive.getPose()).getRotation()
                     .rotateBy(Rotation2d.k180deg)));
 
-        // Driver Left Button + Right Stick Right: Approach Nearest Right-Side Reef Branch
+        // Driver Left Bumper + Right Stick Right: Approach Nearest Right-Side Reef Branch
         m_driver.leftBumper().and(m_driver.axisGreaterThan(RIGHT_STICK_X, 0.8)).whileTrue(
-            DriveCommands.joystickApproach(
-                m_drive,
-                () -> -m_driver.getLeftY(),
-                () -> getNearestReefBranch(m_drive.getPose(), Side.Right)));
+            joystickApproach(() -> getNearestReefBranch(m_drive.getPose(), Side.RIGHT)));
 
-        // Driver Left Button + Right Stick Left: Approach Nearest Left-Side Reef Branch
+        // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(m_driver.axisLessThan(RIGHT_STICK_X, -0.8)).whileTrue(
-            DriveCommands.joystickApproach(
-                m_drive,
-                () -> -m_driver.getLeftY(),
-                () -> getNearestReefBranch(m_drive.getPose(), Side.Left)));
+            joystickApproach(
+                () -> getNearestReefBranch(m_drive.getPose(), Side.LEFT)));
+
+        // Driver Left Bumper + Right Bumber: Approach Nearest Reef Face
+        m_driver.leftBumper()
+            .whileTrue(
+                joystickApproach(() -> getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
@@ -328,23 +347,14 @@ public class RobotContainer {
             .leftTrigger()
             .whileTrue(
                 Commands.parallel(
-                    DriveCommands.joystickDriveAtAngle(
-                        m_drive,
-                        () -> m_driver.getLeftY(),
-                        () -> m_driver.getLeftX(),
+                    joystickDriveAtAngle(
                         () -> getNearestCoralStation(m_drive.getPose()).getRotation()
                             .rotateBy(Rotation2d.k180deg)),
                     m_profiledElevator.setStateCommand(Elevator.State.CORAL_STATION),
-                    // Once the Elevator is at position, get the arm and roller ready
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(Commands.parallel(
                             m_profiledArm.setStateCommand(Arm.State.INTAKE),
                             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
-                            // Once the Coral is in the funnel (use m_rampLaserCAN), tell the driver
-                            // that in LED.java
-                            // Once the Coral is in the claw, get the roller to position.
-                            // Switching states to io position resets the position to 0
-                            // Radius = 1.5in, Distance from breaking beam to centered = 8-9 in
                             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))))
                     .andThen(
@@ -355,12 +365,12 @@ public class RobotContainer {
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(m_driver.rightBumper()).whileTrue(
             Commands.parallel(
-                (getNearestReefBranch(m_drive.getPose(), Side.Right).getTranslation().getX() > 0)
+                (getNearestReefBranch(m_drive.getPose(), Side.RIGHT).getTranslation().getX() > 0)
                     ? m_profiledElevator.setStateCommand(Elevator.State.ALGAE_UPPER)
                     : m_profiledElevator.setStateCommand(Elevator.State.ALGAE_LOWER),
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
-                Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION)))
+                Commands.waitUntil(m_clawRoller.stalled)
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
                 .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
         // Driver Start Button: Climb Request (toggle)
