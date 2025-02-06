@@ -323,13 +323,18 @@ public class RobotContainer {
                     m_drive,
                     () -> m_driver.getLeftY(),
                     () -> m_driver.getLeftX(),
-                    () -> getNearestCoralStation(m_drive.getPose()).getRotation())
+                    () -> getNearestCoralStation(m_drive.getPose()).getRotation()
                         .rotateBy(Rotation2d.k180deg)),
                     m_profiledElevator.setStateCommand(Elevator.State.CORAL_STATION),
+                    // Once the Elevator is at position, get the arm and roller ready
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                             .andThen(Commands.parallel(
                                 m_profiledArm.setStateCommand(Arm.State.INTAKE),
                                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
+                    // Once the Coral is in the funnel (use m_rampLaserCAN), tell the driver that in LED.java
+                    // Once the Coral is in the claw, get the roller to position. 
+                    // Switching states to io position resets the position to 0
+                    // Radius = 1.5in, Distance from breaking beam to centered = 8-9 in
                     Commands.waitUntil(m_clawLaserCAN.getNearTrigger()).andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))
                     .until(()-> m_clawLaserCAN.getMeasurement().baseUnitMagnitude() < Inches.of(2.5).baseUnitMagnitude())))
                 .andThen(
