@@ -2,6 +2,7 @@ package frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem.DistanceState;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaserCAN.State> {
+
+    public Trigger triggered = new Trigger(() -> super.isTriggered());
 
     @RequiredArgsConstructor
     @Getter
