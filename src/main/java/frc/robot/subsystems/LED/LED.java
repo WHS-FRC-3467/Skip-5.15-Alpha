@@ -16,16 +16,20 @@ import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import frc.robot.subsystems.Arm.Arm;
+import frc.robot.subsystems.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.drivers.LaserCANSensor;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Ports;
 
@@ -38,22 +42,92 @@ public class LED extends SubsystemBase {
 
     // Subsystems to query
     Arm m_Arm;
+    ClawRoller m_ClawRoller;
     Climber m_Climber;
     Drive m_Drive;
     Elevator m_Elevator;
     Vision m_Vision;
+    LaserCANSensor m_clawLaserCAN;
     
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.CANDLE.getDeviceNumber());
 
-    /*
-     * Robot LED States
-     */
-    private static enum LEDState {
-        START, DISABLED, DISABLED_TARGET, AUTONOMOUS, ENABLED, INTAKING, CLIMBING, HAVEALGAE, HAVECORAL, AIMING, READY
-    }
-    LEDState m_currentState = LEDState.START;
+    // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
 
+    // Create Triggers for each state
+    // TODO: Figure out the priority level of driver feedback for each state
+    private Trigger intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and arm are at setpoint
+    // private Trigger hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
+    private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.getNearTrigger()));
+    private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP | m_Climber.getState() == Climber.State.CLIMB);
+    private Trigger aimingTrigger = new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand() && m_Climber.getState() != Climber.State.CLIMB && m_Climber.getState() != Climber.State.PREP);
+    // private Trigger readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a generic implementation
+    private Trigger disabledTrigger = new Trigger(() -> DriverStation.isDisabled());
+    private Trigger disabledTargetTrigger = new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
+    private Trigger autonomousTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
+
+    /*
+     * Constructor
+     * Creates a new LEDSubsystem
+     */
+    public LED(CommandXboxController controller, Arm arm,
+                        ClawRoller clawRoller,
+                        Climber climber,
+                        Drive drive,
+                        Elevator elevator,
+                        Vision vision,
+                        LaserCANSensor clawLaserCAN) {
+        
+        m_controller = controller;
+        m_Arm = arm;
+        m_ClawRoller = clawRoller;
+        m_Climber = climber;
+        m_Drive = drive;
+        m_Elevator = elevator;
+        m_Vision = vision;
+        m_clawLaserCAN = clawLaserCAN;
+
+        m_driveRmbl = m_controller.getHID();
+
+        m_candle.configFactoryDefault();
+        
+        CANdleConfiguration candleConfiguration = new CANdleConfiguration();
+        m_candle.getAllConfigs(candleConfiguration);
+
+        candleConfiguration.statusLedOffWhenActive = true;
+        candleConfiguration.disableWhenLOS = false;
+        candleConfiguration.stripType = LEDStripType.RGB;
+        candleConfiguration.brightnessScalar = 0.5;
+        candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
+        m_candle.configAllSettings(candleConfiguration, 100);
+
+        m_candle.getAllConfigs(candleConfiguration);
+
+        m_candle.configLEDType(LEDStripType.RGB, 300);
+
+        m_candle.getAllConfigs(candleConfiguration);
+
+        // Use the LEDStateMachine to set the LEDs
+        LEDStateMachine();
+    }
+
+    private void LEDStateMachine() {
+        // Light up the robot based on the triggers/state
+        disabledTrigger.whileTrue(Commands.run(() -> runMatchTimerPattern()));
+        disabledTargetTrigger.whileTrue(Commands.run(() -> {
+            m_Intake.setAnimation(a_IntakeRainbow);
+            this.timerDisabled();}));
+        autonomousTrigger.whileTrue(Commands.run(() -> {
+            m_Intake.setAnimation(a_IntakePingPong);
+            m_Timer.setAnimation(a_InAutonomous);
+        }));
+        hasPieceInClaw.whileTrue(
+                Commands.run(() -> {m_Intake.setColor(green);
+                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);}));
+
+
+    }
+    
     /*
      * Colors
      */
@@ -110,100 +184,6 @@ public class LED extends SubsystemBase {
 
     }
 
-    /*
-     * Constructor
-     * Creates a new LEDSubsystem
-     */
-    public LED(CommandXboxController controller, Arm arm,
-                        Climber climber,
-                        Drive drive,
-                        Elevator elevator,
-                        Vision vision) {
-        
-        m_controller = controller;
-        m_Arm = arm;
-        m_Climber = climber;
-        m_Drive = drive;
-        m_Elevator = elevator;
-        m_Vision = vision;
-
-        m_driveRmbl = m_controller.getHID();
-
-        m_candle.configFactoryDefault();
-        
-        CANdleConfiguration candleConfiguration = new CANdleConfiguration();
-        m_candle.getAllConfigs(candleConfiguration);
-
-        candleConfiguration.statusLedOffWhenActive = true;
-        candleConfiguration.disableWhenLOS = false;
-        candleConfiguration.stripType = LEDStripType.RGB;
-        candleConfiguration.brightnessScalar = 0.5;
-        candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
-        m_candle.configAllSettings(candleConfiguration, 100);
-
-        m_candle.getAllConfigs(candleConfiguration);
-
-        m_candle.configLEDType(LEDStripType.RGB, 300);
-
-        m_candle.getAllConfigs(candleConfiguration);
-    }
-
-    @Override
-    public void periodic()
-    {
-        // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
-        // Flesh out periodic. Use the states of the subsystems to set the LED state
-        // Phase out the big if statement tree for use of Triggers
-        // Check to see which states have priority over others
-        LEDState newState = LEDState.DISABLED;
-
-        if (DriverStation.isAutonomousEnabled()) {
-            newState = LEDState.AUTONOMOUS;
-
-        } else if (!DriverStation.isDisabled()) {
-            // If not Disabled or in Auto, run MatchTimer
-            runMatchTimerPattern();
-
-            if (m_Climber.getState() == Climber.State.CLIMB) {
-
-            }
-        }
-
-        // Use the LEDStateMachine to set the LEDs
-        LEDStateMachine(m_currentState);
-    }
-
-    private void LEDStateMachine(LEDState newState) {
-        switch (newState) {
-                case START:
-                    break;
-                case DISABLED:
-                    break;
-                case DISABLED_TARGET:
-                    break;
-                case AUTONOMOUS:
-                    break;
-                case ENABLED:
-                    break;
-                case INTAKING:
-                    break;
-                case CLIMBING:
-                    break;
-                case HAVEALGAE:
-                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-                    break;
-                case HAVECORAL:
-                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-
-                    break;
-                case AIMING:
-                    break;
-                case READY:
-                    break;
-                default:
-                    break;
-            }
-    }
    /* Match Timer Strip
     * Autonomous (15 sec): Yellow Ping-pong
     * 2:15 -> 1:00: Solid Green
@@ -214,8 +194,16 @@ public class LED extends SubsystemBase {
     */
     Timer m_pseudoTimer = new Timer();
     Color currentColor = black;
+
+    // There will be two LED strips
     LEDSegment m_Timer = new LEDSegment(101, 27, 3);
+    LEDSegment m_Intake = new LEDSegment(128, 89, 4);
+
+    // Animations
     Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Timer.segmentSize, m_Timer.startIndex);
+    Animation a_IntakeRainbow = new RainbowAnimation(0.7, 0.5, m_Intake.segmentSize, false, m_Intake.startIndex);
+    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_Intake.segmentSize, BounceMode.Back, 6, m_Intake.startIndex);
+    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8, m_Timer.segmentSize, BounceMode.Back, 3, m_Timer.startIndex);
 
 
     private void runMatchTimerPattern() {
@@ -248,5 +236,11 @@ public class LED extends SubsystemBase {
             }
             currentColor = newColor;
         }
+    }
+
+    public void timerDisabled() {
+        m_Timer.setColor(white);
+        m_pseudoTimer.stop();
+        m_pseudoTimer.reset();
     }
 }
