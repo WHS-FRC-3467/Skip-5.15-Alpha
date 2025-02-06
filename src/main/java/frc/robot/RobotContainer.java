@@ -220,7 +220,7 @@ public class RobotContainer {
             .get(FieldConstants.ReefHeight.L1).toPose2d();
     }
 
-    private static Pose2d getNearestCoralStation(Pose2d currentPose, Side side)
+    private static Pose2d getNearestCoralStation(Pose2d currentPose)
     {
         double distanceToLeftStation = currentPose.getTranslation().getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation());
         double distanceToRightStation = currentPose.getTranslation().getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation());
@@ -323,7 +323,7 @@ public class RobotContainer {
                     m_drive,
                     () -> m_driver.getLeftY(),
                     () -> m_driver.getLeftX(),
-                    () -> getNearestReefFace(m_drive.getPose()).getRotation()
+                    () -> getNearestCoralStation(m_drive.getPose()).getRotation())
                         .rotateBy(Rotation2d.k180deg)),
                     m_profiledElevator.setStateCommand(Elevator.State.CORAL_STATION),
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
