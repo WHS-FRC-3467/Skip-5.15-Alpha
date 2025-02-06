@@ -21,6 +21,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm.*;
+import frc.robot.subsystems.ClawRoller.ClawRoller;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCAN;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIO;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
@@ -28,7 +32,6 @@ import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
-import frc.robot.util.drivers.LaserCANSensor;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
@@ -61,12 +64,14 @@ public class RobotContainer {
     private final Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
 
+    public final ClawRollerLaserCAN m_testCan;
+
     public final Vision m_vision;
 
-    private final LaserCANSensor m_clawLaserCAN =
-        new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
-    private final LaserCANSensor m_rampLaserCAN =
-        new LaserCANSensor(Ports.RAMP_LASERCAN.getDeviceNumber(), Inches.of(6));
+    // private final LaserCANSensor m_clawLaserCAN =
+    // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
+    // private final LaserCANSensor m_rampLaserCAN =
+    // new LaserCANSensor(Ports.RAMP_LASERCAN.getDeviceNumber(), Inches.of(6));
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -87,6 +92,7 @@ public class RobotContainer {
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
 
                 m_vision =
                     new Vision(
@@ -119,6 +125,8 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
                 m_profiledClimber = new Climber(new ClimberIOSim(), true);
 
+                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
+
                 m_vision =
                     new Vision(
                         m_drive,
@@ -146,6 +154,8 @@ public class RobotContainer {
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
+
+                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;

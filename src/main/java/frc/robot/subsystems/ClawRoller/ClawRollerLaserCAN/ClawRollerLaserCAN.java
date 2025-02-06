@@ -1,0 +1,31 @@
+package frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN;
+
+import static edu.wpi.first.units.Units.Meter;
+import edu.wpi.first.units.measure.Distance;
+import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
+import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem.DistanceState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaserCAN.State> {
+
+    @RequiredArgsConstructor
+    @Getter
+    public enum State implements DistanceState {
+        DEFAULT(Distance.ofBaseUnits(1, Meter));
+
+        @Getter
+        private final Distance distance;
+    }
+
+    @Getter
+    @Setter
+    private State state = State.DEFAULT;
+
+    public ClawRollerLaserCAN(ClawRollerLaserCANIO io)
+    {
+        super(ClawRollerLaserCANConstants.kSubSysConstants.kName, io);
+    }
+
+}

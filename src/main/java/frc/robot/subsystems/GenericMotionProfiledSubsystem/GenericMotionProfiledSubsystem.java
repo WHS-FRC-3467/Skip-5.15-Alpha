@@ -19,12 +19,11 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         MM_POSITION,
         MM_VELOCITY,
         OPEN_VOLTAGE,
-        OPEN_CURRENT, 
+        OPEN_CURRENT,
         CHARACTERIZATION
     }
 
     public interface TargetState {
-
         public double getOutput();
 
         public double getFeedFwd();
@@ -157,7 +156,10 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
                 io.runCurrent(getState().getOutput());
                 break;
             case CHARACTERIZATION:
-                /* Run Open Loop for characterization in the child subsystem class's characterization command. Do nothing here.*/
+                /*
+                 * Run Open Loop for characterization in the child subsystem class's
+                 * characterization command. Do nothing here.
+                 */
                 break;
         }
 
@@ -173,7 +175,8 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         if (Constants.tuningMode) {
             Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());
             Logger.recordOutput(m_name + "/Position(Rotations)", io.getPosition());
-            Logger.recordOutput(m_name + "/Position(Degrees)", Math.toDegrees(io.getPosition()* 2 * Math.PI));
+            Logger.recordOutput(m_name + "/Position(Degrees)",
+                Math.toDegrees(io.getPosition() * 2 * Math.PI));
             Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
             Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
             Logger.recordOutput(m_name + "/hasFinishedTrajectory", io.hasFinishedTrajectory(0.1));
