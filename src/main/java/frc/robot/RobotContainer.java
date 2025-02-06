@@ -345,7 +345,7 @@ public class RobotContainer {
                             m_profiledArm.setStateCommand(Arm.State.INTAKE),
                             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
                             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))))
+                                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
                     .andThen(
                         Commands.parallel(
                             m_clawRoller.setStateCommand(ClawRoller.State.OFF),
@@ -463,7 +463,7 @@ public class RobotContainer {
                         m_profiledArm.setStateCommand(Arm.State.INTAKE),
                         m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
                         Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))))
+                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
                 .andThen(
                     Commands.parallel(
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF),

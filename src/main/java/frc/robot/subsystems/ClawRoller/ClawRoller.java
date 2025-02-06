@@ -23,6 +23,7 @@ public class ClawRoller
         OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
         INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
         EJECT(-6.0, 0.0, ProfileType.OPEN_VOLTAGE),
+        HOLDCORAL(1.0, 0.0, ProfileType.MM_POSITION), //One rotation after detecting coral, switch to HOLDCORAL to tell the motors to go one rotaiton
         POSITION(20.0, 0.0, ProfileType.MM_POSITION);
 
         private final double output;

@@ -27,7 +27,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
         HOME(Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
         PREP(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION),;
+        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
 
         private final double output;
         private final double feedFwd;
