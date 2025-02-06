@@ -14,14 +14,15 @@ public class LaserCANSim implements LaserCanInterface {
 
     public LaserCANSim(String name)
     {
-        tunableDistance = new LoggedTunableNumber(name + "/Measurement");
+        tunableDistance = new LoggedTunableNumber(name + "/Measurement", 0);
     }
 
     @Override
     public Measurement getMeasurement()
     {
         return new Measurement(
-            0, (int) (tunableDistance.get() / 1000), 100, rangingMode == RangingMode.LONG,
+            LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT,
+            (int) (tunableDistance.get() * 1000), 0, rangingMode == RangingMode.LONG,
             timingBudget.asMilliseconds(), regionOfInterest);
     }
 
