@@ -28,6 +28,7 @@ import frc.robot.subsystems.ClawRoller.ClawRollerIOTalonFX;
 import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
@@ -67,8 +68,7 @@ public class RobotContainer {
     private final Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
-
-    public final ClawRollerLaserCAN m_testCan;
+    public final ClawRollerLaserCAN m_clawRollerLaserCAN;
 
     public final Vision m_vision;
 
@@ -97,7 +97,7 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
-                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
+                m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
 
                 m_vision =
                     new Vision(
@@ -131,7 +131,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
 
-                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
+                m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOSim());
 
                 m_vision =
                     new Vision(
@@ -162,7 +162,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
 
-                m_testCan = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
+                m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -345,10 +345,8 @@ public class RobotContainer {
                             // Once the Coral is in the claw, get the roller to position.
                             // Switching states to io position resets the position to 0
                             // Radius = 1.5in, Distance from breaking beam to centered = 8-9 in
-                            Commands.waitUntil(m_clawLaserCAN.getNearTrigger())
-                                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))
-                                .until(() -> m_clawLaserCAN.getMeasurement()
-                                    .baseUnitMagnitude() < Inches.of(2.5).baseUnitMagnitude())))
+                            Commands.waitUntil(m_clawRollerLaserCAN.triggered)
+                                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))))
                     .andThen(
                         Commands.parallel(
                             m_clawRoller.setStateCommand(ClawRoller.State.OFF),
@@ -361,10 +359,8 @@ public class RobotContainer {
                     ? m_profiledElevator.setStateCommand(Elevator.State.ALGAE_UPPER)
                     : m_profiledElevator.setStateCommand(Elevator.State.ALGAE_LOWER),
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
-                Commands.waitUntil(m_clawLaserCAN.getNearTrigger())
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION))
-                    .until(() -> m_clawLaserCAN.getMeasurement().baseUnitMagnitude() < Inches
-                        .of(2.5).baseUnitMagnitude()))
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered)
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.POSITION)))
                 .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
         // Driver Start Button: Climb Request (toggle)

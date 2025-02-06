@@ -3,6 +3,7 @@ package frc.robot.subsystems.GenericLaserCANSubsystem;
 import org.littletonrobotics.junction.Logger;
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
@@ -15,7 +16,7 @@ import static edu.wpi.first.units.Units.*;
  */
 public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemIO {
 
-    private LaserCan lc;
+    private LaserCanInterface lc = null;
     private String name;
 
     private Distance currentDistance;
@@ -29,10 +30,14 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
      * Constructor
      */
     public GenericLaserCANSubsystemIOImpl(
-        GenericLaserCANSubsystemConstants constants)
+        GenericLaserCANSubsystemConstants constants, boolean isSim)
     {
-        lc = new LaserCan(constants.laserCANDeviceId.getDeviceNumber());
         name = constants.kName;
+
+        lc = isSim
+            ? new LaserCANSim(name)
+            : new LaserCan(constants.laserCANDeviceId.getDeviceNumber());
+
         try {
             lc.setRangingMode(constants.rangingMode);
             lc.setRegionOfInterest(constants.regionOfInterest);
