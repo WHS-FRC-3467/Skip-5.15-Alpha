@@ -17,9 +17,9 @@ import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.ClawRoller.ClawRoller;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.drivers.LaserCANSensor;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Ports;
 
 
@@ -47,7 +46,7 @@ public class LED extends SubsystemBase {
     Drive m_Drive;
     Elevator m_Elevator;
     Vision m_Vision;
-    LaserCANSensor m_clawLaserCAN;
+    ClawRollerLaserCAN m_clawLaserCAN;
     
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.CANDLE.getDeviceNumber());
@@ -58,7 +57,7 @@ public class LED extends SubsystemBase {
     // TODO: Figure out the priority level of driver feedback for each state
     private Trigger intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and arm are at setpoint
     // private Trigger hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
-    private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.getNearTrigger()));
+    private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
     private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP | m_Climber.getState() == Climber.State.CLIMB);
     private Trigger aimingTrigger = new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand() && m_Climber.getState() != Climber.State.CLIMB && m_Climber.getState() != Climber.State.PREP);
     // private Trigger readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a generic implementation
@@ -76,7 +75,7 @@ public class LED extends SubsystemBase {
                         Drive drive,
                         Elevator elevator,
                         Vision vision,
-                        LaserCANSensor clawLaserCAN) {
+                        ClawRollerLaserCAN laserCAN) {
         
         m_controller = controller;
         m_Arm = arm;
@@ -85,7 +84,7 @@ public class LED extends SubsystemBase {
         m_Drive = drive;
         m_Elevator = elevator;
         m_Vision = vision;
-        m_clawLaserCAN = clawLaserCAN;
+        m_clawLaserCAN = laserCAN;
 
         m_driveRmbl = m_controller.getHID();
 
@@ -113,6 +112,13 @@ public class LED extends SubsystemBase {
 
     private void LEDStateMachine() {
         // Light up the robot based on the triggers/state
+        /* --- List of Priorities ---
+         * Disabled, Disabled with Target, and Autonomous never conflict
+         * Has Piece in Claw has precedence over Intaking trigger
+         * Then come intaking and climbing triggers
+         * TODO: Make a (aiming and) ready trigger for coral/algae placement
+         * Bottom priority is the aiming trigger
+         */
         disabledTrigger.whileTrue(Commands.run(() -> runMatchTimerPattern()));
         disabledTargetTrigger.whileTrue(Commands.run(() -> {
             m_Intake.setAnimation(a_IntakeRainbow);
@@ -121,10 +127,17 @@ public class LED extends SubsystemBase {
             m_Intake.setAnimation(a_IntakePingPong);
             m_Timer.setAnimation(a_InAutonomous);
         }));
+        intakingTrigger.and(()-> !m_clawLaserCAN.isTriggered()).whileTrue(
+            Commands.run(() -> m_Intake.setColor(red)));
         hasPieceInClaw.whileTrue(
-                Commands.run(() -> {m_Intake.setColor(green);
+                Commands.run(() -> {m_Intake.setColor(green); // Tells the driver that they can back away from the coral station
                     m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);}));
-
+        climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
+            Commands.run(() -> m_Intake.setColor(magenta)));
+        aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(
+            Commands.run(() -> 
+                {m_Intake.setAnimation(a_IntakePingPong);
+                m_Timer.setAnimation(a_TimeExpiring);}));
 
     }
     

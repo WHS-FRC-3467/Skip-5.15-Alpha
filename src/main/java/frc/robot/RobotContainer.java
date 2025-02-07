@@ -35,6 +35,7 @@ import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
+import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import org.ironmaple.simulation.SimulatedArena;
@@ -72,7 +73,7 @@ public class RobotContainer {
     public final ClawRollerLaserCAN m_clawRollerLaserCAN;
 
     public final Vision m_vision;
-
+    public final LED m_LED;
     // private final LaserCANSensor m_clawLaserCAN =
     // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
     // private final LaserCANSensor m_rampLaserCAN =
@@ -106,6 +107,7 @@ public class RobotContainer {
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
+                LED m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN);
                 break;
 
             case SIM:
@@ -143,6 +145,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                             camera1Name, robotToCamera1,
                             m_driveSimulation::getSimulatedDriveTrainPose));
+                m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN);
 
                 break;
 
@@ -166,6 +169,7 @@ public class RobotContainer {
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+                m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN);
                 break;
         }
 
