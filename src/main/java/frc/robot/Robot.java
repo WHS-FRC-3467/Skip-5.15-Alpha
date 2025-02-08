@@ -8,11 +8,25 @@ import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.Elastic;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -28,7 +42,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
+    private Command m_lastAutonomousCommand;
     private RobotContainer m_robotContainer;
+    private List<Pose2d> m_pathsToShow = new ArrayList<Pose2d>();
+    private Field2d m_autoTraj = new Field2d();
 
     public Robot()
     {
@@ -122,12 +139,59 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
+        Elastic.selectTab(1);
+        SmartDashboard.putData("Auto Path Preview", m_autoTraj);
     }
 
     /** This function is called periodically when disabled. */
     @Override
     public void disabledPeriodic()
-    {}
+    {
+        // Test
+        var alliance = DriverStation.getAlliance();
+        Pose2d test;
+        // Test
+        // Get currently selected command
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // Check if is the same as the last one
+        if (m_autonomousCommand != m_lastAutonomousCommand && m_autonomousCommand != null) {
+            // Check if its contained in the list of our autos
+            if (AutoBuilder.getAllAutoNames().contains(m_autonomousCommand.getName())) {
+                // Clear the current path
+                m_pathsToShow.clear();
+                // Grabs all paths from the auto
+                try {
+                    for (PathPlannerPath path : PathPlannerAuto
+                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
+                        // Adds all poses to master list
+                        m_pathsToShow.addAll(path.getPathPoses());
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                // Displays all poses on Field2d widget depending on Alliance Side
+                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                    m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
+                } else {
+                    for (int i = 0; i < m_pathsToShow.size(); i++) {
+                        test = m_pathsToShow.get(0).transformBy(
+                            new Transform2d());
+                        Logger.recordOutput("m_pathsToShow" + i, m_pathsToShow.get(i));
+                        Logger.recordOutput("NEW_m_pathsToShow" + i, test);
+                    }
+                }
+                //
+                m_autoTraj.setRobotPose(m_pathsToShow.get(0));
+            }
+        }
+        m_lastAutonomousCommand = m_autonomousCommand;
+
+    }
+
 
     /**
      * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
@@ -159,6 +223,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        Elastic.selectTab(2);
     }
 
     /** This function is called periodically during operator control. */

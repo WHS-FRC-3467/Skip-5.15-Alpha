@@ -181,4 +181,36 @@ public class FieldConstants {
         public final double height;
         public final double pitch;
     }
+
+    public static Pose2d getNearestReefFace(Pose2d currentPose)
+    {
+        return currentPose.nearest(List.of(FieldConstants.Reef.centerFaces));
+    }
+
+    public enum ReefSide {
+        LEFT,
+        RIGHT
+    }
+
+    public static Pose2d getNearestReefBranch(Pose2d currentPose, ReefSide side)
+    {
+        return FieldConstants.Reef.branchPositions
+            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
+                * 2 + (side == ReefSide.LEFT ? 1 : 0))
+            .get(FieldConstants.ReefHeight.L1).toPose2d();
+    }
+
+    public static Pose2d getNearestCoralStation(Pose2d currentPose)
+    {
+        double distanceToLeftStation = currentPose.getTranslation()
+            .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation());
+        double distanceToRightStation = currentPose.getTranslation()
+            .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation());
+
+        if (distanceToLeftStation > distanceToRightStation) {
+            return FieldConstants.CoralStation.rightCenterFace;
+        } else {
+            return FieldConstants.CoralStation.leftCenterFace;
+        }
+    }
 }

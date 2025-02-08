@@ -179,7 +179,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
                 Math.toDegrees(io.getPosition() * 2 * Math.PI));
             Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
             Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
-            Logger.recordOutput(m_name + "/hasFinishedTrajectory", io.hasFinishedTrajectory(0.1));
+            Logger.recordOutput(m_name + "/AtPosition?", io.atPosition(0.0));
 
             Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
             Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);

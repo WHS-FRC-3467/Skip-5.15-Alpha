@@ -24,7 +24,10 @@ public class GenericMotionProfiledSubsystemConstants {
 
     public CANcoderConfiguration kEncoderConfig = new CANcoderConfiguration();
 
-    public double kTolerance = 0.0;
+    // This is the minimum tolerance that will be used by the atPosition() method.
+    // Subclasses should set their own values based on the mechanism they represent.
+    public double kminTolerance = 0.00;
+
     public double kCANTimeout = 0.010; // use for important on the fly updates
     public int kLongCANTimeoutMs = 100; // use for constructors
 

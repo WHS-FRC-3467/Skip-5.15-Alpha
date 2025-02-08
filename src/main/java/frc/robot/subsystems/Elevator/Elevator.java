@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,16 +26,18 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(-0.2, 0.0, ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        HOME(0.15, 0.0, ProfileType.MM_POSITION),
-        INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
+        STOW(0.15, 0.0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
         LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
         LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
         LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
         LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
-        CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
-        ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
-        NET(9.0, 0.0, ProfileType.MM_POSITION),
+        CLIMB(0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_LOW(0.8, 0.0, ProfileType.MM_POSITION),
+        ALGAE_HIGH(1.5, 0.0, ProfileType.MM_POSITION),
+        ALGAE_GROUND(0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_SCORE(0.05, 0.0, ProfileType.MM_POSITION),
+        BARGE(4.0, 0.0, ProfileType.MM_POSITION),
         CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
 
         private final double output;
@@ -46,7 +47,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     @Getter
     @Setter
-    private State state = State.HOME;
+    private State state = State.STOW;
 
     @Getter
     public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
@@ -80,7 +81,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(1, tolerance));
+        return io.atPosition(tolerance);
     }
 
     public Command homedAlertCommand()
@@ -113,7 +114,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
                     timer.stop();
                     Logger.recordOutput("Elevator/CharacterizationOutput",
                         state.characterizationOutput);
-                    this.state = State.HOME;
+                    this.state = State.STOW;
                 });
     }
 
