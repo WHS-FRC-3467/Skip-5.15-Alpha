@@ -29,7 +29,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SIMScore"
+                  "name": "Score"
                 }
               }
             ]
@@ -85,7 +85,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SIMScore"
+                  "name": "Score"
                 }
               }
             ]
@@ -141,7 +141,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SIMScore"
+                  "name": "Score"
                 }
               }
             ]

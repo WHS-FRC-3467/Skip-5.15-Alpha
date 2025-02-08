@@ -45,25 +45,26 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     /* For adjusting the Arm's static characterization velocity threshold */
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
-    new LoggedTunableNumber("Arm/StaticCharacterizationVelocityThresh", 0.1);
+        new LoggedTunableNumber("Arm/StaticCharacterizationVelocityThresh", 0.1);
 
     public Arm(ArmIO io, boolean isSim)
     {
         super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
     }
-    
+
     /** Constructor */
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return runOnce(() -> this.state = state);
     }
 
     public boolean atPosition(double tolerance)
     {
         return Util.epsilonEquals(io.getPosition(), state.output, Math.max(0.0001, tolerance));
     }
-    
-    public Command staticCharacterization(double outputRampRate) {
+
+    public Command staticCharacterization(double outputRampRate)
+    {
         final StaticCharacterizationState characterizationState = new StaticCharacterizationState();
         Timer timer = new Timer();
         return Commands.startRun(
@@ -73,17 +74,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
             },
             () -> {
                 characterizationState.characterizationOutput = outputRampRate * timer.get();
-              io.runCurrent(characterizationState.characterizationOutput);
-              Logger.recordOutput(
-                  "Arm/StaticCharacterizationOutput", characterizationState.characterizationOutput);
+                io.runCurrent(characterizationState.characterizationOutput);
+                Logger.recordOutput(
+                    "Arm/StaticCharacterizationOutput",
+                    characterizationState.characterizationOutput);
             })
-        .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh.get())
-        .finallyDo(
-            () -> {
-              timer.stop();
-              Logger.recordOutput("Arm/CharacterizationOutput", characterizationState.characterizationOutput);
-              this.state = State.HOME;
-            });
+            .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh
+                .get())
+            .finallyDo(
+                () -> {
+                    timer.stop();
+                    Logger.recordOutput("Arm/CharacterizationOutput",
+                        characterizationState.characterizationOutput);
+                    this.state = State.HOME;
+                });
     }
 
     private static class StaticCharacterizationState {
