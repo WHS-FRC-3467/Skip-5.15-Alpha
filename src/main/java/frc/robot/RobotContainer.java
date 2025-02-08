@@ -81,10 +81,6 @@ public class RobotContainer {
     private boolean coralModeEnabled = false;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
-    // Trigger for algae/coral mode switching
-    private boolean coralModeEnabled = false;
-    private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
-
     // private final LaserCANSensor m_clawLaserCAN =
     // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
     // private final LaserCANSensor m_rampLaserCAN =
@@ -310,15 +306,6 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
                     Elevator.State.ALGAE_SCORE));
 
-        // Driver A Button held and Right Bumper Pressed: Send Arm and Elevator to Processor
-        m_driver
-            .a().and(isCoralMode.negate())
-            .onTrue(
-                Commands.parallel(
-                    m_profiledArm.setStateCommand(Arm.State.GROUND),
-                    Commands.waitUntil(() -> m_profiledArm.atPosition(0))
-                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.INTAKE))));
-
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
             .x()
@@ -344,22 +331,6 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.BARGE));
         // TODO: Test Arm Level 4 in Sim
-
-        // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
-        m_driver.rightTrigger()
-            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.EJECT));
-
-        // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
-        // Elevator to NET
-        m_driver
-            .y().and(isCoralMode.negate())
-            .onTrue(
-                Commands.parallel(
-                    m_profiledElevator.setStateCommand(Elevator.State.NET),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4)))); // TODO: Test
-                                                                                      // Arm Level 4
-                                                                                      // in Sim
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()

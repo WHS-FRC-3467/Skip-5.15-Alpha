@@ -47,7 +47,7 @@ public class LED extends SubsystemBase {
     Trigger m_isCoralMode;
 
     // Control everything with a CANdle
-    private static final CANdle m_candle = new CANdle(Ports.CANDLE.getDeviceNumber());
+    private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
 
     // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
 
