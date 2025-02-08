@@ -35,6 +35,8 @@ public class Ports {
 
     public static final CanDeviceId CLIMBER = new CanDeviceId(23, "rio");
 
+    public static final CanDeviceId CANDLE = new CanDeviceId(27, "rio");
+    
     /*
      * public static final CanDeviceId INTAKE_PIVOT = new CanDeviceId(8, "canivore1"); public static
      * final CanDeviceId INTAKE_ROLLER = new CanDeviceId(15, "rio");
