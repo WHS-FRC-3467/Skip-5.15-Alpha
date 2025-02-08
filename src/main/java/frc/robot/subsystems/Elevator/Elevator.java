@@ -53,7 +53,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     /* For adjusting the Arm's static characterization velocity threshold */
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
-    new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
+        new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
@@ -63,7 +63,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return runOnce(() -> this.state = state);
     }
 
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
@@ -91,27 +91,30 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             new InstantCommand(() -> homedAlert.set(false)));
     }
 
-    public Command staticCharacterization(double outputRampRate) {
+    public Command staticCharacterization(double outputRampRate)
+    {
         final StaticCharacterizationState state = new StaticCharacterizationState();
         Timer timer = new Timer();
         return Commands.startRun(
             () -> {
-              this.state = State.CHARACTERIZATION;
-              timer.restart(); // Starts the timer that tracks the time of the characterization
+                this.state = State.CHARACTERIZATION;
+                timer.restart(); // Starts the timer that tracks the time of the characterization
             },
             () -> {
-              state.characterizationOutput = outputRampRate * timer.get();
-              io.runCurrent(state.characterizationOutput);
-              Logger.recordOutput(
-                  "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
+                state.characterizationOutput = outputRampRate * timer.get();
+                io.runCurrent(state.characterizationOutput);
+                Logger.recordOutput(
+                    "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
             })
-        .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh.get())
-        .finallyDo(
-            () -> {
-              timer.stop();
-              Logger.recordOutput("Elevator/CharacterizationOutput", state.characterizationOutput);
-              this.state = State.HOME;
-            });
+            .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh
+                .get())
+            .finallyDo(
+                () -> {
+                    timer.stop();
+                    Logger.recordOutput("Elevator/CharacterizationOutput",
+                        state.characterizationOutput);
+                    this.state = State.HOME;
+                });
     }
 
     private static class StaticCharacterizationState {

@@ -30,6 +30,10 @@ import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOSim;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIO;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOReal;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
@@ -70,13 +74,14 @@ public class RobotContainer {
     private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
     public final ClawRollerLaserCAN m_clawRollerLaserCAN;
+    public final IntakeLaserCAN m_intakeLaserCAN;
 
     public final Vision m_vision;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = false;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
-    
+
     // private final LaserCANSensor m_clawLaserCAN =
     // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
     // private final LaserCANSensor m_rampLaserCAN =
@@ -103,6 +108,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
+                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
                 m_vision =
                     new Vision(
@@ -137,6 +143,7 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
 
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOSim());
+                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOSim());
 
                 m_vision =
                     new Vision(
@@ -168,6 +175,7 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
 
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
+                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -264,10 +272,12 @@ public class RobotContainer {
             approachPose);
     }
 
-    public Command setCoralAlgaeModeCommand() {
+    public Command setCoralAlgaeModeCommand()
+    {
         return Commands.runOnce(
-            () -> {coralModeEnabled = !coralModeEnabled;}
-        );
+            () -> {
+                coralModeEnabled = !coralModeEnabled;
+            });
     }
 
     /** Use this method to define your joystick and button -> command mappings. */
@@ -350,14 +360,17 @@ public class RobotContainer {
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
 
-        // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and Elevator to NET
+        // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
+        // Elevator to NET
         m_driver
             .y().and(isCoralMode.negate())
             .onTrue(
                 Commands.parallel(
                     m_profiledElevator.setStateCommand(Elevator.State.NET),
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4)))); // TODO: Test Arm Level 4 in Sim
+                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4)))); // TODO: Test
+                                                                                      // Arm Level 4
+                                                                                      // in Sim
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()
@@ -392,7 +405,9 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
                 Commands.waitUntil(m_clawRoller.stalled)
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
-            .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+                .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+
+        m_driver.rightTrigger().whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
 
         // Driver Start Button: Climb Request (toggle)
         m_driver.start().onTrue(Commands.runOnce(() -> {
@@ -437,20 +452,22 @@ public class RobotContainer {
                 () -> -m_driver.getLeftY() * 0.25,
                 () -> -m_driver.getLeftX() * 0.25,
                 () -> -m_driver.getRightX() * 0.25));
-        
+
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
             m_profiledElevator.setStateCommand(Elevator.State.HOMING)
-            .until(m_profiledElevator.getHomedTrigger())
-            .andThen(m_profiledElevator.zeroSensorCommand()));
+                .until(m_profiledElevator.getHomedTrigger())
+                .andThen(m_profiledElevator.zeroSensorCommand()));
 
-        // Driver Right Bumper: Toggle between Coral and Algae Modes. 
+        // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
         m_driver.rightBumper()
-            .onTrue( 
-                    !m_driver.leftBumper().getAsBoolean() ? setCoralAlgaeModeCommand() : Commands.runOnce(() -> {}));
+            .onTrue(
+                !m_driver.leftBumper().getAsBoolean() ? setCoralAlgaeModeCommand()
+                    : Commands.runOnce(() -> {
+                    }));
 
-        }
+    }
 
     /**
      * Register Named commands for use in PathPlanner
@@ -480,7 +497,7 @@ public class RobotContainer {
             "L4",
             Commands.parallel(
                 m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
-                Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                Commands.waitUntil(() -> m_profiledElevator.atPosition(1))
                     .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
         // Go to the Home Position
         NamedCommands.registerCommand(
@@ -489,23 +506,17 @@ public class RobotContainer {
                 m_profiledElevator.setStateCommand(Elevator.State.HOME),
                 m_profiledArm.setStateCommand(Arm.State.HOME)));
 
+        // Wait for intake laserCAN to be triggered
+        NamedCommands.registerCommand("WaitForCoral",
+            Commands.waitUntil(m_intakeLaserCAN.triggered));
+
         // Intake Coral
         NamedCommands.registerCommand(
-            "IntakeCoral", 
-            Commands.sequence(
-                joystickDriveAtAngle(
-                    () -> getNearestCoralStation(m_drive.getPose()).getRotation()),
-                m_profiledElevator.setStateCommand(Elevator.State.CORAL_STATION),
-                Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                    .andThen(Commands.parallel(
-                        m_profiledArm.setStateCommand(Arm.State.INTAKE),
-                        m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
-                        Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
-                .andThen(
-                    Commands.parallel(
-                        m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                        m_profiledArm.setStateCommand(Arm.State.HOME))));
+            "IntakeCoral",
+            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                .until(m_clawRollerLaserCAN.triggered)
+                .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL))
+                .andThen(Commands.waitUntil(() -> m_clawRoller.atPosition(1))));
 
         // Intake Algae
         NamedCommands.registerCommand(
@@ -517,29 +528,13 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
                 Commands.waitUntil(m_clawRoller.stalled)
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
-            .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
+                .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME)));
 
         NamedCommands.registerCommand(
-            "SIMScore",
-            Commands.runOnce(
-                () -> SimulatedArena.getInstance()
-                    .addGamePieceProjectile(
-                        new ReefscapeCoralOnFly(
-                            // Obtain robot position from drive simulation
-                            m_driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
-                            // The scoring mechanism is installed at (0.46, 0) (meters) on the
-                            // robot
-                            new Translation2d(0.48, 0),
-                            // Obtain robot speed from drive simulation
-                            m_driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                            // Obtain robot facing from drive simulation
-                            m_driveSimulation.getSimulatedDriveTrainPose().getRotation(),
-                            // The height at which the coral is ejected
-                            Meters.of(2.3),
-                            // The initial speed of the coral
-                            MetersPerSecond.of(1),
-                            // The coral is ejected vertically downwards
-                            Degrees.of(-75)))));
+            "Score",
+            m_clawRoller.setStateCommandNoEnd(ClawRoller.State.SCORE)
+                .andThen(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()))
+                .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.OFF)));
     }
 
     /**
