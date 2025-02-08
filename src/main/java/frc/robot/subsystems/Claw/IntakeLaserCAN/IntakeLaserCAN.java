@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN;
+package frc.robot.subsystems.Claw.IntakeLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.units.measure.Distance;
@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaserCAN.State> {
+public class IntakeLaserCAN extends GenericLaserCANSubsystem<IntakeLaserCAN.State> {
 
     public Trigger triggered = new Trigger(() -> super.isTriggered());
 
@@ -26,9 +26,9 @@ public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaser
     @Setter
     private State state = State.DEFAULT;
 
-    public ClawRollerLaserCAN(ClawRollerLaserCANIO io)
+    public IntakeLaserCAN(IntakeLaserCANIO io)
     {
-        super(ClawRollerLaserCANConstants.kSubSysConstants.kName, io);
+        super(IntakeLaserCANConstants.kSubSysConstants.kName, io);
     }
 
 }
