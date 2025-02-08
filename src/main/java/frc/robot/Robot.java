@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.Elastic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +139,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
+        Elastic.selectTab(1);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
     }
 
@@ -221,6 +223,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        Elastic.selectTab(2);
     }
 
     /** This function is called periodically during operator control. */
