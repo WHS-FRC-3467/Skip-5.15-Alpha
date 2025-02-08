@@ -76,7 +76,7 @@ public class RobotContainer {
     public final LED m_LED;
 
     // Trigger for algae/coral mode switching
-    private boolean coralModeEnabled = false;
+    private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
     
     // private final LaserCANSensor m_clawLaserCAN =
@@ -111,7 +111,7 @@ public class RobotContainer {
                         m_drive,
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
-                LED m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+                m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
                 break;
 
             case SIM:
@@ -149,6 +149,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                             camera1Name, robotToCamera1,
                             m_driveSimulation::getSimulatedDriveTrainPose));
+                m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
                 break;
 
@@ -172,10 +173,13 @@ public class RobotContainer {
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
-                LED m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+                m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
                 break;
         }
+
+        // Instantiate LED Subsystem
+        // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive, m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();

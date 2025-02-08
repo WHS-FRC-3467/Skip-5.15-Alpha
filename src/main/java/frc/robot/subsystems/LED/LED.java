@@ -56,14 +56,14 @@ public class LED extends SubsystemBase {
 
     // Create Triggers for each state
     // TODO: Figure out the priority level of driver feedback for each state
-    private Trigger intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and arm are at setpoint
-    // private Trigger hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
-    private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
-    private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP | m_Climber.getState() == Climber.State.CLIMB);
-    private Trigger aimingTrigger = new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand() && m_Climber.getState() != Climber.State.CLIMB && m_Climber.getState() != Climber.State.PREP);
-    // private Trigger readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a generic implementation
+    private Trigger intakingTrigger;
+    // private Trigger hasPieceInFunnel;
+    private Trigger hasPieceInClaw;
+    private Trigger climbingTrigger;
+    private Trigger aimingTrigger;
+    // private Trigger readyTrigger;
     private Trigger disabledTrigger = new Trigger(() -> DriverStation.isDisabled());
-    private Trigger disabledTargetTrigger = new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
+    private Trigger disabledTargetTrigger;
     private Trigger autonomousTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
 
     /*
@@ -89,12 +89,22 @@ public class LED extends SubsystemBase {
         m_clawLaserCAN = laserCAN;
         m_isCoralMode = isCoralMode;
 
+        // Create Triggers for each state
+        // TODO: Figure out the priority level of driver feedback for each state
+        intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and arm are at setpoint
+        // hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
+        hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
+        climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP | m_Climber.getState() == Climber.State.CLIMB);
+        aimingTrigger = new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand());
+        // readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a generic implementation
+        disabledTargetTrigger = new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
+
         m_driveRmbl = m_controller.getHID();
 
         m_candle.configFactoryDefault();
         
         CANdleConfiguration candleConfiguration = new CANdleConfiguration();
-        m_candle.getAllConfigs(candleConfiguration);
+        // m_candle.getAllConfigs(candleConfiguration);
 
         candleConfiguration.statusLedOffWhenActive = true;
         candleConfiguration.disableWhenLOS = false;
@@ -103,12 +113,16 @@ public class LED extends SubsystemBase {
         candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
         m_candle.configAllSettings(candleConfiguration, 100);
 
-        m_candle.getAllConfigs(candleConfiguration);
+        // m_candle.getAllConfigs(candleConfiguration);
 
-        m_candle.configLEDType(LEDStripType.RGB, 300);
+        // m_candle.configLEDType(LEDStripType.RGB, 300);
 
-        m_candle.getAllConfigs(candleConfiguration);
+        // m_candle.getAllConfigs(candleConfiguration);
 
+    }
+
+    @Override
+    public void periodic() {
         // Use the LEDStateMachine to set the LEDs
         LEDStateMachine();
     }
@@ -116,8 +130,8 @@ public class LED extends SubsystemBase {
     private void LEDStateMachine() {
         // Light up the robot based on the triggers/state
         // Set the color of the mode LED strip based on Coral/Algae Mode
-        m_isCoralMode.whileTrue(Commands.run(() -> m_Mode.setColor(white)));
-        m_isCoralMode.whileFalse(Commands.run(() -> m_Mode.setColor(cyan)));
+        m_isCoralMode.whileTrue(Commands.runOnce(() -> m_Mode.setColor(white)));
+        m_isCoralMode.whileFalse(Commands.runOnce(() -> m_Mode.setColor(cyan)));
 
         /* --- List of Priorities ---
          * Disabled, Disabled with Target, and Autonomous never conflict
@@ -126,24 +140,27 @@ public class LED extends SubsystemBase {
          * TODO: Make a (aiming and) ready trigger for coral/algae placement
          * Bottom priority is the aiming trigger
          */
-        disabledTrigger.whileTrue(Commands.run(() -> runMatchTimerPattern()));
-        disabledTargetTrigger.whileTrue(Commands.run(() -> {
-            m_State.setAnimation(a_IntakeRainbow);
-            m_Mode.setAnimation(a_IntakeRainbow);
+        disabledTrigger.whileTrue(
+            Commands.parallel(
+                Commands.runOnce(() -> runMatchTimerPattern()),
+                Commands.runOnce(() -> m_State.setAnimation(a_InAutonomous))));
+        disabledTargetTrigger.whileTrue(Commands.runOnce(() -> {
+            m_State.setAnimation(a_LeftIntakeRainbow);
+            m_Mode.setAnimation(a_RightIntakeRainbow);
             this.timerDisabled();}));
-        autonomousTrigger.whileTrue(Commands.run(() -> {
-            m_State.setAnimation(a_InAutonomous);
-            m_Mode.setAnimation(a_InAutonomous);
+        autonomousTrigger.whileTrue(Commands.runOnce(() -> {
+            m_State.setAnimation(a_LeftFlame);
+            m_Mode.setAnimation(a_RightFlame);
         }));
         intakingTrigger.and(()-> !m_clawLaserCAN.isTriggered()).whileTrue(
-            Commands.run(() -> m_State.setColor(red)));
+            Commands.runOnce(() -> m_State.setColor(red)));
         hasPieceInClaw.whileTrue(
-                Commands.run(() -> {m_State.setColor(green); // Tells the driver that they can back away from the coral station
+                Commands.runOnce(() -> {m_State.setColor(green); // Tells the driver that they can back away from the coral station
                     m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);}));
         climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
-            Commands.run(() -> m_State.setColor(magenta)));
+            Commands.runOnce(() -> m_State.setColor(magenta)));
         aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(
-            Commands.run(() -> m_State.setAnimation(a_IntakePingPong)));
+            Commands.runOnce(() -> m_State.setAnimation(a_AimingPingPong)));
         // TODO: Ready Trigger
         // When robot is successfully auto aligned, set one LED to green, the other to the coral/algae and rumble the controller
     }
@@ -217,16 +234,18 @@ public class LED extends SubsystemBase {
 
     // There will be two LED strips
     // This one for Coral/Algae Mode
-    LEDSegment m_Mode = new LEDSegment(101, 27, 3);
+    LEDSegment m_Mode = new LEDSegment(8, 47, 1);
     // This one for what the robot is doing
-    LEDSegment m_State = new LEDSegment(128, 89, 4);
+    LEDSegment m_State = new LEDSegment(55, 47, 2);
 
     // Animations
     Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
-    Animation a_IntakeRainbow = new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
-    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
+    Animation a_LeftIntakeRainbow = new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
+    Animation a_RightIntakeRainbow = new RainbowAnimation(0.7, 0.5, m_Mode.segmentSize, false, m_Mode.startIndex);
+    Animation a_AimingPingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
     Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8, m_Mode.segmentSize, BounceMode.Back, 3, m_Mode.startIndex);
-
+    Animation a_LeftFlame = new FireAnimation(0.9, 0.75, m_State.segmentSize, 1.0, 0.3, true, m_State.startIndex);
+    Animation a_RightFlame = new FireAnimation(0.9, 0.75, m_Mode.segmentSize, 1.0, 0.3, false, m_Mode.startIndex);
 
     private void runMatchTimerPattern() {
 
