@@ -1,4 +1,4 @@
-package frc.robot.subsystems.ClawRoller;
+package frc.robot.subsystems.Claw.ClawRoller;
 
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemIOImpl;
 

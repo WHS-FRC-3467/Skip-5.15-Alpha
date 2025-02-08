@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Climber;
 
+import java.util.function.BooleanSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,8 +24,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
-        // CLIMB is inwards
+        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
         HOME(Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
         PREP(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
         CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
@@ -54,9 +55,8 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     // Climbing Triggers
     public boolean climbRequested = false; // Whether or not a climb request is active
     private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
-    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when
-                              // not climbing
-
+    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when not climbing
+    
     // Triggers for each step of the climb sequence
     private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
     private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
@@ -67,8 +67,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public Trigger climbedTrigger =
         new Trigger(
             () -> climbedDebouncer.calculate(
-                this.state == State.CLIMB
-                    && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
+                this.state == State.CLIMB && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
 
     public Command climbedAlertCommand()
     {
