@@ -100,7 +100,7 @@ public interface GenericMotionProfiledSubsystemIO {
     }
 
     /* Has the closed loop completed (within tolerance)? */
-    public default boolean hasFinishedTrajectory(double tolerance)
+    public default boolean atPosition(double tolerance)
     {
         return false;
     }

@@ -47,7 +47,7 @@ public class LED extends SubsystemBase {
     Elevator m_Elevator;
     Vision m_Vision;
     ClawRollerLaserCAN m_clawLaserCAN;
-    
+
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.CANDLE.getDeviceNumber());
 
@@ -55,28 +55,36 @@ public class LED extends SubsystemBase {
 
     // Create Triggers for each state
     // TODO: Figure out the priority level of driver feedback for each state
-    private Trigger intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and arm are at setpoint
+    private Trigger intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.CORAL_INTAKE
+        || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and
+                                                                // arm are at setpoint
     // private Trigger hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
     private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
-    private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP | m_Climber.getState() == Climber.State.CLIMB);
-    private Trigger aimingTrigger = new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand() && m_Climber.getState() != Climber.State.CLIMB && m_Climber.getState() != Climber.State.PREP);
-    // private Trigger readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a generic implementation
+    private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP
+        | m_Climber.getState() == Climber.State.CLIMB);
+    private Trigger aimingTrigger =
+        new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand()
+            && m_Climber.getState() != Climber.State.CLIMB
+            && m_Climber.getState() != Climber.State.PREP);
+    // private Trigger readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once
+    // there is a generic implementation
     private Trigger disabledTrigger = new Trigger(() -> DriverStation.isDisabled());
-    private Trigger disabledTargetTrigger = new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
+    private Trigger disabledTargetTrigger =
+        new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
     private Trigger autonomousTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
 
     /*
-     * Constructor
-     * Creates a new LEDSubsystem
+     * Constructor Creates a new LEDSubsystem
      */
     public LED(CommandXboxController controller, Arm arm,
-                        ClawRoller clawRoller,
-                        Climber climber,
-                        Drive drive,
-                        Elevator elevator,
-                        Vision vision,
-                        ClawRollerLaserCAN laserCAN) {
-        
+        ClawRoller clawRoller,
+        Climber climber,
+        Drive drive,
+        Elevator elevator,
+        Vision vision,
+        ClawRollerLaserCAN laserCAN)
+    {
+
         m_controller = controller;
         m_Arm = arm;
         m_ClawRoller = clawRoller;
@@ -89,7 +97,7 @@ public class LED extends SubsystemBase {
         m_driveRmbl = m_controller.getHID();
 
         m_candle.configFactoryDefault();
-        
+
         CANdleConfiguration candleConfiguration = new CANdleConfiguration();
         m_candle.getAllConfigs(candleConfiguration);
 
@@ -110,45 +118,53 @@ public class LED extends SubsystemBase {
         LEDStateMachine();
     }
 
-    private void LEDStateMachine() {
+    private void LEDStateMachine()
+    {
         // Light up the robot based on the triggers/state
-        /* --- List of Priorities ---
-         * Disabled, Disabled with Target, and Autonomous never conflict
-         * Has Piece in Claw has precedence over Intaking trigger
-         * Then come intaking and climbing triggers
-         * TODO: Make a (aiming and) ready trigger for coral/algae placement
-         * Bottom priority is the aiming trigger
+        /*
+         * --- List of Priorities --- Disabled, Disabled with Target, and Autonomous never conflict
+         * Has Piece in Claw has precedence over Intaking trigger Then come intaking and climbing
+         * triggers TODO: Make a (aiming and) ready trigger for coral/algae placement Bottom
+         * priority is the aiming trigger
          */
         disabledTrigger.whileTrue(Commands.run(() -> runMatchTimerPattern()));
         disabledTargetTrigger.whileTrue(Commands.run(() -> {
             m_Intake.setAnimation(a_IntakeRainbow);
-            this.timerDisabled();}));
+            this.timerDisabled();
+        }));
         autonomousTrigger.whileTrue(Commands.run(() -> {
             m_Intake.setAnimation(a_IntakePingPong);
             m_Timer.setAnimation(a_InAutonomous);
         }));
-        intakingTrigger.and(()-> !m_clawLaserCAN.isTriggered()).whileTrue(
+        intakingTrigger.and(() -> !m_clawLaserCAN.isTriggered()).whileTrue(
             Commands.run(() -> m_Intake.setColor(red)));
         hasPieceInClaw.whileTrue(
-                Commands.run(() -> {m_Intake.setColor(green); // Tells the driver that they can back away from the coral station
-                    m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);}));
+            Commands.run(() -> {
+                m_Intake.setColor(green); // Tells the driver that they can back away from the coral
+                                          // station
+                m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+            }));
         climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
             Commands.run(() -> m_Intake.setColor(magenta)));
         aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(
-            Commands.run(() -> 
-                {m_Intake.setAnimation(a_IntakePingPong);
-                m_Timer.setAnimation(a_TimeExpiring);}));
+            Commands.run(() -> {
+                m_Intake.setAnimation(a_IntakePingPong);
+                m_Timer.setAnimation(a_TimeExpiring);
+            }));
 
     }
-    
+
     /*
      * Colors
      */
     class Color {
         int r, g, b;
 
-        private Color(int red, int green, int blue) {
-            this.r = red; this.g = green; this.b = blue;
+        private Color(int red, int green, int blue)
+        {
+            this.r = red;
+            this.g = green;
+            this.b = blue;
         }
     }
 
@@ -160,7 +176,7 @@ public class LED extends SubsystemBase {
     Color yellow = new Color(255, 255, 0);
     Color cyan = new Color(0, 255, 255);
     Color magenta = new Color(255, 0, 255);
-    
+
     /*
      * LED Segments
      */
@@ -170,25 +186,29 @@ public class LED extends SubsystemBase {
         int segmentSize;
         int animationSlot;
 
-        private LEDSegment(int startIndex, int segmentSize, int animationSlot) {
+        private LEDSegment(int startIndex, int segmentSize, int animationSlot)
+        {
             this.startIndex = startIndex;
             this.segmentSize = segmentSize;
             this.animationSlot = animationSlot;
         }
 
-        public void setColor(Color color) {
+        public void setColor(Color color)
+        {
             m_candle.clearAnimation(animationSlot);
             m_candle.setLEDs(color.r, color.g, color.b, 0, startIndex, segmentSize);
             m_candle.modulateVBatOutput(0.95);
         }
 
-        private void setAnimation(Animation animation) {
+        private void setAnimation(Animation animation)
+        {
             m_candle.clearAnimation(animationSlot);
             m_candle.animate(animation, animationSlot);
             m_candle.modulateVBatOutput(0.95);
         }
 
-        public void setOff() {
+        public void setOff()
+        {
             m_candle.clearAnimation(animationSlot);
             m_candle.setLEDs(0, 0, 0, 0, startIndex, segmentSize);
             m_candle.modulateVBatOutput(0.0);
@@ -197,14 +217,11 @@ public class LED extends SubsystemBase {
 
     }
 
-   /* Match Timer Strip
-    * Autonomous (15 sec): Yellow Ping-pong
-    * 2:15 -> 1:00: Solid Green
-    * 1:00 -> 0:20: Solid Yellow
-    * 0:20 -> 0:10: Solid Red
-    * 0:10 -> 0:00: Strobing Red
-    * Non-auto periods & Disabled: White
-    */
+    /*
+     * Match Timer Strip Autonomous (15 sec): Yellow Ping-pong 2:15 -> 1:00: Solid Green 1:00 ->
+     * 0:20: Solid Yellow 0:20 -> 0:10: Solid Red 0:10 -> 0:00: Strobing Red Non-auto periods &
+     * Disabled: White
+     */
     Timer m_pseudoTimer = new Timer();
     Color currentColor = black;
 
@@ -213,19 +230,24 @@ public class LED extends SubsystemBase {
     LEDSegment m_Intake = new LEDSegment(128, 89, 4);
 
     // Animations
-    Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Timer.segmentSize, m_Timer.startIndex);
-    Animation a_IntakeRainbow = new RainbowAnimation(0.7, 0.5, m_Intake.segmentSize, false, m_Intake.startIndex);
-    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_Intake.segmentSize, BounceMode.Back, 6, m_Intake.startIndex);
-    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8, m_Timer.segmentSize, BounceMode.Back, 3, m_Timer.startIndex);
+    Animation a_TimeExpiring =
+        new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Timer.segmentSize, m_Timer.startIndex);
+    Animation a_IntakeRainbow =
+        new RainbowAnimation(0.7, 0.5, m_Intake.segmentSize, false, m_Intake.startIndex);
+    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8,
+        m_Intake.segmentSize, BounceMode.Back, 6, m_Intake.startIndex);
+    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
+        m_Timer.segmentSize, BounceMode.Back, 3, m_Timer.startIndex);
 
 
-    private void runMatchTimerPattern() {
+    private void runMatchTimerPattern()
+    {
 
         Color newColor = black;
 
         double matchTime = DriverStation.getMatchTime();
         if (matchTime < 0.0) {
-            m_pseudoTimer.start();            
+            m_pseudoTimer.start();
             matchTime = (int) (150.0 - m_pseudoTimer.get());
         }
 
@@ -251,7 +273,8 @@ public class LED extends SubsystemBase {
         }
     }
 
-    public void timerDisabled() {
+    public void timerDisabled()
+    {
         m_Timer.setColor(white);
         m_pseudoTimer.stop();
         m_pseudoTimer.reset();

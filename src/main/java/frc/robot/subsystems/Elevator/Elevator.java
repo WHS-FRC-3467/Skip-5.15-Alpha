@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,16 +26,18 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(-0.2, 0.0, ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        HOME(0.15, 0.0, ProfileType.MM_POSITION),
-        INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
+        STOW(0.15, 0.0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
         LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
         LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
         LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
         LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
-        CORAL_STATION(0.6, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOWER(0.5, 0.0, ProfileType.MM_POSITION),
-        ALGAE_UPPER(0.8, 0.0, ProfileType.MM_POSITION),
-        NET(9.0, 0.0, ProfileType.MM_POSITION),
+        CLIMB(0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_LOW(0.8, 0.0, ProfileType.MM_POSITION),
+        ALGAE_HIGH(1.5, 0.0, ProfileType.MM_POSITION),
+        ALGAE_GROUND(0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_SCORE(0.05, 0.0, ProfileType.MM_POSITION),
+        BARGE(4.0, 0.0, ProfileType.MM_POSITION),
         CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
 
         private final double output;
@@ -46,14 +47,14 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     @Getter
     @Setter
-    private State state = State.HOME;
+    private State state = State.STOW;
 
     @Getter
     public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
 
     /* For adjusting the Arm's static characterization velocity threshold */
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
-    new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
+        new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
@@ -63,7 +64,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return startEnd(() -> this.state = state, () -> this.state = State.STOW);
     }
 
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
@@ -80,7 +81,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(0.0001, tolerance));
+        return io.atPosition(tolerance);
     }
 
     public Command homedAlertCommand()
@@ -91,27 +92,30 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             new InstantCommand(() -> homedAlert.set(false)));
     }
 
-    public Command staticCharacterization(double outputRampRate) {
+    public Command staticCharacterization(double outputRampRate)
+    {
         final StaticCharacterizationState state = new StaticCharacterizationState();
         Timer timer = new Timer();
         return Commands.startRun(
             () -> {
-              this.state = State.CHARACTERIZATION;
-              timer.restart(); // Starts the timer that tracks the time of the characterization
+                this.state = State.CHARACTERIZATION;
+                timer.restart(); // Starts the timer that tracks the time of the characterization
             },
             () -> {
-              state.characterizationOutput = outputRampRate * timer.get();
-              io.runCurrent(state.characterizationOutput);
-              Logger.recordOutput(
-                  "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
+                state.characterizationOutput = outputRampRate * timer.get();
+                io.runCurrent(state.characterizationOutput);
+                Logger.recordOutput(
+                    "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
             })
-        .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh.get())
-        .finallyDo(
-            () -> {
-              timer.stop();
-              Logger.recordOutput("Elevator/CharacterizationOutput", state.characterizationOutput);
-              this.state = State.HOME;
-            });
+            .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh
+                .get())
+            .finallyDo(
+                () -> {
+                    timer.stop();
+                    Logger.recordOutput("Elevator/CharacterizationOutput",
+                        state.characterizationOutput);
+                    this.state = State.STOW;
+                });
     }
 
     private static class StaticCharacterizationState {

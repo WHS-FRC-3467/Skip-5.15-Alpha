@@ -23,6 +23,12 @@ public final class ElevatorConstants {
     static {
         kSubSysConstants.kName = "Elevator";
 
+        // This is the minimum tolerance that will be used by the atPosition() method.
+        // It will be used even if you pass a smaller value into atPosition().
+        // If you want to specify a larger value on an individual call basis, then you
+        // should pass that value into atPosition()
+        kSubSysConstants.kminTolerance = 0.05;
+
         kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
         kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
         kSubSysConstants.kFollowerOpposesMain = true;

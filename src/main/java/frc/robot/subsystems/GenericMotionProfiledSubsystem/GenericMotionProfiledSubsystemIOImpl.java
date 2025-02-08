@@ -472,9 +472,10 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     @Override
     // Has current motion trajectory completed?
-    public synchronized boolean hasFinishedTrajectory(double tolerance)
+    public synchronized boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(mCurrTrajectoryPosition, getSetpoint(), Math.max(1, tolerance));
+        return Util.epsilonEquals(mCurrPosition, mOpSetpoint,
+            Math.max(mConstants.kminTolerance, tolerance));
     }
 
     /**************************************************
