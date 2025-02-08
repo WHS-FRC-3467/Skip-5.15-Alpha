@@ -409,8 +409,8 @@ public class RobotContainer {
                         .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOME))),
                 Commands
                     .waitUntil(
-                        () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
-                    .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
+                        () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1))
+                    .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP))));
 
         // Climb step 2: Move climber to climb
         m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
