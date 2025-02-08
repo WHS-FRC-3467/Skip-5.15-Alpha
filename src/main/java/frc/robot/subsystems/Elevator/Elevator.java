@@ -64,7 +64,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.STOW);
+        return runOnce(() -> this.state = state);
     }
 
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);

@@ -18,6 +18,7 @@ import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.ClawRoller.ClawRoller;
 import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCAN;
+import frc.robot.subsystems.ClawRoller.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Elevator.Elevator;
@@ -59,7 +60,7 @@ public class LED extends SubsystemBase {
         || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator and
                                                                 // arm are at setpoint
     // private Trigger hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
-    private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
+    // private Trigger hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
     private Trigger climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP
         | m_Climber.getState() == Climber.State.CLIMB);
     private Trigger aimingTrigger =
@@ -138,12 +139,12 @@ public class LED extends SubsystemBase {
         }));
         intakingTrigger.and(() -> !m_clawLaserCAN.isTriggered()).whileTrue(
             Commands.run(() -> m_Intake.setColor(red)));
-        hasPieceInClaw.whileTrue(
-            Commands.run(() -> {
-                m_Intake.setColor(green); // Tells the driver that they can back away from the coral
-                                          // station
-                m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-            }));
+        // hasPieceInClaw.whileTrue(
+        // Commands.run(() -> {
+        // m_Intake.setColor(green); // Tells the driver that they can back away from the coral
+        // // station
+        // m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+        // }));
         climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
             Commands.run(() -> m_Intake.setColor(magenta)));
         aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(

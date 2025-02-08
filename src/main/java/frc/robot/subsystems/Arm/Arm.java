@@ -58,7 +58,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     /** Constructor */
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.STOW);
+        return runOnce(() -> this.state = state);
     }
 
     public boolean atPosition(double tolerance)
