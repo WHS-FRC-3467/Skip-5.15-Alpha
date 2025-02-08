@@ -47,6 +47,7 @@ public class LED extends SubsystemBase {
     Elevator m_Elevator;
     Vision m_Vision;
     ClawRollerLaserCAN m_clawLaserCAN;
+    Trigger m_isCoralMode;
     
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.CANDLE.getDeviceNumber());
@@ -75,7 +76,8 @@ public class LED extends SubsystemBase {
                         Drive drive,
                         Elevator elevator,
                         Vision vision,
-                        ClawRollerLaserCAN laserCAN) {
+                        ClawRollerLaserCAN laserCAN,
+                        Trigger isCoralMode) {
         
         m_controller = controller;
         m_Arm = arm;
@@ -85,6 +87,7 @@ public class LED extends SubsystemBase {
         m_Elevator = elevator;
         m_Vision = vision;
         m_clawLaserCAN = laserCAN;
+        m_isCoralMode = isCoralMode;
 
         m_driveRmbl = m_controller.getHID();
 
@@ -112,6 +115,10 @@ public class LED extends SubsystemBase {
 
     private void LEDStateMachine() {
         // Light up the robot based on the triggers/state
+        // Set the color of the mode LED strip based on Coral/Algae Mode
+        m_isCoralMode.whileTrue(Commands.run(() -> m_Mode.setColor(white)));
+        m_isCoralMode.whileFalse(Commands.run(() -> m_Mode.setColor(cyan)));
+
         /* --- List of Priorities ---
          * Disabled, Disabled with Target, and Autonomous never conflict
          * Has Piece in Claw has precedence over Intaking trigger
@@ -121,24 +128,24 @@ public class LED extends SubsystemBase {
          */
         disabledTrigger.whileTrue(Commands.run(() -> runMatchTimerPattern()));
         disabledTargetTrigger.whileTrue(Commands.run(() -> {
-            m_Intake.setAnimation(a_IntakeRainbow);
+            m_State.setAnimation(a_IntakeRainbow);
+            m_Mode.setAnimation(a_IntakeRainbow);
             this.timerDisabled();}));
         autonomousTrigger.whileTrue(Commands.run(() -> {
-            m_Intake.setAnimation(a_IntakePingPong);
-            m_Timer.setAnimation(a_InAutonomous);
+            m_State.setAnimation(a_InAutonomous);
+            m_Mode.setAnimation(a_InAutonomous);
         }));
         intakingTrigger.and(()-> !m_clawLaserCAN.isTriggered()).whileTrue(
-            Commands.run(() -> m_Intake.setColor(red)));
+            Commands.run(() -> m_State.setColor(red)));
         hasPieceInClaw.whileTrue(
-                Commands.run(() -> {m_Intake.setColor(green); // Tells the driver that they can back away from the coral station
+                Commands.run(() -> {m_State.setColor(green); // Tells the driver that they can back away from the coral station
                     m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);}));
         climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
-            Commands.run(() -> m_Intake.setColor(magenta)));
+            Commands.run(() -> m_State.setColor(magenta)));
         aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(
-            Commands.run(() -> 
-                {m_Intake.setAnimation(a_IntakePingPong);
-                m_Timer.setAnimation(a_TimeExpiring);}));
-
+            Commands.run(() -> m_State.setAnimation(a_IntakePingPong)));
+        // TODO: Ready Trigger
+        // When robot is successfully auto aligned, set one LED to green, the other to the coral/algae and rumble the controller
     }
     
     /*
@@ -209,14 +216,16 @@ public class LED extends SubsystemBase {
     Color currentColor = black;
 
     // There will be two LED strips
-    LEDSegment m_Timer = new LEDSegment(101, 27, 3);
-    LEDSegment m_Intake = new LEDSegment(128, 89, 4);
+    // This one for Coral/Algae Mode
+    LEDSegment m_Mode = new LEDSegment(101, 27, 3);
+    // This one for what the robot is doing
+    LEDSegment m_State = new LEDSegment(128, 89, 4);
 
     // Animations
-    Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Timer.segmentSize, m_Timer.startIndex);
-    Animation a_IntakeRainbow = new RainbowAnimation(0.7, 0.5, m_Intake.segmentSize, false, m_Intake.startIndex);
-    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_Intake.segmentSize, BounceMode.Back, 6, m_Intake.startIndex);
-    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8, m_Timer.segmentSize, BounceMode.Back, 3, m_Timer.startIndex);
+    Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
+    Animation a_IntakeRainbow = new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
+    Animation a_IntakePingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8, m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
+    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8, m_Mode.segmentSize, BounceMode.Back, 3, m_Mode.startIndex);
 
 
     private void runMatchTimerPattern() {
@@ -243,16 +252,16 @@ public class LED extends SubsystemBase {
 
         if (newColor != currentColor) {
             if (newColor == magenta) {
-                m_Timer.setAnimation(a_TimeExpiring);
+                m_Mode.setAnimation(a_TimeExpiring);
             } else {
-                m_Timer.setColor(newColor);
+                m_Mode.setColor(newColor);
             }
             currentColor = newColor;
         }
     }
 
     public void timerDisabled() {
-        m_Timer.setColor(white);
+        m_Mode.setColor(white);
         m_pseudoTimer.stop();
         m_pseudoTimer.reset();
     }
