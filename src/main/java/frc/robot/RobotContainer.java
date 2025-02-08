@@ -73,6 +73,10 @@ public class RobotContainer {
 
     public final Vision m_vision;
 
+    // Trigger for algae/coral mode switching
+    private boolean coralModeEnabled = false;
+    private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
+    
     // private final LaserCANSensor m_clawLaserCAN =
     // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
     // private final LaserCANSensor m_rampLaserCAN =
@@ -260,6 +264,12 @@ public class RobotContainer {
             approachPose);
     }
 
+    public Command setCoralAlgaeModeCommand() {
+        return Commands.runOnce(
+            () -> {coralModeEnabled = !coralModeEnabled;}
+        );
+    }
+
     /** Use this method to define your joystick and button -> command mappings. */
     private void configureControllerBindings()
     {
@@ -292,19 +302,28 @@ public class RobotContainer {
             joystickApproach(
                 () -> getNearestReefBranch(m_drive.getPose(), Side.LEFT)));
 
-        // Driver Left Bumper + Right Bumber: Approach Nearest Reef Face
+        // Driver Left Bumper + Right Bumper: Approach Nearest Reef Face
         m_driver.leftBumper().and(m_driver.rightBumper())
             .whileTrue(
                 joystickApproach(() -> getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
-            .a()
+            .a().and(isCoralMode)
             .onTrue(
                 Commands.parallel(
                     m_profiledArm.setStateCommand(Arm.State.LEVEL_1),
                     Commands.waitUntil(() -> m_profiledArm.atPosition(0))
                         .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))));
+
+        // Driver A Button held and Right Bumper Pressed: Send Arm and Elevator to Processor
+        m_driver
+            .a().and(isCoralMode.negate())
+            .onTrue(
+                Commands.parallel(
+                    m_profiledArm.setStateCommand(Arm.State.GROUND),
+                    Commands.waitUntil(() -> m_profiledArm.atPosition(0))
+                        .andThen(m_profiledElevator.setStateCommand(Elevator.State.INTAKE))));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -324,17 +343,30 @@ public class RobotContainer {
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
-            .y()
+            .y().and(isCoralMode)
             .onTrue(
                 Commands.parallel(
                     m_profiledElevator.setStateCommand(Elevator.State.LEVEL_4),
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4))));
 
+        // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and Elevator to NET
+        m_driver
+            .y().and(isCoralMode.negate())
+            .onTrue(
+                Commands.parallel(
+                    m_profiledElevator.setStateCommand(Elevator.State.NET),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                        .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4)))); // TODO: Test Arm Level 4 in Sim
+
+        // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
+        m_driver.rightTrigger()
+            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.EJECT));
+
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
         m_driver
-            .leftTrigger()
+            .leftTrigger().and(isCoralMode)
             .whileTrue(
                 Commands.sequence(
                     joystickDriveAtAngle(
@@ -352,7 +384,7 @@ public class RobotContainer {
                             m_profiledArm.setStateCommand(Arm.State.HOME))));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
-        m_driver.leftTrigger().and(m_driver.rightBumper()).whileTrue(
+        m_driver.leftTrigger().and(isCoralMode.negate()).whileTrue(
             Commands.sequence(
                 (getNearestReefBranch(m_drive.getPose(), Side.RIGHT).getTranslation().getX() > 0)
                     ? m_profiledElevator.setStateCommand(Elevator.State.ALGAE_UPPER)
@@ -411,6 +443,12 @@ public class RobotContainer {
             m_profiledElevator.setStateCommand(Elevator.State.HOMING)
             .until(m_profiledElevator.getHomedTrigger())
             .andThen(m_profiledElevator.zeroSensorCommand()));
+
+        // Driver Right Bumper: Toggle between Coral and Algae Modes. 
+        // Make sure the Approach nearest reef face does not mess with this
+        m_driver.rightBumper()
+            .onTrue( 
+                    !m_driver.leftBumper().getAsBoolean() ? setCoralAlgaeModeCommand() : Commands.runOnce(() -> {}));
 
         }
 
