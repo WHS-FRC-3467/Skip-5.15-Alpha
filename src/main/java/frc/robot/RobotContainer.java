@@ -74,6 +74,11 @@ public class RobotContainer {
 
     public final Vision m_vision;
     public final LED m_LED;
+
+    // Trigger for algae/coral mode switching
+    private boolean coralModeEnabled = true;
+    private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
+    
     // private final LaserCANSensor m_clawLaserCAN =
     // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
     // private final LaserCANSensor m_rampLaserCAN =
@@ -173,7 +178,7 @@ public class RobotContainer {
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
         m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-            m_profiledElevator, m_vision, m_clawRollerLaserCAN);
+            m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();
