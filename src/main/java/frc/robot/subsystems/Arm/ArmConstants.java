@@ -4,6 +4,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Ports;
@@ -28,31 +29,25 @@ public final class ArmConstants {
         kSubSysConstants.kminTolerance = 0.01;
 
         kSubSysConstants.kLeaderMotor = Ports.ARM_MAIN;
-        // kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
-        // kSubSysConstants.kFollowerOpposesMain = true;
 
         // Using TalonFX internal encoder
-
+        /* 
         kSubSysConstants.kCANcoder = null;
         kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
             FeedbackSensorSourceValue.RotorSensor;
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
-        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
+        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0; */
 
         // Using a remote CANcoder
-        /*
-         * kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
-         * kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-         * FeedbackSensorSourceValue.FusedCANcoder;
-         * kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 7.04;
-         * kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 54.4/7.04;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.3467;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
-         * SensorDirectionValue.Clockwise_Positive;
-         * kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-         * AbsoluteSensorRangeValue.Unsigned_0To1; Sprocket ratios = 2.0; Gear Ratios = 3.0;
-         * Planetary Ratio = 25.0;
-         */
+        kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
+        kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
+        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 104.1322; //Gearbox (15/1)*big gears(70/22)*chain(48/22)
+        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.0; // TODO: Tune arm encoder offset
+        kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        // Should be the center of the positions where the arm cannot go, in rotations
+        kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.58; 
+        
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
@@ -100,12 +95,12 @@ public final class ArmConstants {
         // Arm Simulation
         kSubSysConstants.kArmSimConfig.kIsComboSim = true;
         kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
-        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
+        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(23.188);
         kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
         kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
         kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
         kSubSysConstants.kArmSimConfig.kArmReduction =
-            54.4; // RotorToSensorRatio * SensorToMechanismRatio
-        kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
+            104.1322; // RotorToSensorRatio * SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
     }
 }
