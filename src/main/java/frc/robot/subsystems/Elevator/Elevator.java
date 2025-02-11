@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Elevator;
 
+import static edu.wpi.first.units.Units.*;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -10,12 +11,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
 
 @Setter
 @Getter
@@ -43,6 +46,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         private final double output;
         private final double feedFwd;
         private final ProfileType profileType;
+
     }
 
     @Getter
@@ -56,10 +60,22 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
         new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
+    private final SysIdRoutine sysId;
+
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
     {
         super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
+
+        sysId =
+            new SysIdRoutine(
+                new SysIdRoutine.Config(
+                    Volts.of(1).per(Seconds),
+                    Volts.of(7),
+                    Seconds.of(30),
+                    (state) -> Logger.recordOutput("Elevator/SysIdState", state.toString())),
+                new SysIdRoutine.Mechanism(
+                    (voltage) -> io.runCurrent(voltage.in(Volts)), null, this));
     }
 
     public Command setStateCommand(State state)
@@ -120,5 +136,28 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     private static class StaticCharacterizationState {
         public double characterizationOutput = 0.0;
+    }
+
+
+
+    /** Returns a command to run a quasistatic test in the specified direction. */
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction)
+    {
+        return run(() -> {
+            this.state = State.CHARACTERIZATION;
+            io.runCurrent(0.0);
+        })
+            .withTimeout(1.0)
+            .andThen(sysId.quasistatic(direction));
+    }
+
+    /** Returns a command to run a dynamic test in the specified direction. */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction)
+    {
+        return run(() -> {
+            this.state = State.CHARACTERIZATION;
+            io.runCurrent(0.0);
+        }).withTimeout(1.0)
+            .andThen(sysId.dynamic(direction));
     }
 }

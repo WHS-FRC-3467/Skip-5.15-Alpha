@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -210,6 +211,10 @@ public class RobotContainer {
             "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         m_autoChooser.addOption("Elevator static", m_profiledElevator.staticCharacterization(2.0));
         m_autoChooser.addOption("Arm static", m_profiledArm.staticCharacterization(2.0));
+        m_autoChooser.addOption("Elevator SysId Quasi",
+            m_profiledElevator.sysIdQuasistatic(Direction.kForward));
+        m_autoChooser.addOption("Elevator SysId Dynamic",
+            m_profiledElevator.sysIdDynamic(Direction.kForward));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
