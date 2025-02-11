@@ -148,6 +148,7 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic()
     {
         // Test
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         var alliance = DriverStation.getAlliance();
         // Test
         // Get currently selected command
