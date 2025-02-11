@@ -13,6 +13,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
@@ -32,16 +33,11 @@ import frc.robot.Ports;
 
 public class LED extends SubsystemBase {
 
-    // Driver controller to query
-    private final CommandXboxController m_controller;
-    private final GenericHID m_driveRmbl;
-
     // Subsystems to query
-    Arm m_Arm;
     ClawRoller m_ClawRoller;
     Climber m_Climber;
     Drive m_Drive;
-    Elevator m_Elevator;
+    Superstructure m_Superstructure;
     Vision m_Vision;
     ClawRollerLaserCAN m_clawLaserCAN;
     Trigger m_isCoralMode;
@@ -51,58 +47,27 @@ public class LED extends SubsystemBase {
 
     // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
 
-    // Create Triggers for each state
-    // TODO: Figure out the priority level of driver feedback for each state
-    private Trigger intakingTrigger;
-    // private Trigger hasPieceInFunnel;
-    private Trigger hasPieceInClaw;
-    private Trigger climbingTrigger;
-    private Trigger aimingTrigger;
-    // private Trigger readyTrigger;
-    private Trigger disabledTrigger = new Trigger(() -> DriverStation.isDisabled());
-    private Trigger disabledTargetTrigger;
-    private Trigger autonomousTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
 
     /*
      * Constructor Creates a new LEDSubsystem
      */
-    public LED(CommandXboxController controller, Arm arm,
+    public LED(
         ClawRoller clawRoller,
         Climber climber,
         Drive drive,
-        Elevator elevator,
+        Superstructure superstructure,
         Vision vision,
         ClawRollerLaserCAN laserCAN,
         Trigger isCoralMode)
     {
 
-        m_controller = controller;
-        m_Arm = arm;
         m_ClawRoller = clawRoller;
         m_Climber = climber;
         m_Drive = drive;
-        m_Elevator = elevator;
+        m_Superstructure = superstructure;
         m_Vision = vision;
         m_clawLaserCAN = laserCAN;
         m_isCoralMode = isCoralMode;
-
-        // Create Triggers for each state
-        // TODO: Figure out the priority level of driver feedback for each state
-        intakingTrigger = new Trigger(() -> m_Arm.getState() == Arm.State.CORAL_INTAKE
-            || m_ClawRoller.getState() == ClawRoller.State.INTAKE); // and check to see if elevator
-                                                                    // and arm are at setpoint
-        // hasPieceInFunnel = new Trigger(m_rampLaserCAN.getNearTrigger());
-        hasPieceInClaw = new Trigger(intakingTrigger.and(m_clawLaserCAN.triggered));
-        climbingTrigger = new Trigger(() -> m_Climber.getState() == Climber.State.PREP
-            | m_Climber.getState() == Climber.State.CLIMB);
-        aimingTrigger =
-            new Trigger(() -> m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand());
-        // readyTrigger = new Trigger(() -> m_Elevator.io.isAtSetpoint() ); work on once there is a
-        // generic implementation
-        disabledTargetTrigger =
-            new Trigger(() -> DriverStation.isDisabled() && m_Vision.visionHasTarget);
-
-        m_driveRmbl = m_controller.getHID();
 
         m_candle.configFactoryDefault();
 
@@ -135,43 +100,78 @@ public class LED extends SubsystemBase {
     {
         // Light up the robot based on the triggers/state
         // Set the color of the mode LED strip based on Coral/Algae Mode
-        m_isCoralMode.whileTrue(Commands.runOnce(() -> m_Mode.setColor(white)));
-        m_isCoralMode.whileFalse(Commands.runOnce(() -> m_Mode.setColor(cyan)));
+        if (m_isCoralMode.getAsBoolean()) {
+            m_Mode.setColor(cyan);
+        } else {
+            m_Mode.setColor(white);
+        }
 
         /*
          * --- List of Priorities --- Disabled, Disabled with Target, and Autonomous never conflict
-         * Has Piece in Claw has precedence over Intaking trigger Then come intaking and climbing
-         * triggers TODO: Make a (aiming and) ready trigger for coral/algae placement Bottom
-         * priority is the aiming trigger
+         * Has Piece in Claw has precedence over Intaking trigger 
+         * Then come intaking and climbing triggers 
+         * At the end comes aiming:
+         * A to-be-implemented ready condition for coral/algae placement 
+         * Bottom priority is the aiming and not ready condition
          */
-        disabledTrigger.whileTrue(
-            Commands.parallel(
-                Commands.runOnce(() -> runMatchTimerPattern()),
-                Commands.runOnce(() -> m_State.setAnimation(a_InAutonomous))));
-        disabledTargetTrigger.whileTrue(Commands.runOnce(() -> {
-            m_State.setAnimation(a_LeftIntakeRainbow);
-            m_Mode.setAnimation(a_RightIntakeRainbow);
-            this.timerDisabled();
-        }));
-        autonomousTrigger.whileTrue(Commands.runOnce(() -> {
+
+        // Elevator LED Rainbow if disabled and vision has target
+        if (DriverStation.isDisabled()) {
+            if (m_Vision.visionHasTarget) {
+                m_State.setAnimation(a_LeftElevatorRainbow);
+                m_Mode.setAnimation(a_RightElevatorRainbow);
+                this.timerDisabled();
+            } else {
+                runMatchTimerPattern();
+                m_State.setAnimation(a_InAutonomous);
+            }
+        } else if (DriverStation.isAutonomousEnabled()) {
             m_State.setAnimation(a_LeftFlame);
             m_Mode.setAnimation(a_RightFlame);
-        }));
-        intakingTrigger.and(() -> !m_clawLaserCAN.isTriggered()).whileTrue(
-            Commands.runOnce(() -> m_State.setColor(red)));
-        hasPieceInClaw.whileTrue(
-            Commands.runOnce(() -> {
-                m_State.setColor(green); // Tells the driver that they can back away from the coral
-                                         // station
-                m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-            }));
-        climbingTrigger.and(m_Climber.getClimbedTrigger().negate()).whileTrue(
-            Commands.runOnce(() -> m_State.setColor(magenta)));
-        aimingTrigger.and(intakingTrigger.negate()).and(climbingTrigger.negate()).whileTrue(
-            Commands.runOnce(() -> m_State.setAnimation(a_AimingPingPong)));
-        // TODO: Ready Trigger
-        // When robot is successfully auto aligned, set one LED to green, the other to the
-        // coral/algae and rumble the controller
+        } else {
+            // All the teleop states/logic comes here
+            if (m_Superstructure.getArmState() == Arm.State.CORAL_INTAKE
+            || m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
+                if (m_clawLaserCAN.isTriggered()) {
+                    // Checks to see if intaking is complete
+                    // If so, tell driver to back away from coral station
+                    m_State.setColor(green);
+                } else {
+                    // When intaking, set the state LED to red
+                    m_State.setColor(red);               
+                }
+            } else if (m_Superstructure.getArmState() == Arm.State.CLIMB || m_Climber.getState() == Climber.State.PREP
+            | m_Climber.getState() == Climber.State.CLIMB) {
+                // TODO: if climb is complete, set state LED to green
+                if (m_Climber.atPosition(0.1)) {
+                    m_State.setColor(green);
+                } else {
+                    // If robot is still climbing, then set the state LED to magenta
+                    m_State.setColor(magenta);
+                }
+             } else if (m_Superstructure.getElevatorState() != Elevator.State.STOW && m_Superstructure.getElevatorState() != Elevator.State.CHARACTERIZATION 
+                && m_Superstructure.getElevatorState() != Elevator.State.CLIMB && m_Superstructure.getElevatorState() != Elevator.State.HOMING) {
+                // The above statement says that the robot is aiming or has finished aiming if the arm isn't in the above states
+                    // TODO: Robot is Ready If Statement
+                        // When robot is successfully auto aligned, set one LED to green, the other to the
+                        // coral/algae and rumble the controller
+                if (m_Superstructure.atPosition(0.1, 0.1) && m_ClawRoller.atPosition(0.1)) {
+                    m_State.setColor(green);
+                } else {
+                    // Else: the robot is aiming, set state LED to aiming ping pong
+                    // The robot is aiming if the drivetrain isn't in its default command
+                    // which suggests that the robot is auto aligning to the reef or coral station
+                    // This else if being underneath intaking and climbing 
+                    // means that an intaking or climbing robot will never reach this statement
+                    m_State.setAnimation(a_AimingPingPong);
+                }
+
+            } else if (m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand()) {
+                // The robot is also aiming if the drivetrain isn't in its default command,
+                // assuming that the robot has finished aiming
+                m_State.setAnimation(a_AimingPingPong);
+            }
+        }
     }
 
     /*
@@ -254,9 +254,9 @@ public class LED extends SubsystemBase {
     // Animations
     Animation a_TimeExpiring =
         new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
-    Animation a_LeftIntakeRainbow =
+    Animation a_LeftElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
-    Animation a_RightIntakeRainbow =
+    Animation a_RightElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_Mode.segmentSize, false, m_Mode.startIndex);
     Animation a_AimingPingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8,
         m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);

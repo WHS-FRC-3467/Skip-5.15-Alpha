@@ -76,6 +76,10 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             Commands.waitSeconds(1),
             new InstantCommand(() -> climbedAlert.set(false)));
     }
-
+    
+    public boolean atPosition(double tolerance)
+    {
+        return io.atPosition(tolerance);
+    }
 
 }

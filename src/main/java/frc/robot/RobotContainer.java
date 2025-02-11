@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -57,6 +58,7 @@ public class RobotContainer {
 
     // Controllers
     private final CommandXboxController m_driver = new CommandXboxController(0);
+    private final GenericHID m_driveRmbl = m_driver.getHID();
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -182,8 +184,8 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
-        m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-            m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive,
+            m_superStruct, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();
@@ -351,6 +353,7 @@ public class RobotContainer {
                             m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
                             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)),
                             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
+                                .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1)))
                                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
                     .andThen(
                         Commands.parallel(
@@ -366,8 +369,12 @@ public class RobotContainer {
                         : m_profiledElevator.setStateCommand(Elevator.State.ALGAE_LOW),
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
                 Commands.waitUntil(m_clawRoller.stalled)
+                    .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
-                .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW)));
+                .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW)
+                .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 0)))));
+        // Turn off rumble when driver releases intake trigger
+        m_driver.leftTrigger().onFalse(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 0)));
         m_driver.rightTrigger().whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
 
         // Driver Start Button: Climb Request (toggle)
@@ -394,7 +401,10 @@ public class RobotContainer {
                 m_profiledClimber.setStateCommand(Climber.State.CLIMB)
                     .until(m_profiledClimber.getClimbedTrigger()));
 
-        m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
+        m_profiledClimber.getClimbedTrigger().onTrue(
+            Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1))    
+            .andThen(m_profiledClimber.climbedAlertCommand())
+            .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 0))));
 
         // Driver POV Right: End Climbing Sequence if needed
         m_driver
