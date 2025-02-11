@@ -75,7 +75,7 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
-    public final LED m_LED;
+    // public final LED m_LED;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = false;
@@ -92,28 +92,49 @@ public class RobotContainer {
         switch (Constants.currentMode) {
             case REAL:
                 // Real robot, instantiate hardware IO implementations
-                m_drive =
-                    new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (robotPose) -> {
-                        });
+                // m_drive =
+                // new Drive(
+                // new GyroIOPigeon2(),
+                // new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                // new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                // new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                // new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                // (robotPose) -> {
+                // });
 
-                m_profiledArm = new Arm(new ArmIOTalonFX(), false);
+                // m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
-                m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                // m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
-                m_vision =
-                    new Vision(
-                        m_drive,
-                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                // m_vision =
+                // new Vision(
+                // m_drive,
+                // new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                // new VisionIOPhotonVision(camera1Name, robotToCamera1));
+
+                // break;
+
+                m_drive =
+                    new Drive(
+                        new GyroIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        (robotPose) -> {
+                        });
+
+                m_profiledArm = new Arm(new ArmIO() {}, true);
+                // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
+                // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
+                // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
+
+                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
 
@@ -182,8 +203,8 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
-        m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-            m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
+        // m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();
@@ -212,7 +233,7 @@ public class RobotContainer {
         m_autoChooser.addOption("Arm static", m_profiledArm.staticCharacterization(2.0));
 
         // Configure the controller button and joystick bindings
-        configureControllerBindings();
+        // configureControllerBindings();
 
         // Detect if controllers are missing / Stop multiple warnings
         DriverStation.silenceJoystickConnectionWarning(true);

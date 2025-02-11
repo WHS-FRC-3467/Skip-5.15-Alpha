@@ -149,46 +149,9 @@ public class Robot extends LoggedRobot {
     {
         // Test
         var alliance = DriverStation.getAlliance();
-        Pose2d test;
         // Test
         // Get currently selected command
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        // Check if is the same as the last one
-        if (m_autonomousCommand != m_lastAutonomousCommand && m_autonomousCommand != null) {
-            // Check if its contained in the list of our autos
-            if (AutoBuilder.getAllAutoNames().contains(m_autonomousCommand.getName())) {
-                // Clear the current path
-                m_pathsToShow.clear();
-                // Grabs all paths from the auto
-                try {
-                    for (PathPlannerPath path : PathPlannerAuto
-                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
-                        // Adds all poses to master list
-                        m_pathsToShow.addAll(path.getPathPoses());
-                    }
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                // Displays all poses on Field2d widget depending on Alliance Side
-                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-                    m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
-                } else {
-                    for (int i = 0; i < m_pathsToShow.size(); i++) {
-                        test = m_pathsToShow.get(0).transformBy(
-                            new Transform2d());
-                        Logger.recordOutput("m_pathsToShow" + i, m_pathsToShow.get(i));
-                        Logger.recordOutput("NEW_m_pathsToShow" + i, test);
-                    }
-                }
-                //
-                m_autoTraj.setRobotPose(m_pathsToShow.get(0));
-            }
-        }
-        m_lastAutonomousCommand = m_autonomousCommand;
+
 
     }
 

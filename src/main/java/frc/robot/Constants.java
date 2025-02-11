@@ -11,7 +11,7 @@ public class Constants {
     public static double loopPeriodSecs = 0.02;
 
     // Use LoggedTunableNumbers
-    public static final boolean tuningMode = true;
+    public static final boolean tuningMode = false;
 
     /**
      * This enum defines the runtime mode used by AdvantageKit. The mode is always "real" when
