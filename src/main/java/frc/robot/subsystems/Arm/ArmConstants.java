@@ -49,7 +49,7 @@ public final class ArmConstants {
             FeedbackSensorSourceValue.RemoteCANcoder;
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = (9 / 1) * (48 / 22) * (70 / 22);
-        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.826416015625;
+        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.76806640625;
         kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
             SensorDirectionValue.Clockwise_Positive;
         kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
@@ -57,7 +57,7 @@ public final class ArmConstants {
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-            InvertedValue.Clockwise_Positive;
+            InvertedValue.CounterClockwise_Positive;
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
@@ -66,20 +66,22 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = -0.04;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.25;
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 800;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kD = 85;
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 35;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 12;
+        kSubSysConstants.kMotorConfig.Slot0.kS = 4;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 0;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 150;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 80;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         /* SIM system profile constants */
