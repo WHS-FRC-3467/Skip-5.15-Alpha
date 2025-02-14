@@ -102,8 +102,8 @@ public class RobotContainer {
                 // (robotPose) -> {
                 // });
 
-                m_profiledArm = new Arm(new ArmIOTalonFX(), false);
-                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                // m_profiledArm = new Arm(new ArmIOTalonFX(), false);
+                // m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 // m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
@@ -127,8 +127,8 @@ public class RobotContainer {
                         (robotPose) -> {
                         });
 
-                // m_profiledArm = new Arm(new ArmIO() {}, true);
-                // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledArm = new Arm(new ArmIO() {}, true);
+                m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
@@ -358,8 +358,20 @@ public class RobotContainer {
         m_driver.rightTrigger()
             .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.EJECT));
 
+
+
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
+        m_driver
+            .leftTrigger()
+            .whileTrue(
+                Commands.sequence(
+                    m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
+                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
+                        .andThen(Commands.parallel(
+                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
+                            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+                            .until(m_clawRollerLaserCAN.triggered))));
         // m_driver
         // .leftTrigger().and(isCoralMode)
         // .whileTrue(

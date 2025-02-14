@@ -22,10 +22,10 @@ public class ClawRoller
     @Getter
     public enum State implements TargetState {
         OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
-        INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        EJECT(-6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        SCORE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(1.0, 0.0, ProfileType.MM_POSITION); // One rotation after detecting coral, switch
+        INTAKE(2.0, 0.0, ProfileType.OPEN_VOLTAGE),
+        EJECT(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
+        SCORE(8.0, 0.0, ProfileType.OPEN_VOLTAGE),
+        HOLDCORAL(0.0, 0.0, ProfileType.MM_POSITION); // One rotation after detecting coral, switch
                                                       // to HOLDCORAL to tell the motors to go one
                                                       // rotaiton
 
