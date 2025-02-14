@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Arm;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -20,21 +21,21 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(Units.degreesToRotations(20.0), 0.0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(Units.degreesToRotations(70.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(Units.degreesToRotations(70.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(Units.degreesToRotations(60.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(Units.degreesToRotations(95.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(Units.degreesToRotations(105.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        BARGE(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
+        STOW(() -> Units.degreesToRotations(124.0), 0.0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> Units.degreesToRotations(144.0), 0.0, ProfileType.MM_POSITION),
+        LEVEL_1(() -> Units.degreesToRotations(120.0), 0.0, ProfileType.MM_POSITION),
+        LEVEL_2(() -> Units.degreesToRotations(120.0), 0.0, ProfileType.MM_POSITION),
+        LEVEL_3(() -> Units.degreesToRotations(120.0), 0.0, ProfileType.MM_POSITION),
+        LEVEL_4(() ->Units.degreesToRotations(88.0), 0.0, ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(49.0), 0.0, ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> Units.degreesToRotations(9.0), 0.0, ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
+        BARGE(() -> Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, 0.0, ProfileType.CHARACTERIZATION);
 
-        private final double output;
+        private final DoubleSupplier output;
         private final double feedFwd;
 
         private final ProfileType profileType;

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Elevator;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -24,23 +25,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(-0.2, 0.0, ProfileType.OPEN_VOLTAGE),
+        HOMING(() -> -0.2, 0.0, ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        STOW(0.15, 0.0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
-        CLIMB(0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(0.8, 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(1.5, 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(0.05, 0.0, ProfileType.MM_POSITION),
-        BARGE(4.0, 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
+        STOW(() -> 0.15, 0.0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0.05, 0.0, ProfileType.MM_POSITION),
+        LEVEL_1(() -> new LoggedTunableNumber("Elevator/L1SP", 0.2).getAsDouble(), 0.0, ProfileType.MM_POSITION),
+        LEVEL_2(() -> new LoggedTunableNumber("Elevator/L2SP", 1.5).getAsDouble(), 0.0, ProfileType.MM_POSITION),
+        LEVEL_3(() -> new LoggedTunableNumber("Elevator/L3SP", 2.8).getAsDouble(), 0.0, ProfileType.MM_POSITION),
+        LEVEL_4(() -> new LoggedTunableNumber("Elevator/L4SP", 5.2).getAsDouble(), 0.0, ProfileType.MM_POSITION),
+        CLIMB(() -> 0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> 0.8, 0.0, ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> 1.5, 0.0, ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> 0.05, 0.0, ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> 0.05, 0.0, ProfileType.MM_POSITION),
+        BARGE(() -> 4.0, 0.0, ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, 0.0, ProfileType.CHARACTERIZATION);
 
-        private final double output;
+        private final DoubleSupplier output;
         private final double feedFwd;
         private final ProfileType profileType;
     }

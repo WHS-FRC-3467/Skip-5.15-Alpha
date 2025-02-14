@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Climber;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -25,11 +26,11 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @Getter
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
-        HOME(Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
-        PREP(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
+        HOME(() -> Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
+        PREP(() -> Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
 
-        private final double output;
+        private final DoubleSupplier output;
         private final double feedFwd;
         private final ProfileType profileType;
     }
