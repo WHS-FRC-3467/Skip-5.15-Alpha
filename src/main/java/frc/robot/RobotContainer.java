@@ -278,7 +278,7 @@ public class RobotContainer {
     private void configureControllerBindings()
     {
         // Default command, normal field-relative drive
-        // m_drive.setDefaultCommand(joystickDrive());
+        m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Back Button: Reset gyro / odometry
         final Runnable setPose =

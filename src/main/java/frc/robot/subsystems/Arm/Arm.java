@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Arm;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,30 +17,32 @@ import lombok.Setter;
 @Getter
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
+    static LoggedTunableNumber positionTuning =
+        new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
+
     // .14 rot is the max extension
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(Units.degreesToRotations(124.0), 0.0, ProfileType.MM_POSITION),
+        STOW(() -> Units.degreesToRotations(124.0), ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> Units.degreesToRotations(144.0), ProfileType.MM_POSITION),
+        LEVEL_1(() -> Units.degreesToRotations(120.0), ProfileType.MM_POSITION),
+        LEVEL_2(() -> Units.degreesToRotations(105.0), ProfileType.MM_POSITION),
+        LEVEL_3(() -> Units.degreesToRotations(105.0), ProfileType.MM_POSITION),
+        LEVEL_4(() -> Units.degreesToRotations(90.0), ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(50.4), ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> Units.degreesToRotations(114.0), ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> Units.degreesToRotations(114.0), ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> Units.degreesToRotations(9.0), ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> Units.degreesToRotations(114.0), ProfileType.MM_POSITION),
+        BARGE(() -> Units.degreesToRotations(30.0), ProfileType.MM_POSITION),
+        TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()),
+            ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION);
 
-        CORAL_INTAKE(Units.degreesToRotations(144.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(Units.degreesToRotations(120.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(Units.degreesToRotations(105.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(Units.degreesToRotations(105.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(Units.degreesToRotations(90.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(.14, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(Units.degreesToRotations(9.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        BARGE(Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
-
-        private final double output;
-        private final double feedFwd;
-
+        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 

@@ -21,6 +21,8 @@ import java.util.Map;
 public class FieldConstants {
     public static final double fieldLength = Units.inchesToMeters(690.876);
     public static final double fieldWidth = Units.inchesToMeters(317);
+    public static final Translation2d fieldCenter =
+        new Translation2d(fieldLength / 2, fieldWidth / 2);
     public static final double startingLineX =
         Units.inchesToMeters(299.438); // Measured from the inside of starting
     // line
@@ -57,14 +59,14 @@ public class FieldConstants {
     }
 
     public static class Reef {
-        public static final Translation2d center =
+        public static final Translation2d centerOfReef =
             new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501));
         public static final double faceToZoneLine =
             Units.inchesToMeters(12); // Side of the reef to the inside of the
         // reef zone line
 
         public static final Pose2d[] centerFaces =
-            new Pose2d[6]; // Starting facing the driver station in clockwise
+            new Pose2d[12]; // Starting facing the driver station in clockwise
         // order
         public static final List<Map<ReefHeight, Pose3d>> branchPositions =
             new ArrayList<>(); // Starting at the right
@@ -105,15 +107,31 @@ public class FieldConstants {
                     Units.inchesToMeters(130.144),
                     Rotation2d.fromDegrees(-120));
 
+            centerFaces[6] = centerFaces[0].rotateAround(fieldCenter, Rotation2d.k180deg);
+            centerFaces[7] = centerFaces[1].rotateAround(fieldCenter, Rotation2d.k180deg);
+            centerFaces[8] = centerFaces[2].rotateAround(fieldCenter, Rotation2d.k180deg);
+            centerFaces[9] = centerFaces[3].rotateAround(fieldCenter, Rotation2d.k180deg);
+            centerFaces[10] = centerFaces[4].rotateAround(fieldCenter, Rotation2d.k180deg);
+            centerFaces[11] = centerFaces[5].rotateAround(fieldCenter, Rotation2d.k180deg);
+
             // Initialize branch positions
-            for (int face = 0; face < 6; face++) {
+            for (int face = 0; face < centerFaces.length; face++) {
                 Map<ReefHeight, Pose3d> fillRight = new HashMap<>();
                 Map<ReefHeight, Pose3d> fillLeft = new HashMap<>();
                 for (var level : ReefHeight.values()) {
-                    Pose2d poseDirection =
-                        new Pose2d(center, Rotation2d.fromDegrees(180 - (60 * face)));
-                    double adjustX = Units.inchesToMeters(30.738);
-                    double adjustY = Units.inchesToMeters(6.469);
+                    Pose2d poseDirection = new Pose2d();
+                    if (face < 6) {
+                        poseDirection =
+                            new Pose2d(centerOfReef, centerFaces[face].getRotation());
+                    } else {
+                        poseDirection =
+                            new Pose2d(centerOfReef.rotateAround(fieldCenter, Rotation2d.k180deg),
+                                centerFaces[face].getRotation());
+                    }
+
+                    double adjustX = Units.inchesToMeters(30.738); // Depth of branch from reef face
+                    double adjustY = Units.inchesToMeters(6.469); // Offset from reef face
+                                                                  // centerline to branch
 
                     fillRight.put(
                         level,
@@ -153,6 +171,8 @@ public class FieldConstants {
                 branchPositions.add(fillRight);
                 branchPositions.add(fillLeft);
             }
+
+
         }
     }
 
@@ -202,15 +222,20 @@ public class FieldConstants {
 
     public static Pose2d getNearestCoralStation(Pose2d currentPose)
     {
-        double distanceToLeftStation = currentPose.getTranslation()
-            .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation());
-        double distanceToRightStation = currentPose.getTranslation()
-            .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation());
-
-        if (distanceToLeftStation > distanceToRightStation) {
-            return FieldConstants.CoralStation.rightCenterFace;
+        if (currentPose.getTranslation().getX() > FieldConstants.fieldLength / 2) {
+            if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {
+                return FieldConstants.CoralStation.rightCenterFace
+                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+            } else {
+                return FieldConstants.CoralStation.leftCenterFace
+                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+            }
         } else {
-            return FieldConstants.CoralStation.leftCenterFace;
+            if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {
+                return FieldConstants.CoralStation.leftCenterFace;
+            } else {
+                return FieldConstants.CoralStation.rightCenterFace;
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProfiledSubsystem.TargetState>
@@ -24,9 +25,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
     }
 
     public interface TargetState {
-        public double getOutput();
-
-        public double getFeedFwd();
+        public DoubleSupplier getOutput();
 
         public ProfileType getProfileType();
     }
@@ -133,27 +132,27 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             default:
             case POSITION:
                 /* Run Closed Loop to position in rotations */
-                io.runToPosition(getState().getOutput(), getState().getFeedFwd());
+                io.runToPosition(getState().getOutput().getAsDouble());
                 break;
             case VELOCITY:
                 /* Run Closed Loop to velocity in rotations/second */
-                io.runToVelocity(getState().getOutput(), getState().getFeedFwd());
+                io.runToVelocity(getState().getOutput().getAsDouble());
                 break;
             case MM_POSITION:
                 /* Run Motion Magic to the specified position setpoint (in rotations) */
-                io.runMotionMagicPosition(getState().getOutput(), getState().getFeedFwd());
+                io.runMotionMagicPosition(getState().getOutput().getAsDouble());
                 break;
             case MM_VELOCITY:
                 /* Run Motion Magic to the specified velocity setpoint (in rotations/second) */
-                io.runMotionMagicVelocity(getState().getOutput(), getState().getFeedFwd());
+                io.runMotionMagicVelocity(getState().getOutput().getAsDouble());
                 break;
             case OPEN_VOLTAGE:
                 /* Run Open Loop using specified voltage in volts */
-                io.runVoltage(getState().getOutput());
+                io.runVoltage(getState().getOutput().getAsDouble());
                 break;
             case OPEN_CURRENT:
                 /* Run Open Loop using specified current in amps */
-                io.runCurrent(getState().getOutput());
+                io.runCurrent(getState().getOutput().getAsDouble());
                 break;
             case CHARACTERIZATION:
                 /*
