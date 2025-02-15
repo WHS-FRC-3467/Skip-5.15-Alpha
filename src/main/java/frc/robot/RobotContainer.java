@@ -39,6 +39,7 @@ import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
+import frc.robot.subsystems.Elevator.Elevator.State;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
