@@ -16,9 +16,7 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.supplyCurrentAmps[0] < 1); // TODO:
-                                                                                             // real
-                                                                                             // numbers
+    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
 
@@ -29,9 +27,7 @@ public class ClawRoller
         INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
         EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(() -> 0.6, ProfileType.MM_POSITION), // Wheels should spin x rotations before
-                                                       // stopping
-        TUNING(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION);
+        HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;
