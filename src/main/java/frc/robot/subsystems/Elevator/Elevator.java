@@ -32,8 +32,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        STOW(() -> 0.15, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> 0.05, ProfileType.MM_POSITION),
+        STOW(() -> 0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
         LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
         LEVEL_2(() -> 1.4, ProfileType.MM_POSITION),
         LEVEL_3(() -> 2.85, ProfileType.MM_POSITION),
@@ -70,7 +70,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public Command setStateCommand(State state)
     {
-        return runOnce(() -> this.state = state);
+        return this.runOnce(() -> this.state = state);
     }
 
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);

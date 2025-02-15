@@ -102,10 +102,10 @@ public class RobotContainer {
                 // (robotPose) -> {
                 // });
 
-                // m_profiledArm = new Arm(new ArmIOTalonFX(), false);
-                // m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                m_profiledArm = new Arm(new ArmIOTalonFX(), false);
+                m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
-                // m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
+                m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
@@ -127,10 +127,10 @@ public class RobotContainer {
                         (robotPose) -> {
                         });
 
-                m_profiledArm = new Arm(new ArmIO() {}, true);
-                m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                // m_profiledArm = new Arm(new ArmIO() {}, true);
+                // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
-                m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
+                // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
@@ -365,13 +365,25 @@ public class RobotContainer {
         m_driver
             .leftTrigger()
             .whileTrue(
-                Commands.sequence(
-                    m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
-                    Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
-                        .andThen(Commands.parallel(
-                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
-                            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
-                            .until(m_clawRollerLaserCAN.triggered))));
+                m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
+                    .andThen(
+                        m_superStruct
+                            .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                                Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.waitUntil(m_intakeLaserCAN.triggered))
+                    .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW))
+                    .andThen(Commands
+                        .waitUntil(m_intakeLaserCAN.triggered.negate()
+                            .and(m_clawRollerLaserCAN.triggered)))
+                    .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.SHUFFLE))
+                    .andThen(Commands
+                        .waitUntil(m_intakeLaserCAN.triggered
+                            .and(m_clawRollerLaserCAN.triggered)))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
+            .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.OFF).andThen(m_superStruct
+                .getTransitionCommand(Arm.State.STOW,
+                    Elevator.State.STOW)));
+
         // m_driver
         // .leftTrigger().and(isCoralMode)
         // .whileTrue(

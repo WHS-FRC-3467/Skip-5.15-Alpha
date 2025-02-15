@@ -41,11 +41,11 @@ public final class ClawRollerConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 1.0; // TODO: tune on real robot
+        kSubSysConstants.kMotorConfig.Slot0.kP = 5; // TODO: tune on real robot
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
         kSubSysConstants.kMotorConfig.Slot0.kD = 0;
         kSubSysConstants.kMotorConfig.Slot0.kG = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 36;
+        kSubSysConstants.kMotorConfig.Slot0.kS = 0;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
