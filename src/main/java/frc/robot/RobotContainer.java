@@ -75,7 +75,7 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
-    public final LED m_LED;
+    // public final LED m_LED;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = false;
@@ -182,8 +182,8 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
-        m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-            m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
+        // m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();
