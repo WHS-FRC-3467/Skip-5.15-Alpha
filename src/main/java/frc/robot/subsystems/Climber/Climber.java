@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,11 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @Getter
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
-        HOME(() -> Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
-        PREP(() -> Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(() -> Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
+        HOME(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/HomeSP", 90.0).getAsDouble()), ProfileType.MM_POSITION),
+        PREP(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/PrepSP", 0.0).getAsDouble()), ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/ClimbSP", 110.0).getAsDouble()), ProfileType.MM_POSITION);
 
         private final DoubleSupplier output;
-        private final double feedFwd;
         private final ProfileType profileType;
     }
 

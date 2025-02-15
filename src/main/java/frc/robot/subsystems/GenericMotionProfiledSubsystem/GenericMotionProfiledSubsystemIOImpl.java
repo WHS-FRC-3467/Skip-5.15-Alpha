@@ -350,35 +350,35 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     /** Run Closed Loop to setpoint in rotations */
     @Override
-    public void runToPosition(double position, double feedFwd)
+    public void runToPosition(double position)
     {
-        mMainMotor.setControl(positionControl.withPosition(position).withFeedForward(feedFwd));
+        mMainMotor.setControl(positionControl.withPosition(position));
         mOpSetpoint = position;
     }
 
     /** Run Closed Loop to velocity in rotations/second */
     @Override
-    public void runToVelocity(double velocity, double feedFwd)
+    public void runToVelocity(double velocity)
     {
-        mMainMotor.setControl(velocityControl.withVelocity(velocity).withFeedForward(feedFwd));
+        mMainMotor.setControl(velocityControl.withVelocity(velocity));
         mOpSetpoint = velocity;
     }
 
     /** Run Motion Magic to the specified setpoint */
     @Override
-    public void runMotionMagicPosition(double setpoint, double feedFwd)
+    public void runMotionMagicPosition(double setpoint)
     {
         mMainMotor.setControl(
-            motionMagicPositionControl.withPosition(setpoint).withFeedForward(feedFwd));
+            motionMagicPositionControl.withPosition(setpoint));
         mOpSetpoint = setpoint;
     }
 
     /** Run Motion Magic Velocity to the specified velocity */
     @Override
-    public void runMotionMagicVelocity(double velocity, double feedFwd)
+    public void runMotionMagicVelocity(double velocity)
     {
         mMainMotor.setControl(
-            motionMagicVelocityControl.withVelocity(velocity).withFeedForward(feedFwd));
+            motionMagicVelocityControl.withVelocity(velocity));
     }
 
     /* Stop in Open Loop */

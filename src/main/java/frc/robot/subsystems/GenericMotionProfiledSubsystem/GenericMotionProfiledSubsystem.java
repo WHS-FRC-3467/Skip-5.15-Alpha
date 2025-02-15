@@ -27,8 +27,6 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
     public interface TargetState {
         public DoubleSupplier getOutput();
 
-        public double getFeedFwd();
-
         public ProfileType getProfileType();
     }
 
@@ -134,19 +132,19 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             default:
             case POSITION:
                 /* Run Closed Loop to position in rotations */
-                io.runToPosition(getState().getOutput().getAsDouble(), getState().getFeedFwd());
+                io.runToPosition(getState().getOutput().getAsDouble());
                 break;
             case VELOCITY:
                 /* Run Closed Loop to velocity in rotations/second */
-                io.runToVelocity(getState().getOutput().getAsDouble(), getState().getFeedFwd());
+                io.runToVelocity(getState().getOutput().getAsDouble());
                 break;
             case MM_POSITION:
                 /* Run Motion Magic to the specified position setpoint (in rotations) */
-                io.runMotionMagicPosition(getState().getOutput().getAsDouble(), getState().getFeedFwd());
+                io.runMotionMagicPosition(getState().getOutput().getAsDouble());
                 break;
             case MM_VELOCITY:
                 /* Run Motion Magic to the specified velocity setpoint (in rotations/second) */
-                io.runMotionMagicVelocity(getState().getOutput().getAsDouble(), getState().getFeedFwd());
+                io.runMotionMagicVelocity(getState().getOutput().getAsDouble());
                 break;
             case OPEN_VOLTAGE:
                 /* Run Open Loop using specified voltage in volts */

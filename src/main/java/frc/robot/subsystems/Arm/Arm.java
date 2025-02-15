@@ -21,23 +21,22 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/StowSP", 124.0).getAsDouble()), 0.0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> Units.degreesToRotations(144.0), 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L1SP", 120.0).getAsDouble()), 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L2SP", 105.0).getAsDouble()), 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L3SP", 105.0).getAsDouble()), 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(() ->Units.degreesToRotations(new LoggedTunableNumber("Arm/L4SP", 90.0).getAsDouble()), 0.0, ProfileType.MM_POSITION),
-        CLIMB(() -> Units.degreesToRotations(49.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(() -> Units.degreesToRotations(9.0), 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(() -> Units.degreesToRotations(114.0), 0.0, ProfileType.MM_POSITION),
-        BARGE(() -> Units.degreesToRotations(30.0), 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(() -> 0.0, 0.0, ProfileType.CHARACTERIZATION);
+        STOW(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/StowSP", 124.0).getAsDouble()), ProfileType.MM_POSITION),
+
+        CORAL_INTAKE(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/CoralIntakeSP", 144.0).getAsDouble()), ProfileType.MM_POSITION),
+        LEVEL_1(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L1SP", 120.0).getAsDouble()), ProfileType.MM_POSITION),
+        LEVEL_2(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L2SP", 105.0).getAsDouble()), ProfileType.MM_POSITION),
+        LEVEL_3(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L3SP", 105.0).getAsDouble()), ProfileType.MM_POSITION),
+        LEVEL_4(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/L4SP", 90.0).getAsDouble()), ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/ClimbSP", 50.4).getAsDouble()), ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/AlgaeLowSP", 114.0).getAsDouble()), ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/AlgaeHighSP", 114.0).getAsDouble()), ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/AlgaeGroundSP", 9.0).getAsDouble()), ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/AlgaeScoreSP", 114.0).getAsDouble()), ProfileType.MM_POSITION),
+        BARGE(() -> Units.degreesToRotations(new LoggedTunableNumber("Arm/BargeSP", 30.0).getAsDouble()), ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION);
 
         private final DoubleSupplier output;
-        private final double feedFwd;
-
         private final ProfileType profileType;
     }
 

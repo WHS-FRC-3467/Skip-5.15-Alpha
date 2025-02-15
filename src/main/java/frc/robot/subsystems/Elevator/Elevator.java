@@ -25,24 +25,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(() -> -0.2, 0.0, ProfileType.OPEN_VOLTAGE),
+        HOMING(() -> new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2).getAsDouble(), ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        STOW(() -> 0.15, 0.0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> 0.05, 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(() -> new LoggedTunableNumber("Elevator/L1SP", 0.2).getAsDouble(), 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(() -> new LoggedTunableNumber("Elevator/L2SP", 1.5).getAsDouble(), 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(() -> new LoggedTunableNumber("Elevator/L3SP", 2.8).getAsDouble(), 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(() -> new LoggedTunableNumber("Elevator/L4SP", 5.2).getAsDouble(), 0.0, ProfileType.MM_POSITION),
-        CLIMB(() -> 0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> 0.8, 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> 1.5, 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(() -> 0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(() -> 0.05, 0.0, ProfileType.MM_POSITION),
-        BARGE(() -> 4.0, 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(() -> 0.0, 0.0, ProfileType.CHARACTERIZATION);
+        STOW(() -> new LoggedTunableNumber("Elevator/StowSP", 0.15).getAsDouble(), ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> new LoggedTunableNumber("Elevator/CoralIntakeSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
+        LEVEL_1(() -> new LoggedTunableNumber("Elevator/L1SP", 0.2).getAsDouble(), ProfileType.MM_POSITION),
+        LEVEL_2(() -> new LoggedTunableNumber("Elevator/L2SP", 1.4).getAsDouble(), ProfileType.MM_POSITION),
+        LEVEL_3(() -> new LoggedTunableNumber("Elevator/L3SP", 2.85).getAsDouble(), ProfileType.MM_POSITION),
+        LEVEL_4(() -> new LoggedTunableNumber("Elevator/L4SP", 5.2).getAsDouble(), ProfileType.MM_POSITION),
+        CLIMB(() -> new LoggedTunableNumber("Elevator/ClimbSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> new LoggedTunableNumber("Elevator/AlgaeLowSP", 0.8).getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> new LoggedTunableNumber("Elevator/AlgaeHighSP", 1.5).getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> new LoggedTunableNumber("Elevator/AlgaeGroundSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> new LoggedTunableNumber("Elevator/AlgaeScoreSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
+        BARGE(() -> new LoggedTunableNumber("Elevator/BargeSP", 4.0).getAsDouble(), ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION);
 
         private final DoubleSupplier output;
-        private final double feedFwd;
         private final ProfileType profileType;
     }
 
