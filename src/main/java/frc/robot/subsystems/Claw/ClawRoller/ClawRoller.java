@@ -21,6 +21,7 @@ public class ClawRoller
                                                                                              // numbers
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
+    static LoggedTunableNumber algaeIntakeSP = new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
 
     @RequiredArgsConstructor
     @Getter
@@ -29,8 +30,8 @@ public class ClawRoller
         INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
         EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(() -> 0.6, ProfileType.MM_POSITION), // Wheels should spin x rotations before stopping
-        TUNING(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION);
+        HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_INTAKE(() -> algaeIntakeSP.getAsDouble(), ProfileType.OPEN_CURRENT);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;
