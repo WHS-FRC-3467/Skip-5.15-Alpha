@@ -29,25 +29,31 @@ public final class ArmConstants {
         kSubSysConstants.kminTolerance = 0.01;
 
         kSubSysConstants.kLeaderMotor = Ports.ARM_MAIN;
+        // kSubSysConstants.kFollowMotor = Ports.ARM_FOLLOWER;
+        // kSubSysConstants.kFollowerOpposesMain = true;
 
         // Using TalonFX internal encoder
-        /* 
-        kSubSysConstants.kCANcoder = null;
-        kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-            FeedbackSensorSourceValue.RotorSensor;
-        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
-        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0; */
+
+        // kSubSysConstants.kCANcoder = null;
+        // kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
+        // FeedbackSensorSourceValue.RotorSensor;
+        // kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 54.4;
+        // kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
         // Using a remote CANcoder
+
         kSubSysConstants.kCANcoder = Ports.ARM_CANCODER;
-        kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
-        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 104.1322; //Gearbox (15/1)*big gears(70/22)*chain(48/22)
-        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.0; // TODO: Tune arm encoder offset
-        kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-        // Should be the center of the positions where the arm cannot go, in rotations
-        kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.58; 
-        
+        kSubSysConstants.kMotorConfig.Feedback.FeedbackRemoteSensorID =
+            Ports.ARM_CANCODER.getDeviceNumber();
+        kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
+            FeedbackSensorSourceValue.RemoteCANcoder;
+        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = (9 / 1) * (48 / 22) * (70 / 22);
+        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.826416015625;
+        kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
+            SensorDirectionValue.Clockwise_Positive;
+        kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
+
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
@@ -60,17 +66,22 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.405;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 800;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kD = 85;
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 12;
+        kSubSysConstants.kMotorConfig.Slot0.kS = 4;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 0;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 150;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 80;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         /* SIM system profile constants */
