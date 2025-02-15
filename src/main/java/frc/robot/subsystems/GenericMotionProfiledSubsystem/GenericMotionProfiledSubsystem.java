@@ -21,6 +21,8 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         MM_VELOCITY,
         OPEN_VOLTAGE,
         OPEN_CURRENT,
+        DISABLED_COAST,
+        DISABLED_BRAKE,
         CHARACTERIZATION
     }
 
@@ -153,6 +155,14 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             case OPEN_CURRENT:
                 /* Run Open Loop using specified current in amps */
                 io.runCurrent(getState().getOutput().getAsDouble());
+                break;
+            case DISABLED_COAST:
+                /* Stop all output and put motor in Coast mode */
+                io.stopCoast();
+                break;
+            case DISABLED_BRAKE:
+                /* Stop all output and put motor in Brake mode */
+                io.stopBrake();
                 break;
             case CHARACTERIZATION:
                 /*

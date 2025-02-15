@@ -53,6 +53,14 @@ public interface GenericMotionProfiledSubsystemIO {
     public default void runMotionMagicVelocity(double velocity)
     {}
 
+    /* Stop in Coast mode */
+    public default void stopCoast()
+    {}
+
+    /* Stop in Brake mode */
+    public default void stopBrake()
+    {}
+
     /* Stop in Open Loop */
     public default void stop()
     {}
