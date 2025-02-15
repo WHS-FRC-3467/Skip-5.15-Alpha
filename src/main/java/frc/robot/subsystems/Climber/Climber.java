@@ -23,13 +23,17 @@ import lombok.Setter;
 @Getter
 public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
+    static LoggedTunableNumber positionTuning = new LoggedTunableNumber("Climber/PositionTuningSP", 0.0);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
-        HOME(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/HomeSP", 90.0).getAsDouble()), ProfileType.MM_POSITION),
-        PREP(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/PrepSP", 0.0).getAsDouble()), ProfileType.MM_POSITION),
-        CLIMB(() -> Units.degreesToRotations(new LoggedTunableNumber("Climber/ClimbSP", 110.0).getAsDouble()), ProfileType.MM_POSITION);
+        HOME(() -> Units.degreesToRotations(90.0), ProfileType.MM_POSITION),
+        PREP(() -> Units.degreesToRotations(0.0), ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(110.0), ProfileType.MM_POSITION),
+        TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()), ProfileType.MM_POSITION),
+        ;
 
         private final DoubleSupplier output;
         private final ProfileType profileType;

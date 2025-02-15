@@ -22,23 +22,27 @@ import lombok.Setter;
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
+    static LoggedTunableNumber homingTuning = new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2);
+    static LoggedTunableNumber positionTuning = new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(() -> new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2).getAsDouble(), ProfileType.OPEN_VOLTAGE),
+        HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        STOW(() -> new LoggedTunableNumber("Elevator/StowSP", 0.15).getAsDouble(), ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> new LoggedTunableNumber("Elevator/CoralIntakeSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
-        LEVEL_1(() -> new LoggedTunableNumber("Elevator/L1SP", 0.2).getAsDouble(), ProfileType.MM_POSITION),
-        LEVEL_2(() -> new LoggedTunableNumber("Elevator/L2SP", 1.4).getAsDouble(), ProfileType.MM_POSITION),
-        LEVEL_3(() -> new LoggedTunableNumber("Elevator/L3SP", 2.85).getAsDouble(), ProfileType.MM_POSITION),
-        LEVEL_4(() -> new LoggedTunableNumber("Elevator/L4SP", 5.2).getAsDouble(), ProfileType.MM_POSITION),
-        CLIMB(() -> new LoggedTunableNumber("Elevator/ClimbSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> new LoggedTunableNumber("Elevator/AlgaeLowSP", 0.8).getAsDouble(), ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> new LoggedTunableNumber("Elevator/AlgaeHighSP", 1.5).getAsDouble(), ProfileType.MM_POSITION),
-        ALGAE_GROUND(() -> new LoggedTunableNumber("Elevator/AlgaeGroundSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
-        ALGAE_SCORE(() -> new LoggedTunableNumber("Elevator/AlgaeScoreSP", 0.05).getAsDouble(), ProfileType.MM_POSITION),
-        BARGE(() -> new LoggedTunableNumber("Elevator/BargeSP", 4.0).getAsDouble(), ProfileType.MM_POSITION),
+        STOW(() -> 0.15, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0.05, ProfileType.MM_POSITION),
+        LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
+        LEVEL_2(() -> 1.4, ProfileType.MM_POSITION),
+        LEVEL_3(() -> 2.85, ProfileType.MM_POSITION),
+        LEVEL_4(() -> 5.20, ProfileType.MM_POSITION),
+        CLIMB(() -> 0.05, ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> 0.8, ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> 1.5, ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> 0.05, ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> 0.05, ProfileType.MM_POSITION),
+        BARGE(() -> 4.0, ProfileType.MM_POSITION),
+        TUNING(() -> positionTuning.getAsDouble(), ProfileType.MM_POSITION),
         CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION);
 
         private final DoubleSupplier output;
