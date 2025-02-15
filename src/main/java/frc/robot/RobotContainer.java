@@ -364,7 +364,7 @@ public class RobotContainer {
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
         m_driver
-            .leftTrigger()
+            .leftTrigger().and(isCoralMode)
             .whileTrue(
                 m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
                     .andThen(
