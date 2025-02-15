@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Contains various field dimensions and useful reference points. All units are in meters and poses
@@ -168,13 +167,9 @@ public class FieldConstants {
                                 0,
                                 Units.degreesToRadians(level.pitch),
                                 poseDirection.getRotation().getRadians())));
-                    Logger.recordOutput("AlignmentDebug/LastBranchL",
-                        fillRight.values().toArray(new Pose3d[0]));
                 }
                 branchPositions.add(fillRight);
                 branchPositions.add(fillLeft);
-
-                Logger.recordOutput("AlignmentDebug/CenterFaces", centerFaces);
             }
 
 
@@ -209,8 +204,6 @@ public class FieldConstants {
 
     public static Pose2d getNearestReefFace(Pose2d currentPose)
     {
-        Logger.recordOutput("AlignmentDebug/ClosestReefFace",
-            currentPose.nearest(List.of(FieldConstants.Reef.centerFaces)));
         return currentPose.nearest(List.of(FieldConstants.Reef.centerFaces));
     }
 
@@ -221,11 +214,6 @@ public class FieldConstants {
 
     public static Pose2d getNearestReefBranch(Pose2d currentPose, ReefSide side)
     {
-        Logger.recordOutput("AlignmentDebug/ClosestBranch", FieldConstants.Reef.branchPositions
-            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
-                * 2 + (side == ReefSide.LEFT ? 1 : 0))
-            .get(FieldConstants.ReefHeight.L1).toPose2d());
-
         return FieldConstants.Reef.branchPositions
             .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
                 * 2 + (side == ReefSide.LEFT ? 1 : 0))
@@ -249,7 +237,5 @@ public class FieldConstants {
                 return FieldConstants.CoralStation.rightCenterFace;
             }
         }
-
-
     }
 }
