@@ -1,9 +1,11 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +20,19 @@ public class ClawRoller
                                                                                              // real
                                                                                              // numbers
 
+    static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(0.0, 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
-        INTAKE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        EJECT(-6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        SCORE(6.0, 0.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(1.0, 0.0, ProfileType.MM_POSITION); // One rotation after detecting coral, switch
-                                                      // to HOLDCORAL to tell the motors to go one
-                                                      // rotaiton
+        OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
+        INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
+        EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
+        SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
+        HOLDCORAL(() -> 0.6, ProfileType.MM_POSITION), // Wheels should spin x rotations before stopping
+        TUNING(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION);
 
-        private final double output;
-        private final double feedFwd;
+        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -55,6 +57,6 @@ public class ClawRoller
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output, Math.max(0.0001, tolerance));
+        return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(), Math.max(0.0001, tolerance));
     }
 }
