@@ -3,10 +3,12 @@ package frc.robot.subsystems.GenericMotionProfiledSubsystem;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -87,6 +89,8 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
     private final MotionMagicVelocityTorqueCurrentFOC motionMagicVelocityControl =
         new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+    private final CoastOut coastOut = new CoastOut();
+    private final StaticBrake staticBrake = new StaticBrake();
 
     /*
      * Constructor
@@ -350,35 +354,49 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     /** Run Closed Loop to setpoint in rotations */
     @Override
-    public void runToPosition(double position, double feedFwd)
+    public void runToPosition(double position)
     {
-        mMainMotor.setControl(positionControl.withPosition(position).withFeedForward(feedFwd));
+        mMainMotor.setControl(positionControl.withPosition(position));
         mOpSetpoint = position;
     }
 
     /** Run Closed Loop to velocity in rotations/second */
     @Override
-    public void runToVelocity(double velocity, double feedFwd)
+    public void runToVelocity(double velocity)
     {
-        mMainMotor.setControl(velocityControl.withVelocity(velocity).withFeedForward(feedFwd));
+        mMainMotor.setControl(velocityControl.withVelocity(velocity));
         mOpSetpoint = velocity;
     }
 
     /** Run Motion Magic to the specified setpoint */
     @Override
-    public void runMotionMagicPosition(double setpoint, double feedFwd)
+    public void runMotionMagicPosition(double setpoint)
     {
         mMainMotor.setControl(
-            motionMagicPositionControl.withPosition(setpoint).withFeedForward(feedFwd));
+            motionMagicPositionControl.withPosition(setpoint));
         mOpSetpoint = setpoint;
     }
 
     /** Run Motion Magic Velocity to the specified velocity */
     @Override
-    public void runMotionMagicVelocity(double velocity, double feedFwd)
+    public void runMotionMagicVelocity(double velocity)
     {
         mMainMotor.setControl(
-            motionMagicVelocityControl.withVelocity(velocity).withFeedForward(feedFwd));
+            motionMagicVelocityControl.withVelocity(velocity));
+    }
+
+    /* Stop in Coast mode */
+    @Override
+    public void stopCoast()
+    {
+        mMainMotor.setControl(coastOut);
+    }
+
+    /* Stop in Brake mode */
+    @Override
+    public void stopBrake()
+    {
+        mMainMotor.setControl(staticBrake);
     }
 
     /* Stop in Open Loop */
