@@ -31,13 +31,13 @@ public final class ElevatorConstants {
 
         kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
         kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
-        kSubSysConstants.kFollowerOpposesMain = true;
+        kSubSysConstants.kFollowerOpposesMain = false;
 
         // Using TalonFX internal encoder
         kSubSysConstants.kCANcoder = null;
         kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
             FeedbackSensorSourceValue.RotorSensor;
-        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1.0;
+        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 9.6;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
         // Using a remote CANcoder
@@ -56,7 +56,7 @@ public final class ElevatorConstants {
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-            InvertedValue.CounterClockwise_Positive;
+            InvertedValue.Clockwise_Positive;
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
@@ -65,17 +65,20 @@ public final class ElevatorConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 5.4;
+        kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 1200;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kD = 30;
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 5;
         kSubSysConstants.kMotorConfig.Slot0.kS = 0;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 0;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 75;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 20;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         /* SIM system profile constants */
