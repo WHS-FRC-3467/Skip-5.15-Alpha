@@ -16,9 +16,7 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.supplyCurrentAmps[0] < 1); // TODO:
-                                                                                             // real
-                                                                                             // numbers
+    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
     static LoggedTunableNumber algaeIntakeSP = new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
@@ -28,6 +26,8 @@ public class ClawRoller
     public enum State implements TargetState {
         OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
         INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
+        INTAKESLOW(() -> 1, ProfileType.OPEN_VOLTAGE),
+        SHUFFLE(() -> -0.5, ProfileType.OPEN_VOLTAGE),
         EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
         HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION),
@@ -58,6 +58,7 @@ public class ClawRoller
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(), Math.max(0.0001, tolerance));
+        return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
+            Math.max(0.0001, tolerance));
     }
 }

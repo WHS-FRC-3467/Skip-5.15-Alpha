@@ -14,7 +14,7 @@ public class LaserCANSim implements LaserCanInterface {
 
     public LaserCANSim(String name)
     {
-        tunableDistance = new LoggedTunableNumber(name + "/Measurement", 0);
+        tunableDistance = new LoggedTunableNumber(name + "/Measurement", Double.POSITIVE_INFINITY);
     }
 
     @Override
