@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Climber;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +23,19 @@ import lombok.Setter;
 @Getter
 public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
+    static LoggedTunableNumber positionTuning = new LoggedTunableNumber("Climber/PositionTuningSP", 0.0);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
-        HOME(Units.degreesToRotations(90), 0.0, ProfileType.MM_POSITION),
-        PREP(Units.degreesToRotations(0.0), 0.0, ProfileType.MM_POSITION),
-        CLIMB(Units.degreesToRotations(110.0), 0.0, ProfileType.MM_POSITION);
+        HOME(() -> Units.degreesToRotations(90.0), ProfileType.MM_POSITION),
+        PREP(() -> Units.degreesToRotations(0.0), ProfileType.MM_POSITION),
+        CLIMB(() -> Units.degreesToRotations(110.0), ProfileType.MM_POSITION),
+        TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()), ProfileType.MM_POSITION),
+        ;
 
-        private final double output;
-        private final double feedFwd;
+        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
