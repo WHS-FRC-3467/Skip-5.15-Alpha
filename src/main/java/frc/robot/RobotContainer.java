@@ -39,6 +39,7 @@ import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
+import frc.robot.subsystems.Elevator.Elevator.State;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
@@ -319,7 +320,7 @@ public class RobotContainer {
         m_driver
             .a()
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1, 0.2, 0.2));
 
         // Driver A Button held and Right Bumper Pressed: Send Arm and Elevator to Processor
         // m_driver
@@ -332,19 +333,19 @@ public class RobotContainer {
         m_driver
             .x()
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2, 0.2, 0.2));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
             .b()
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3, 0.2, 0.2));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
             .y()
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.2, 0.2));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
         // Elevator to NET
@@ -366,12 +367,20 @@ public class RobotContainer {
             .leftTrigger()
             .whileTrue(
                 Commands.sequence(
-                    m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
+                    // Always move Arm to STOW position before moving Elevator
+                    m_profiledArm.setStateCommand(Arm.State.STOW).until(() -> m_profiledArm.atPosition(0.1)),
+                    // Move Elevator to new position
+                    Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
+                    .andThen(m_profiledElevator.setStateCommand(State.CORAL_INTAKE)
+                            .until(() -> m_profiledElevator.atPosition(0.1))),
+                    // Once Elevator in position, move Arm to Coral Intake and start spinning claw
                     Commands.waitUntil(() -> m_profiledElevator.atPosition(0.1))
                         .andThen(Commands.parallel(
-                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
+                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE).until(() -> m_profiledArm.atPosition(0.1)),
                             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
-                            .until(m_clawRollerLaserCAN.triggered))));
+                            .until(m_clawRollerLaserCAN.triggered)),
+                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                    
         // m_driver
         // .leftTrigger().and(isCoralMode)
         // .whileTrue(

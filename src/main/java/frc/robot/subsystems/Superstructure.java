@@ -50,18 +50,4 @@ public class Superstructure {
             Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)).andThen(
                 m_Arm.setStateCommand(armState).until(() -> m_Arm.atPosition(armTolerance)))));
     }
-
-    /**
-     * Get a Command to transition the states of the Arm and Elevator in the proper order.
-     * 
-     * This version uses the defualt tolerances as specified by the subsystem's kminTolerance
-     * 
-     * @param armState
-     * @param elevatorState
-     * @return A Command
-     */
-    public Command getTransitionCommand(Arm.State armState, Elevator.State elevatorState)
-    {
-        return getTransitionCommand(armState, elevatorState, 0.0, 0.0);
-    }
 }
