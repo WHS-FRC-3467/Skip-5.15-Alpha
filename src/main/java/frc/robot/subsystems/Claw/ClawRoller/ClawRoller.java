@@ -29,7 +29,7 @@ public class ClawRoller
         SHUFFLE(() -> -0.5, ProfileType.OPEN_VOLTAGE),
         EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION);
+        HOLDCORAL(() -> 0, ProfileType.MM_POSITION);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;

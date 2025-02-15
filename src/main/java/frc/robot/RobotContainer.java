@@ -380,10 +380,11 @@ public class RobotContainer {
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
-            .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.OFF).andThen(m_superStruct
-                .getTransitionCommand(Arm.State.STOW,
-                    Elevator.State.STOW)));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+            .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL)
+                .andThen(m_superStruct
+                    .getTransitionCommand(Arm.State.STOW,
+                        Elevator.State.STOW)));
 
         // m_driver
         // .leftTrigger().and(isCoralMode)
