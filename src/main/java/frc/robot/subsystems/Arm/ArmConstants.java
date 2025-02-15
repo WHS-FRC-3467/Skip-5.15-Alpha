@@ -95,12 +95,12 @@ public final class ArmConstants {
         // Arm Simulation
         kSubSysConstants.kArmSimConfig.kIsComboSim = true;
         kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
-        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(23.188);
+        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
         kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
         kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
         kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
         kSubSysConstants.kArmSimConfig.kArmReduction =
-            104.1322; // RotorToSensorRatio * SensorToMechanismRatio
-        kSubSysConstants.kArmSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
+            54.4; // RotorToSensorRatio * SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
     }
 }
