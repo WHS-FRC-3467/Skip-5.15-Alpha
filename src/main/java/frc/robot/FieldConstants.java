@@ -234,15 +234,22 @@ public class FieldConstants {
 
     public static Pose2d getNearestCoralStation(Pose2d currentPose)
     {
-        double distanceToLeftStation = currentPose.getTranslation()
-            .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation());
-        double distanceToRightStation = currentPose.getTranslation()
-            .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation());
-
-        if (distanceToLeftStation > distanceToRightStation) {
-            return FieldConstants.CoralStation.rightCenterFace;
+        if (currentPose.getTranslation().getX() > FieldConstants.fieldLength / 2) {
+            if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {
+                return FieldConstants.CoralStation.rightCenterFace
+                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+            } else {
+                return FieldConstants.CoralStation.leftCenterFace
+                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+            }
         } else {
-            return FieldConstants.CoralStation.leftCenterFace;
+            if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {
+                return FieldConstants.CoralStation.leftCenterFace;
+            } else {
+                return FieldConstants.CoralStation.rightCenterFace;
+            }
         }
+
+
     }
 }
