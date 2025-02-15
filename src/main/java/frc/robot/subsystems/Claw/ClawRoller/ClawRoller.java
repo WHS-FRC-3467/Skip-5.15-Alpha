@@ -19,6 +19,7 @@ public class ClawRoller
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
+    static LoggedTunableNumber algaeIntakeSP = new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
 
     @RequiredArgsConstructor
     @Getter
@@ -29,7 +30,8 @@ public class ClawRoller
         SHUFFLE(() -> -0.5, ProfileType.OPEN_VOLTAGE),
         EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(() -> 0, ProfileType.MM_POSITION);
+        HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION),
+        ALGAE_INTAKE(() -> algaeIntakeSP.getAsDouble(), ProfileType.OPEN_CURRENT);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;
