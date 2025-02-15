@@ -75,16 +75,11 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
-    public final LED m_LED;
+    // public final LED m_LED;
 
     // Trigger for algae/coral mode switching
-    private boolean coralModeEnabled = false;
+    private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
-
-    // private final LaserCANSensor m_clawLaserCAN =
-    // new LaserCANSensor(Ports.CLAW_LASERCAN.getDeviceNumber(), Inches.of(6));
-    // private final LaserCANSensor m_rampLaserCAN =
-    // new LaserCANSensor(Ports.RAMP_LASERCAN.getDeviceNumber(), Inches.of(6));
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -182,8 +177,8 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
-        m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-            m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
+        // m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // Logic Triggers
         registerNamedCommands();
@@ -208,8 +203,6 @@ public class RobotContainer {
             "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         m_autoChooser.addOption(
             "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        m_autoChooser.addOption("Elevator static", m_profiledElevator.staticCharacterization(2.0));
-        m_autoChooser.addOption("Arm static", m_profiledArm.staticCharacterization(2.0));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
@@ -252,22 +245,11 @@ public class RobotContainer {
             });
     }
 
-    /** Use this method to define your joystick and button -> command mappings. */
+    /** Button and Command mappings */
     private void configureControllerBindings()
     {
         // Default command, normal field-relative drive
         m_drive.setDefaultCommand(joystickDrive());
-
-        // Driver Back Button: Reset gyro / odometry
-        final Runnable setPose =
-            Constants.currentMode == Constants.Mode.SIM
-                ? () -> m_drive.setPose(m_driveSimulation.getSimulatedDriveTrainPose())
-                : () -> m_drive
-                    .setPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d()));
-        m_driver
-            .back()
-            .onTrue(
-                Commands.runOnce(setPose).ignoringDisable(true));
 
         // Driver Left Bumper: Face Nearest Reef Face
         m_driver.leftBumper()
@@ -301,22 +283,34 @@ public class RobotContainer {
 
         // Driver A Button held and Right Bumper Pressed: Send Arm and Elevator to Processor
         m_driver
-            .a().and(isCoralMode.negate())
+            .a().and(isCoralMode)
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
                     Elevator.State.ALGAE_SCORE));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
-            .x()
+            .x().and(isCoralMode)
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
 
+        // Driver X Button: Send Arm and Elevator to LEVEL_2
+        m_driver
+            .x().and(isCoralMode.negate())
+            .onTrue(
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW));
+
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
-            .b()
+            .b().and(isCoralMode)
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
+
+        m_driver
+            .b().and(isCoralMode.negate())
+            .onTrue(
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                    Elevator.State.ALGAE_HIGH));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
@@ -329,12 +323,11 @@ public class RobotContainer {
         m_driver
             .y().and(isCoralMode.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.BARGE));
-        // TODO: Test Arm Level 4 in Sim
+                m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()
-            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.EJECT));
+            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -356,6 +349,7 @@ public class RobotContainer {
                         Commands.parallel(
                             m_clawRoller.setStateCommand(ClawRoller.State.OFF),
                             m_profiledArm.setStateCommand(Arm.State.STOW))));
+
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).whileTrue(
@@ -422,11 +416,8 @@ public class RobotContainer {
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
-        m_driver.rightBumper()
-            .onTrue(
-                !m_driver.leftBumper().getAsBoolean() ? setCoralAlgaeModeCommand()
-                    : Commands.runOnce(() -> {
-                    }));
+        m_driver.rightBumper().and(m_driver.leftBumper().negate())
+            .onTrue(setCoralAlgaeModeCommand());
 
     }
 
