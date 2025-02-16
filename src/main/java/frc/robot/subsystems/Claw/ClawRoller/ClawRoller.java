@@ -19,7 +19,8 @@ public class ClawRoller
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
-    static LoggedTunableNumber algaeIntakeSP = new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
+    static LoggedTunableNumber algaeIntakeSP =
+        new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
 
     @RequiredArgsConstructor
     @Getter
@@ -47,11 +48,6 @@ public class ClawRoller
     }
 
     public Command setStateCommand(State state)
-    {
-        return startEnd(() -> this.state = state, () -> this.state = State.OFF);
-    }
-
-    public Command setStateCommandNoEnd(State state)
     {
         return runOnce(() -> this.state = state);
     }

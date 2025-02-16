@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -132,6 +133,8 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
+
+        Logger.recordOutput("ZeroedCompPoses", new Pose3d());
     }
 
     /** This function is called once when the robot is disabled. */
