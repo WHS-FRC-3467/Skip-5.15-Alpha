@@ -351,7 +351,10 @@ public class RobotContainer {
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()
-            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
+            .whileTrue(Commands.parallel(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE),
+                Commands.sequence(Commands.waitSeconds(1.5),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))));
 
 
 
