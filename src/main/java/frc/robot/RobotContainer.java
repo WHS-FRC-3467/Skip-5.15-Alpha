@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.Vision.VisionConstants.*;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -188,8 +189,20 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
-                m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
+                m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {
+                    @Override
+                    public BooleanSupplier getValidStatus() {
+                        // Implement the method here
+                        return () -> true; // Replace with actual implementation
+                    }
+                });
+                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {
+                    @Override
+                    public BooleanSupplier getValidStatus() {
+                        // Implement the method here
+                        return () -> true; // Replace with actual implementation
+                    }
+                });
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
                 break;
@@ -357,10 +370,12 @@ public class RobotContainer {
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
+        // If lasercans are not reporting a valid measurement, then intake slowly for manual stopping
         m_driver
-            .leftTrigger()
+            .leftTrigger().and(isCoralMode)
             .whileTrue(
-                m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
+                (m_clawRollerLaserCAN.getValidMeasurement().getAsBoolean() && m_intakeLaserCAN.getValidMeasurement().getAsBoolean())
+                ? m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
                     .andThen(
                         m_superStruct
                             .getTransitionCommand(Arm.State.CORAL_INTAKE,
@@ -374,7 +389,9 @@ public class RobotContainer {
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW)
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE)))
             .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,

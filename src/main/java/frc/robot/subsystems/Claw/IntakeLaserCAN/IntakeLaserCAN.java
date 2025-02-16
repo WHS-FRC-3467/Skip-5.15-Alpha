@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Claw.IntakeLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
+import java.util.function.BooleanSupplier;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
@@ -12,6 +13,10 @@ import lombok.Setter;
 public class IntakeLaserCAN extends GenericLaserCANSubsystem<IntakeLaserCAN.State> {
 
     public Trigger triggered = new Trigger(() -> super.isTriggered());
+
+    public BooleanSupplier getValidMeasurement() {
+        return io.getValidStatus();
+    }
 
     @RequiredArgsConstructor
     @Getter
