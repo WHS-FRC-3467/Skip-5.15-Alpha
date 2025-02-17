@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
@@ -41,7 +42,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         BARGE(() -> Units.degreesToRotations(30.0), ProfileType.MM_POSITION),
         TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()),
             ProfileType.MM_POSITION),
-        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION);
+        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION),
+        COAST(() -> 0.0, ProfileType.DISABLED_COAST),
+        BRAKE(() -> 0.0, ProfileType.DISABLED_BRAKE);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;
@@ -60,12 +63,24 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public Arm(ArmIO io, boolean isSim)
     {
         super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
+        SmartDashboard.putData("Arm Coast Command", setCoastStateCommand());
+        SmartDashboard.putData("Arm Brake Command", setBrakeStateCommand());
     }
 
     /** Constructor */
     public Command setStateCommand(State state)
     {
         return this.runOnce(() -> this.state = state);
+    }
+
+    public Command setCoastStateCommand()
+    {
+        return this.runOnce(() -> this.state = State.COAST);
+    }
+
+    public Command setBrakeStateCommand()
+    {
+        return this.runOnce(() -> this.state = State.BRAKE);
     }
 
     public boolean atPosition(double tolerance)
