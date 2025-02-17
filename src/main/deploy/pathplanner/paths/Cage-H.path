@@ -82,7 +82,7 @@
     "rotation": -178.7269699799434
   },
   "reversed": false,
-  "folder": "1 Piece Center",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
