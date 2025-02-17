@@ -274,29 +274,29 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Left Bumper: Face Nearest Reef Face
-        // m_driver.leftBumper()
-        // .whileTrue(
-        // joystickDriveAtAngle(
-        // () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
-        // .rotateBy(Rotation2d.k180deg)));
+        m_driver.leftBumper()
+            .whileTrue(
+                joystickDriveAtAngle(
+                    () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
+                        .rotateBy(Rotation2d.k180deg)));
 
         // Driver Left Bumper + Right Stick Right: Approach Nearest Right-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
-        // 0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+        m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
+            0.8))
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
+        m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
         // Driver Left Bumper + Right Bumper: Approach Nearest Reef Face
-        // m_driver.leftBumper().and(m_driver.rightBumper())
-        // .whileTrue(
-        // joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+        m_driver.leftBumper().and(m_driver.rightBumper())
+            .whileTrue(
+                joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
@@ -433,6 +433,15 @@ public class RobotContainer {
         // () -> -m_driver.getLeftY() * 0.25,
         // () -> -m_driver.getLeftX() * 0.25,
         // () -> -m_driver.getRightX() * 0.25));
+
+        // Drive POV Up: Throw into the Barge
+        m_driver.povUp().onTrue(
+            Commands.sequence(
+                m_superStruct.getTransitionCommand(Arm.State.THROW_PREP, Elevator.State.THROW),
+                Commands.waitUntil(() -> m_profiledArm.atPosition(0))
+                    .andThen(m_profiledArm.setStateCommand(Arm.State.THROW_PREP)),
+                Commands.waitUntil(() -> m_profiledArm.atPosition(0))
+                    .andThen(m_profiledArm.setStateCommand(Arm.State.THROW))));
 
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
