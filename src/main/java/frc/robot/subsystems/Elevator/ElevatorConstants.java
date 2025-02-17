@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Ports;
+import frc.robot.Robot;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
@@ -97,6 +98,12 @@ public final class ElevatorConstants {
         // Simulation Type
         kSubSysConstants.SimType = simType.ELEVATOR;
 
+        if (Robot.isSimulation()) {
+            kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
+                InvertedValue.CounterClockwise_Positive;
+
+        }
+
         // Motor simulation
         kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
 
@@ -104,15 +111,15 @@ public final class ElevatorConstants {
         kSubSysConstants.kElevSimConfig.kIsComboSim = true;
         // Elevator Simulation
         kSubSysConstants.kElevSimConfig.kDefaultSetpoint = 0.0; // Meters
-        kSubSysConstants.kElevSimConfig.kCarriageMass = Units.lbsToKilograms(25); // Kilograms
-        kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(1.75); // Meters
+        kSubSysConstants.kElevSimConfig.kCarriageMass = Units.lbsToKilograms(21.5); // Kilograms
+        kSubSysConstants.kElevSimConfig.kElevatorDrumRadius = Units.inchesToMeters(1.756 / 2); // Meters
         // May want to triple "drum size" to account for the x3 scale in the cascading
         // elevator
         kSubSysConstants.kElevSimConfig.kMinElevatorHeight = 0.0; // Meters
-        kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(30); // Meters
+        kSubSysConstants.kElevSimConfig.kMaxElevatorHeight = Units.inchesToMeters(31); // Meters
         kSubSysConstants.kElevSimConfig.kElevatorGearing =
-            5.0; // RotorToSensorRatio * SensorToMechanismRatio
-        kSubSysConstants.kElevSimConfig.kSensorReduction = 1.0; // SensorToMechanismRatio
+            9.6; // RotorToSensorRatio * SensorToMechanismRatio
+        kSubSysConstants.kElevSimConfig.kSensorReduction = 9.6; // SensorToMechanismRatio
 
         // Calculate ratio of motor rotation to distance the top of the elevator moves
         // 5:1 and then x3. Each rotation is 1.75in diameter x pi = 5.498in per rotation

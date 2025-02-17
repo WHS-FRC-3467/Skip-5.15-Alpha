@@ -1,6 +1,7 @@
 package frc.robot.subsystems.GenericMotionProfiledSubsystem;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -185,7 +186,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             Logger.recordOutput(m_name + "/Setpoint", io.getSetpoint());
             Logger.recordOutput(m_name + "/Position(Rotations)", io.getPosition());
             Logger.recordOutput(m_name + "/Position(Degrees)",
-                Math.toDegrees(io.getPosition() * 2 * Math.PI));
+                (Units.rotationsToDegrees(io.getPosition())));
             Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
             Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
             Logger.recordOutput(m_name + "/AtPosition?", io.atPosition(0.0));

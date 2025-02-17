@@ -88,14 +88,18 @@ public class ElevatorSimProfile extends SimProfile {
 
         // ... and set the position and velocity for the lead motor simulation
         // (Multiply elevator positon by total gearing reduction from motor to elevator)
-        simState.setRawRotorPosition(position_meters * m_ElevConst.kElevatorGearing);
-        simState.setRotorVelocity(velocity_mps * m_ElevConst.kElevatorGearing);
+        simState.setRawRotorPosition(position_meters
+            / (2 * Math.PI * m_ElevConst.kElevatorDrumRadius) * m_ElevConst.kElevatorGearing);
+        simState.setRotorVelocity(velocity_mps / (2 * Math.PI * m_ElevConst.kElevatorDrumRadius)
+            * m_ElevConst.kElevatorGearing);
 
         // If using an external encoder, update its sim as well
         if (m_CANcoder != null) {
             // (Multiply elevator position by gearing reduction from sensor to elevator)
-            m_CANcoder.getSimState().setRawPosition(position_meters * m_ElevConst.kSensorReduction);
-            m_CANcoder.getSimState().setVelocity(velocity_mps * m_ElevConst.kSensorReduction);
+            m_CANcoder.getSimState().setRawPosition(position_meters
+                / (2 * Math.PI * m_ElevConst.kElevatorDrumRadius) * m_ElevConst.kSensorReduction);
+            m_CANcoder.getSimState().setVelocity(velocity_mps
+                / (2 * Math.PI * m_ElevConst.kElevatorDrumRadius) * m_ElevConst.kSensorReduction);
         }
 
         // Update elevator sim mechanism
