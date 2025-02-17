@@ -134,7 +134,7 @@ public class Robot extends LoggedRobot {
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
 
-        Logger.recordOutput("ZeroedCompPoses", new Pose3d());
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     /** This function is called once when the robot is disabled. */
@@ -142,7 +142,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
-        Elastic.selectTab(1);
+        Elastic.selectTab(0);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
     }
 
@@ -190,7 +190,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Elastic.selectTab(2);
+        Elastic.selectTab(1);
     }
 
     /** This function is called periodically during operator control. */
