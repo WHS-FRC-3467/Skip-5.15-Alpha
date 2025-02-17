@@ -18,6 +18,8 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
 
     private LaserCanInterface lc = null;
     private String name;
+    private int tries = 0;
+    private boolean hasConfiged = false;
 
     private Distance currentDistance;
 
@@ -37,17 +39,22 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
         lc = isSim
             ? new LaserCANSim(name)
             : new LaserCan(constants.laserCANDeviceId.getDeviceNumber());
-
-        try {
-            lc.setRangingMode(constants.rangingMode);
-            lc.setRegionOfInterest(constants.regionOfInterest);
-            lc.setTimingBudget(constants.timingBudget);
-            failedConfig.set(false);
-        } catch (ConfigurationFailedException e) {
-            System.out.println("Configuration failed! " + e);
-            failedConfig.setText("Failed to configure " + name + "!");
-            failedConfig.set(true);
+        while (!hasConfiged && tries < 5) {
+            try {
+                lc.setRangingMode(constants.rangingMode);
+                lc.setRegionOfInterest(constants.regionOfInterest);
+                lc.setTimingBudget(constants.timingBudget);
+                failedConfig.set(false);
+                System.out.println("Succesfully configured " + name);
+                hasConfiged = true;
+            } catch (ConfigurationFailedException e) {
+                System.out.println("Configuration failed for " + name + "! " + e);
+                failedConfig.setText("Failed to configure " + name + "!");
+                failedConfig.set(true);
+                tries++;
+            }
         }
+
     }
 
     public Distance getMeasurement()

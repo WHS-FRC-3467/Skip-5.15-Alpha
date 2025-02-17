@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -132,6 +133,8 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
+
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     /** This function is called once when the robot is disabled. */
@@ -139,7 +142,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
-        Elastic.selectTab(1);
+        Elastic.selectTab(0);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
     }
 
@@ -148,47 +151,11 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic()
     {
         // Test
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         var alliance = DriverStation.getAlliance();
-        Pose2d test;
         // Test
         // Get currently selected command
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        // Check if is the same as the last one
-        if (m_autonomousCommand != m_lastAutonomousCommand && m_autonomousCommand != null) {
-            // Check if its contained in the list of our autos
-            if (AutoBuilder.getAllAutoNames().contains(m_autonomousCommand.getName())) {
-                // Clear the current path
-                m_pathsToShow.clear();
-                // Grabs all paths from the auto
-                try {
-                    for (PathPlannerPath path : PathPlannerAuto
-                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
-                        // Adds all poses to master list
-                        m_pathsToShow.addAll(path.getPathPoses());
-                    }
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                // Displays all poses on Field2d widget depending on Alliance Side
-                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-                    m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
-                } else {
-                    for (int i = 0; i < m_pathsToShow.size(); i++) {
-                        test = m_pathsToShow.get(0).transformBy(
-                            new Transform2d());
-                        Logger.recordOutput("m_pathsToShow" + i, m_pathsToShow.get(i));
-                        Logger.recordOutput("NEW_m_pathsToShow" + i, test);
-                    }
-                }
-                //
-                m_autoTraj.setRobotPose(m_pathsToShow.get(0));
-            }
-        }
-        m_lastAutonomousCommand = m_autonomousCommand;
+
 
     }
 
@@ -223,7 +190,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Elastic.selectTab(2);
+        Elastic.selectTab(1);
     }
 
     /** This function is called periodically during operator control. */

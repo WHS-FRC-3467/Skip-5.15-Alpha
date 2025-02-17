@@ -1,10 +1,12 @@
 package frc.robot.subsystems.Elevator;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,27 +23,34 @@ import lombok.Setter;
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
+    static LoggedTunableNumber homingTuning =
+        new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2);
+    static LoggedTunableNumber positionTuning =
+        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(-0.2, 0.0, ProfileType.OPEN_VOLTAGE),
+        HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
         // TODO: Test Voltage and position values (rotations)
-        STOW(0.15, 0.0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(0.05, 0.0, ProfileType.MM_POSITION),
-        LEVEL_1(0.2, 0.0, ProfileType.MM_POSITION),
-        LEVEL_2(1, 0.0, ProfileType.MM_POSITION),
-        LEVEL_3(2, 0.0, ProfileType.MM_POSITION),
-        LEVEL_4(3.75, 0.0, ProfileType.MM_POSITION),
-        CLIMB(0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_LOW(0.8, 0.0, ProfileType.MM_POSITION),
-        ALGAE_HIGH(1.5, 0.0, ProfileType.MM_POSITION),
-        ALGAE_GROUND(0.05, 0.0, ProfileType.MM_POSITION),
-        ALGAE_SCORE(0.05, 0.0, ProfileType.MM_POSITION),
-        BARGE(4.0, 0.0, ProfileType.MM_POSITION),
-        CHARACTERIZATION(0.0, 0.0, ProfileType.CHARACTERIZATION);
+        STOW(() -> 0, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
+        LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
+        LEVEL_2(() -> 1.4, ProfileType.MM_POSITION),
+        LEVEL_3(() -> 2.85, ProfileType.MM_POSITION),
+        LEVEL_4(() -> 5.20, ProfileType.MM_POSITION),
+        CLIMB(() -> 0.05, ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> 0.8, ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> 1.5, ProfileType.MM_POSITION),
+        ALGAE_GROUND(() -> 0.05, ProfileType.MM_POSITION),
+        ALGAE_SCORE(() -> 0.05, ProfileType.MM_POSITION),
+        BARGE(() -> 4.0, ProfileType.MM_POSITION),
+        TUNING(() -> positionTuning.getAsDouble(), ProfileType.MM_POSITION),
+        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION),
+        COAST(() -> 0.0, ProfileType.DISABLED_COAST),
+        BRAKE(() -> 0.0, ProfileType.DISABLED_BRAKE);
 
-        private final double output;
-        private final double feedFwd;
+        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -60,11 +69,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public Elevator(ElevatorIO io, boolean isSim)
     {
         super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
+        SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
+        SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
     }
 
     public Command setStateCommand(State state)
     {
-        return runOnce(() -> this.state = state);
+        return this.runOnce(() -> this.state = state);
+    }
+
+    public Command setCoastStateCommand()
+    {
+        return this.runOnce(() -> this.state = State.COAST);
+    }
+
+    public Command setBrakeStateCommand()
+    {
+        return this.runOnce(() -> this.state = State.BRAKE);
     }
 
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
