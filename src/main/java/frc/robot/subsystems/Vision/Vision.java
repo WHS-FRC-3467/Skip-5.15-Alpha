@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -36,6 +37,8 @@ public class Vision extends SubsystemBase {
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
+    private boolean[] cameraIsDisconnected;
+    public BooleanSupplier camerasDisconnected = () -> false;
 
     public Vision(VisionConsumer consumer, VisionIO... io)
     {
@@ -86,6 +89,7 @@ public class Vision extends SubsystemBase {
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
             // Update disconnected alert
             disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
+            cameraIsDisconnected[cameraIndex] = !inputs[cameraIndex].connected;
 
             // Initialize logging values
             List<Pose3d> tagPoses = new LinkedList<>();
@@ -175,6 +179,8 @@ public class Vision extends SubsystemBase {
             allRobotPosesAccepted.addAll(robotPosesAccepted);
             allRobotPosesRejected.addAll(robotPosesRejected);
         }
+
+        camerasDisconnected = () -> cameraIsDisconnected[0] && cameraIsDisconnected[1];
 
         // Log summary data
         Logger.recordOutput(
