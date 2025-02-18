@@ -38,7 +38,8 @@ public class Vision extends SubsystemBase {
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
     private boolean[] cameraIsDisconnected;
-    public BooleanSupplier camerasDisconnected = () -> false;
+    public boolean camerasDisconnected = false;
+    public BooleanSupplier camerasConnected = () -> !camerasDisconnected;
 
     public Vision(VisionConsumer consumer, VisionIO... io)
     {
@@ -180,7 +181,7 @@ public class Vision extends SubsystemBase {
             allRobotPosesRejected.addAll(robotPosesRejected);
         }
 
-        camerasDisconnected = () -> cameraIsDisconnected[0] && cameraIsDisconnected[1];
+        camerasDisconnected = cameraIsDisconnected[0] && cameraIsDisconnected[1];
 
         // Log summary data
         Logger.recordOutput(
