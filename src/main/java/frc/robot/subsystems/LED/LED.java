@@ -22,11 +22,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Ports;
 
@@ -44,9 +40,6 @@ public class LED extends SubsystemBase {
 
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
-
-    // https://github.com/WHS-FRC-3467/Skip-5.14-Nocturne/blob/main/src/main/java/frc/robot/Subsystems/LED/LEDSubsystem.java
-
 
     /*
      * Constructor Creates a new LEDSubsystem
@@ -120,41 +113,39 @@ public class LED extends SubsystemBase {
             if (m_Vision.visionHasTarget) {
                 m_State.setAnimation(a_LeftElevatorRainbow);
                 m_Mode.setAnimation(a_RightElevatorRainbow);
-                this.timerDisabled();
             } else {
-                runMatchTimerPattern();
-                m_State.setAnimation(a_InAutonomous);
+                m_Mode.setAnimation(a_DisabledMode);
+                m_State.setAnimation(a_DisabledState);
             }
         } else if (DriverStation.isAutonomousEnabled()) {
             m_State.setAnimation(a_LeftFlame);
             m_Mode.setAnimation(a_RightFlame);
         } else {
             // All the teleop states/logic comes here
-            if (m_Superstructure.getArmState() == Arm.State.CORAL_INTAKE
-            || m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
-                if (m_clawLaserCAN.isTriggered()) {
+            if (m_Superstructure.getArmState() == Arm.State.CORAL_INTAKE || m_Superstructure.getArmState() == Arm.State.ALGAE_GROUND
+            || m_Superstructure.getArmState() == Arm.State.ALGAE_HIGH || m_Superstructure.getArmState() == Arm.State.ALGAE_LOW) {
+                if (m_ClawRoller.atPosition(0.1)) {
                     // Checks to see if intaking is complete
                     // If so, tell driver to back away from coral station
                     m_State.setColor(green);
                 } else {
                     // When intaking, set the state LED to red
-                    m_State.setColor(red);               
+                    m_State.setAnimation(a_Intaking);               
                 }
             } else if (m_Superstructure.getArmState() == Arm.State.CLIMB || m_Climber.getState() == Climber.State.PREP
             | m_Climber.getState() == Climber.State.CLIMB) {
-                // TODO: if climb is complete, set state LED to green
+                // If climb is complete, set state LED to green
                 if (m_Climber.atPosition(0.1)) {
                     m_State.setColor(green);
                 } else {
                     // If robot is still climbing, then set the state LED to magenta
-                    m_State.setColor(magenta);
+                    m_State.setAnimation(a_Intaking);
                 }
              } else if (m_Superstructure.getElevatorState() != Elevator.State.STOW && m_Superstructure.getElevatorState() != Elevator.State.CHARACTERIZATION 
                 && m_Superstructure.getElevatorState() != Elevator.State.CLIMB && m_Superstructure.getElevatorState() != Elevator.State.HOMING) {
                 // The above statement says that the robot is aiming or has finished aiming if the arm isn't in the above states
-                    // TODO: Robot is Ready If Statement
-                        // When robot is successfully auto aligned, set one LED to green, the other to the
-                        // coral/algae and rumble the controller
+                    // When robot is successfully auto aligned, set one LED to green, the other to the
+                    // coral/algae and rumble the controller
                 if (m_Superstructure.atPosition(0.1, 0.1) && m_ClawRoller.atPosition(0.1)) {
                     m_State.setColor(green);
                 } else {
@@ -237,22 +228,14 @@ public class LED extends SubsystemBase {
 
     }
 
-    /*
-     * Match Timer Strip Autonomous (15 sec): Yellow Ping-pong 2:15 -> 1:00: Solid Green 1:00 ->
-     * 0:20: Solid Yellow 0:20 -> 0:10: Solid Red 0:10 -> 0:00: Strobing Red Non-auto periods &
-     * Disabled: White
-     */
-    Timer m_pseudoTimer = new Timer();
-    Color currentColor = black;
-
     // There will be two LED strips
     // This one for Coral/Algae Mode
-    LEDSegment m_Mode = new LEDSegment(8, 47, 1);
+    LEDSegment m_Mode = new LEDSegment(8, 47, 1); // TODO: Get the real segment size
     // This one for what the robot is doing
     LEDSegment m_State = new LEDSegment(55, 47, 2);
 
     // Animations
-    Animation a_TimeExpiring =
+    Animation a_Intaking =
         new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
     Animation a_LeftElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
@@ -260,50 +243,13 @@ public class LED extends SubsystemBase {
         new RainbowAnimation(0.7, 0.5, m_Mode.segmentSize, false, m_Mode.startIndex);
     Animation a_AimingPingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8,
         m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
-    Animation a_InAutonomous = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
+    Animation a_DisabledMode = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
         m_Mode.segmentSize, BounceMode.Back, 3, m_Mode.startIndex);
+    Animation a_DisabledState = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
+        m_State.segmentSize, BounceMode.Back, 3, m_State.startIndex);
     Animation a_LeftFlame =
         new FireAnimation(0.9, 0.75, m_State.segmentSize, 1.0, 0.3, true, m_State.startIndex);
     Animation a_RightFlame =
         new FireAnimation(0.9, 0.75, m_Mode.segmentSize, 1.0, 0.3, false, m_Mode.startIndex);
 
-    private void runMatchTimerPattern()
-    {
-
-        Color newColor = black;
-
-        double matchTime = DriverStation.getMatchTime();
-        if (matchTime < 0.0) {
-            m_pseudoTimer.start();
-            matchTime = (int) (150.0 - m_pseudoTimer.get());
-        }
-
-        if (matchTime > 60.0) {
-            newColor = green;
-        } else if (matchTime > 20.0) {
-            newColor = yellow;
-        } else if (matchTime > 10.0) {
-            newColor = red;
-        } else if (matchTime > 0.0) {
-            newColor = magenta;
-        } else {
-            newColor = white;
-        }
-
-        if (newColor != currentColor) {
-            if (newColor == magenta) {
-                m_Mode.setAnimation(a_TimeExpiring);
-            } else {
-                m_Mode.setColor(newColor);
-            }
-            currentColor = newColor;
-        }
-    }
-
-    public void timerDisabled()
-    {
-        m_Mode.setColor(white);
-        m_pseudoTimer.stop();
-        m_pseudoTimer.reset();
-    }
 }
