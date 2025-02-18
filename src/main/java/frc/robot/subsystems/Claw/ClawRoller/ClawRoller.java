@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -60,5 +61,15 @@ public class ClawRoller
     {
         return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
             Math.max(0.0001, tolerance));
+    }
+
+    public BooleanSupplier isCurrentSpiked(double spikedCurrentThreshold) 
+    {
+        return () -> spikedCurrentThreshold > io.getSupplyCurrent();
+    }
+
+    public BooleanSupplier isCurrentDipped(double dippedCurrentThreshold)
+    {
+        return () -> dippedCurrentThreshold < io.getSupplyCurrent();
     }
 }

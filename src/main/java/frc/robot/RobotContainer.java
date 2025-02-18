@@ -364,9 +364,16 @@ public class RobotContainer {
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()
-            .whileTrue(m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
-
-
+            .whileTrue(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
+            .onFalse(
+                (m_clawRollerLaserCAN.getValidMeasurement().getAsBoolean())
+                ? Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                : Commands.waitUntil(m_clawRoller.isCurrentDipped(20))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -390,8 +397,10 @@ public class RobotContainer {
                         .waitUntil(m_intakeLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
-                : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW)
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE)))
+                : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW) // TODO: TEST
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.waitUntil(m_clawRoller.isCurrentSpiked(65))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
             .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,
