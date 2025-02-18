@@ -380,11 +380,13 @@ public class RobotContainer {
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered)))
+                    .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 1)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
             .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,
-                        Elevator.State.STOW)));
+                        Elevator.State.STOW))
+                .andThen(Commands.runOnce(() -> m_driveRmbl.setRumble(GenericHID.RumbleType.kLeftRumble, 0))));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
