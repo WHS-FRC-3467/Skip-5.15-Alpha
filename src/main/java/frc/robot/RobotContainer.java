@@ -351,13 +351,11 @@ public class RobotContainer {
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger()
-            .whileTrue(Commands.parallel(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE),
-                Commands.sequence(Commands.waitSeconds(1.5),
-                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))));
-
-        m_driver.rightTrigger()
-            .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.OFF));
+            .whileTrue(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
+            .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
