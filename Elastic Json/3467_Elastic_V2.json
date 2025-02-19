@@ -109,7 +109,8 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_left-raw",
-              "period": 0.06
+              "period": 0.06,
+              "rotation_turns": 0
             }
           },
           {
@@ -121,7 +122,8 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_right-raw",
-              "period": 0.06
+              "period": 0.06,
+              "rotation_turns": 0
             }
           },
           {
@@ -206,7 +208,8 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_left-processed",
-              "period": 0.06
+              "period": 0.06,
+              "rotation_turns": 0
             }
           },
           {
@@ -218,7 +221,8 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_right-processed",
-              "period": 0.06
+              "period": 0.06,
+              "rotation_turns": 0
             }
           },
           {
@@ -1724,6 +1728,155 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Alerts",
               "period": 0.06
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pit",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "ClawRollerLaserCAN",
+            "x": 950.0,
+            "y": 300.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Distance",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 150.0,
+                "height": 150.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/AdvantageKit/ClawRollerLaserCAN/Distance",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "IntakeLaserCAN",
+            "x": 650.0,
+            "y": 300.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Distance",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 150.0,
+                "height": 150.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/AdvantageKit/IntakeLaserCAN/Distance",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Elevator Coast Command",
+            "x": 650.0,
+            "y": 0.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Elevator Coast Command",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Arm Coast Command",
+            "x": 950.0,
+            "y": 0.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Arm Coast Command",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Arm Brake Command",
+            "x": 950.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Arm Brake Command",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Elevator Brake Command",
+            "x": 650.0,
+            "y": 150.0,
+            "width": 300.0,
+            "height": 150.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Elevator Brake Command",
+              "period": 0.06,
+              "show_type": false
+            }
+          },
+          {
+            "title": "Triggered",
+            "x": 950.0,
+            "y": 450.0,
+            "width": 300.0,
+            "height": 100.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClawRollerLaserCAN/Triggered",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Triggered",
+            "x": 650.0,
+            "y": 450.0,
+            "width": 300.0,
+            "height": 100.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/IntakeLaserCAN/Triggered",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
