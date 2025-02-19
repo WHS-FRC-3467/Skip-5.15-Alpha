@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems.LED;
 
+import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Ports;
@@ -40,6 +42,11 @@ public class LED extends SubsystemBase {
 
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
+
+    // Sim strings
+    String modeSim = "";
+    String stateSim = "";
+    String driveCommand = "";
 
     /*
      * Constructor Creates a new LEDSubsystem
@@ -87,6 +94,15 @@ public class LED extends SubsystemBase {
     {
         // Use the LEDStateMachine to set the LEDs
         LEDStateMachine();
+        // Smartdashboard the LEDs for Sim
+        SmartDashboard.putString("State LED", stateSim);
+        SmartDashboard.putString("Mode LED", modeSim);
+        try {
+            driveCommand = m_Drive.getCurrentCommand().getClass().toString();
+        } catch (Exception e) {
+            driveCommand = "";
+        }
+        Logger.recordOutput("Current Drive Command", driveCommand);
     }
 
     private void LEDStateMachine()
@@ -94,9 +110,11 @@ public class LED extends SubsystemBase {
         // Light up the robot based on the triggers/state
         // Set the color of the mode LED strip based on Coral/Algae Mode
         if (m_isCoralMode.getAsBoolean()) {
-            m_Mode.setColor(cyan);
-        } else {
             m_Mode.setColor(white);
+            modeSim = "Coral";
+        } else {
+            m_Mode.setColor(cyan);
+            modeSim = "Algae";
         }
 
         /*
@@ -113,13 +131,19 @@ public class LED extends SubsystemBase {
             if (m_Vision.visionHasTarget) {
                 m_State.setAnimation(a_LeftElevatorRainbow);
                 m_Mode.setAnimation(a_RightElevatorRainbow);
+                stateSim = "Left Elevator Rainbow";
+                modeSim = "Right Elevator Rainbow";
             } else {
                 m_Mode.setAnimation(a_DisabledMode);
                 m_State.setAnimation(a_DisabledState);
+                stateSim = "Disabled State";
+                modeSim = "Disabled Mode";
             }
         } else if (DriverStation.isAutonomousEnabled()) {
             m_State.setAnimation(a_LeftFlame);
             m_Mode.setAnimation(a_RightFlame);
+            stateSim = "Auto - State Flame";
+            modeSim = "Auto - Mode Flame";
         } else {
             // All the teleop states/logic comes here
             if (m_Superstructure.getArmState() == Arm.State.CORAL_INTAKE || m_Superstructure.getArmState() == Arm.State.ALGAE_GROUND
@@ -128,26 +152,32 @@ public class LED extends SubsystemBase {
                     // Checks to see if intaking is complete
                     // If so, tell driver to back away from coral station
                     m_State.setColor(green);
+                    stateSim = "Intake - State Green";
                 } else {
                     // When intaking, set the state LED to red
-                    m_State.setAnimation(a_Intaking);               
+                    m_State.setAnimation(a_Intaking);
+                    stateSim = "Intake - State Red";
                 }
             } else if (m_Superstructure.getArmState() == Arm.State.CLIMB || m_Climber.getState() == Climber.State.PREP
             | m_Climber.getState() == Climber.State.CLIMB) {
                 // If climb is complete, set state LED to green
                 if (m_Climber.atPosition(0.1)) {
                     m_State.setColor(green);
+                    stateSim = "Climb - State Green";
                 } else {
-                    // If robot is still climbing, then set the state LED to magenta
+                    // If robot is still climbing, then set the state LED red
                     m_State.setAnimation(a_Intaking);
+                    stateSim = "Climb - State Red";
                 }
              } else if (m_Superstructure.getElevatorState() != Elevator.State.STOW && m_Superstructure.getElevatorState() != Elevator.State.CHARACTERIZATION 
                 && m_Superstructure.getElevatorState() != Elevator.State.CLIMB && m_Superstructure.getElevatorState() != Elevator.State.HOMING) {
-                // The above statement says that the robot is aiming or has finished aiming if the arm isn't in the above states
+                // The above statement says that the robot's superstructure is going to a state if the arm isn't in the above states
+                // This superstructure part of LED control may be deleted if the driver changes his mind about keeping this
                     // When robot is successfully auto aligned, set one LED to green, the other to the
                     // coral/algae and rumble the controller
                 if (m_Superstructure.atPosition(0.1, 0.1) && m_ClawRoller.atPosition(0.1)) {
                     m_State.setColor(green);
+                    stateSim = "Superstructure - State Green";
                 } else {
                     // Else: the robot is aiming, set state LED to aiming ping pong
                     // The robot is aiming if the drivetrain isn't in its default command
@@ -155,12 +185,32 @@ public class LED extends SubsystemBase {
                     // This else if being underneath intaking and climbing 
                     // means that an intaking or climbing robot will never reach this statement
                     m_State.setAnimation(a_AimingPingPong);
+                    stateSim = "Superstructure - State Red";
                 }
 
-            } else if (m_Drive.getCurrentCommand() != m_Drive.getDefaultCommand()) {
+            // } else if (m_Drive.getCurrentCommand().getClass() == edu.wpi.first.wpilibj2.command.SequentialCommandGroup.class) {
                 // The robot is also aiming if the drivetrain isn't in its default command,
                 // assuming that the robot has finished aiming
-                m_State.setAnimation(a_AimingPingPong);
+                // m_State.setAnimation(a_AimingPingPong);
+                // stateSim = "Drivetrain is Aiming something";
+            } else {
+                try {
+                    if (m_Drive.getCurrentCommand().getClass() == edu.wpi.first.wpilibj2.command.SequentialCommandGroup.class) {
+                        // The robot is also aiming if the drivetrain isn't in its default command,
+                        // assuming that the robot has finished aiming
+                        m_State.setAnimation(a_AimingPingPong);
+                        stateSim = "Drivetrain is Aiming something";
+                    } else {
+                        // Default Teleop
+                        stateSim = "Teleop";
+                        m_State.setColor(black);
+                    }
+                } catch (Exception e) {
+                    // Default Teleop
+                    stateSim = "Teleop";
+                    m_State.setColor(black);
+                }
+
             }
         }
     }
@@ -230,19 +280,20 @@ public class LED extends SubsystemBase {
 
     // There will be two LED strips
     // This one for Coral/Algae Mode
-    LEDSegment m_Mode = new LEDSegment(8, 47, 1); // TODO: Get the real segment size
+    LEDSegment m_Mode = new LEDSegment(8, 144, 1);
     // This one for what the robot is doing
-    LEDSegment m_State = new LEDSegment(55, 47, 2);
+    LEDSegment m_State = new LEDSegment(152, 144, 2);
 
     // Animations
     Animation a_Intaking =
-        new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
+        new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_State.segmentSize, m_State.startIndex);
     Animation a_LeftElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
     Animation a_RightElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_Mode.segmentSize, false, m_Mode.startIndex);
-    Animation a_AimingPingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8,
-        m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
+    Animation a_AimingPingPong = new StrobeAnimation(magenta.r, magenta.g, magenta.b, 0, 0.75, m_State.segmentSize, m_State.startIndex);
+    Animation a_FacingPingPong = new LarsonAnimation(green.r, green.g, green.b, 0, 0.8,
+    m_State.segmentSize, BounceMode.Back, 6, m_State.startIndex);
     Animation a_DisabledMode = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
         m_Mode.segmentSize, BounceMode.Back, 3, m_Mode.startIndex);
     Animation a_DisabledState = new LarsonAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,

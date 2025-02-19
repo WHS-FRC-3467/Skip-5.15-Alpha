@@ -78,7 +78,7 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
-    // public final LED m_LED;
+    public final LED m_LED;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
@@ -199,6 +199,7 @@ public class RobotContainer {
 
         // Superstructure coordinates Arm and Elevator motions
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
+        m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct, m_vision, m_clawRollerLaserCAN, isCoralMode);
 
         // LED subsystem reads status from all other subsystems to control LEDs via CANdle
         // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
@@ -276,18 +277,18 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Left Bumper: Face Nearest Reef Face
-        // m_driver.leftBumper()
-        // .whileTrue(
-        // joystickDriveAtAngle(
-        // () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
-        // .rotateBy(Rotation2d.k180deg)));
+        m_driver.leftBumper()
+        .whileTrue(
+        joystickDriveAtAngle(
+        () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
+        .rotateBy(Rotation2d.k180deg)));
 
         // Driver Left Bumper + Right Stick Right: Approach Nearest Right-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
-        // 0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+        m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
+        0.8))
+        .whileTrue(
+        joystickApproach(
+        () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
         // m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
@@ -395,48 +396,48 @@ public class RobotContainer {
                 : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE));
 
         // Driver Start Button: Climb Request (toggle)
-        // m_driver.start().onTrue(Commands.runOnce(() -> {
-        // m_profiledClimber.climbRequested = true;
-        // m_profiledClimber.climbStep += 1;
-        // }));
+        m_driver.start().onTrue(Commands.runOnce(() -> {
+        m_profiledClimber.climbRequested = true;
+        m_profiledClimber.climbStep += 1;
+        }));
 
         // Climb step 1: Get the Arm Down, then the Elevator down, and then and move climber to prep
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).whileTrue(
-        // Commands.parallel(
-        // Commands.parallel(
-        // m_profiledArm.setStateCommand(Arm.State.CLIMB),
-        // Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-        // .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))),
-        // Commands
-        // .waitUntil(
-        // () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
-        // .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).whileTrue(
+        Commands.parallel(
+        Commands.parallel(
+        m_profiledArm.setStateCommand(Arm.State.CLIMB),
+        Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
+        .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))),
+        Commands
+        .waitUntil(
+        () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
+        .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
 
         // Climb step 2: Move climber to climb
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
-        // .whileTrue(
-        // m_profiledClimber.setStateCommand(Climber.State.CLIMB)
-        // .until(m_profiledClimber.getClimbedTrigger()));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
+        .whileTrue(
+        m_profiledClimber.setStateCommand(Climber.State.CLIMB)
+        .until(m_profiledClimber.getClimbedTrigger()));
 
-        // m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
+        m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
 
         // Driver POV Right: End Climbing Sequence if needed
-        // m_driver
-        // .povRight()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> {
-        // m_profiledClimber.climbRequested = false;
-        // m_profiledClimber.climbStep = 0;
-        // }));
+        m_driver
+        .povRight()
+        .onTrue(
+        Commands.runOnce(
+        () -> {
+        m_profiledClimber.climbRequested = false;
+        m_profiledClimber.climbStep = 0;
+        }));
 
         // Slow drivetrain to 25% while climbing
-        // m_profiledClimber.getClimbRequest().whileTrue(
-        // DriveCommands.joystickDrive(
-        // m_drive,
-        // () -> -m_driver.getLeftY() * 0.25,
-        // () -> -m_driver.getLeftX() * 0.25,
-        // () -> -m_driver.getRightX() * 0.25));
+        m_profiledClimber.getClimbRequest().whileTrue(
+            DriveCommands.joystickDrive(
+                m_drive,
+                () -> -m_driver.getLeftY()*0.25,
+                () -> -m_driver.getLeftX()*0.25,
+                () -> -m_driver.getRightX()*0.25));
 
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
