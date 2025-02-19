@@ -178,12 +178,14 @@ public class DriveCommands {
     {
 
         // Create PID controller
-        ProfiledPIDController angleController =
-            new ProfiledPIDController(
+        TuneableProfiledPID angleController =
+            new TuneableProfiledPID(
+                "angleController",
                 ANGLE_KP,
                 0.0,
                 ANGLE_KD,
-                new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+                ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_ACCELERATION);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
         TuneableProfiledPID alignController =

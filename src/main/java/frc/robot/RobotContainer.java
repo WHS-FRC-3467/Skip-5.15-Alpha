@@ -105,11 +105,11 @@ public class RobotContainer {
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
-                // m_vision =
-                // new Vision(
-                // m_drive,
-                // new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                // new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                m_vision =
+                    new Vision(
+                        m_drive,
+                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
                 // break;
 
@@ -130,7 +130,7 @@ public class RobotContainer {
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
-                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+                // m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
 
@@ -274,29 +274,29 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Left Bumper: Face Nearest Reef Face
-        // m_driver.leftBumper()
-        // .whileTrue(
-        // joystickDriveAtAngle(
-        // () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
-        // .rotateBy(Rotation2d.k180deg)));
+        m_driver.leftBumper()
+            .whileTrue(
+                joystickDriveAtAngle(
+                    () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
+                        .rotateBy(Rotation2d.k180deg)));
 
         // Driver Left Bumper + Right Stick Right: Approach Nearest Right-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
-        // 0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+        m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
+            0.8))
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
+        m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
         // Driver Left Bumper + Right Bumper: Approach Nearest Reef Face
-        // m_driver.leftBumper().and(m_driver.rightBumper())
-        // .whileTrue(
-        // joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+        m_driver.leftBumper().and(m_driver.rightBumper())
+            .whileTrue(
+                joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
