@@ -273,30 +273,22 @@ public class RobotContainer {
         // Default command, normal field-relative drive
         m_drive.setDefaultCommand(joystickDrive());
 
-        // Driver Left Bumper: Face Nearest Reef Face
-        // m_driver.leftBumper()
-        // .whileTrue(
-        // joystickDriveAtAngle(
-        // () -> FieldConstants.getNearestReefFace(m_drive.getPose()).getRotation()
-        // .rotateBy(Rotation2d.k180deg)));
+        // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
+        m_driver.rightBumper()
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
-        // Driver Left Bumper + Right Stick Right: Approach Nearest Right-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisGreaterThan(XboxController.Axis.kRightX.value,
-        // 0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+        // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
+        m_driver.leftBumper()
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
-        // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
-        // m_driver.leftBumper().and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
-        // .whileTrue(
-        // joystickApproach(
-        // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
-
-        // Driver Left Bumper + Right Bumper: Approach Nearest Reef Face
-        // m_driver.leftBumper().and(m_driver.rightBumper())
-        // .whileTrue(
-        // joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.leftBumper().and(isCoralMode.negate())
+            .whileTrue(
+                joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
@@ -448,7 +440,7 @@ public class RobotContainer {
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
-        m_driver.rightBumper().and(m_driver.leftBumper().negate())
+        m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand());
 
     }
