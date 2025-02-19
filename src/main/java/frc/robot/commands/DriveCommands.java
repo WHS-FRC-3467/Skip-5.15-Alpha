@@ -222,6 +222,8 @@ public class DriveCommands {
                     new Translation2d(alignController.calculate(distanceToGoal), 0)
                         .rotateBy(robotToGoal.getAngle());
 
+                Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+
                 // Calculate total linear velocity
                 Translation2d linearVelocity =
                     getLinearVelocityFromJoysticks(0,

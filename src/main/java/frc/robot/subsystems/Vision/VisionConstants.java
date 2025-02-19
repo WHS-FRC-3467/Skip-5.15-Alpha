@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.Vision;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -20,11 +22,20 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 
 public class VisionConstants {
     // AprilTag layout
-    public static AprilTagFieldLayout aprilTagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    public static AprilTagFieldLayout aprilTagLayout;
+
+    static {
+        try {
+            aprilTagLayout = new AprilTagFieldLayout(
+                new File(Filesystem.getDeployDirectory(), "vision/andymark.json").toPath());
+        } catch (IOException exception) {
+            aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        }
+    }
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "front_left";
