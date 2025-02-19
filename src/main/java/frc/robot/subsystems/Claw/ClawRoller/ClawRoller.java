@@ -20,7 +20,10 @@ public class ClawRoller
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
-    static LoggedTunableNumber algaeIntakeSP = new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
+    static LoggedTunableNumber algaeIntakeSP =
+        new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
+
+    public static boolean isCurrentDipped;
 
     @RequiredArgsConstructor
     @Getter
@@ -63,7 +66,7 @@ public class ClawRoller
             Math.max(0.0001, tolerance));
     }
 
-    public BooleanSupplier isCurrentSpiked(double spikedCurrentThreshold) 
+    public BooleanSupplier isCurrentSpiked(double spikedCurrentThreshold)
     {
         return () -> spikedCurrentThreshold > io.getSupplyCurrent();
     }
@@ -72,4 +75,6 @@ public class ClawRoller
     {
         return () -> dippedCurrentThreshold < io.getSupplyCurrent();
     }
+
+
 }

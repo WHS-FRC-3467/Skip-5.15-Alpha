@@ -191,14 +191,16 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {
                     @Override
-                    public BooleanSupplier getValidStatus() {
+                    public BooleanSupplier getValidStatus()
+                    {
                         // Implement the method here
                         return () -> true; // Replace with actual implementation
                     }
                 });
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {
                     @Override
-                    public BooleanSupplier getValidStatus() {
+                    public BooleanSupplier getValidStatus()
+                    {
                         // Implement the method here
                         return () -> true; // Replace with actual implementation
                     }
@@ -301,7 +303,8 @@ public class RobotContainer {
         // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper + Right Stick Left: Approach Nearest Left-Side Reef Branch
-        // m_driver.leftBumper().and(m_vision.camerasConnected).and(m_driver.axisLessThan(XboxController.Axis.kRightX.value, -0.8))
+        // m_driver.leftBumper().and(m_vision.camerasConnected).and(m_driver.axisLessThan(XboxController.Axis.kRightX.value,
+        // -0.8))
         // .whileTrue(
         // joystickApproach(
         // () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
@@ -368,39 +371,46 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(
                 (m_clawRollerLaserCAN.getValidMeasurement().getAsBoolean())
-                ? Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                : Commands.waitUntil(m_clawRoller.isCurrentDipped(20))
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+                    ? Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
+                        .andThen(
+                            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                    : Commands.waitUntil(m_clawRoller.isCurrentDipped(20))
+                        .andThen(
+                            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
-        // If lasercans are not reporting a valid measurement, then intake slowly for manual stopping
+        // If lasercans are not reporting a valid measurement, then intake slowly for manual
+        // stopping
         m_driver
             .leftTrigger().and(isCoralMode)
             .whileTrue(
-                (m_clawRollerLaserCAN.getValidMeasurement().getAsBoolean() && m_intakeLaserCAN.getValidMeasurement().getAsBoolean())
-                ? m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
-                    .andThen(
-                        m_superStruct
-                            .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                (m_clawRollerLaserCAN.getValidMeasurement().getAsBoolean()
+                    && m_intakeLaserCAN.getValidMeasurement().getAsBoolean())
+                        ? m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKE)
+                            .andThen(
+                                m_superStruct
+                                    .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                                        Elevator.State.CORAL_INTAKE))
+                            .andThen(Commands.waitUntil(m_intakeLaserCAN.triggered))
+                            .raceWith(Commands.waitUntil(m_clawRoller.isCurrentSpiked(65)))
+                            .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW))
+                            .andThen(Commands
+                                .waitUntil(m_intakeLaserCAN.triggered.negate()
+                                    .and(m_clawRollerLaserCAN.triggered)))
+                            .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.SHUFFLE))
+                            .andThen(Commands
+                                .waitUntil(m_intakeLaserCAN.triggered
+                                    .and(m_clawRollerLaserCAN.triggered)))
+                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                        : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW) // TODO:
+                                                                                         // TEST
+                            .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                                 Elevator.State.CORAL_INTAKE))
-                    .andThen(Commands.waitUntil(m_intakeLaserCAN.triggered))
-                    .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW))
-                    .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
-                            .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.SHUFFLE))
-                    .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered
-                            .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
-                : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.INTAKESLOW) // TODO: TEST
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE))
-                    .andThen(Commands.waitUntil(m_clawRoller.isCurrentSpiked(65))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
+                            .andThen(Commands.waitUntil(m_clawRoller.isCurrentSpiked(65))
+                                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))))
             .onFalse(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,
@@ -429,8 +439,8 @@ public class RobotContainer {
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
             (m_clawRoller.getState() == ClawRoller.State.ALGAE_INTAKE)
-            ? m_clawRoller.setStateCommandNoEnd(ClawRoller.State.EJECT)
-            : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.ALGAE_INTAKE));
+                ? m_clawRoller.setStateCommandNoEnd(ClawRoller.State.EJECT)
+                : m_clawRoller.setStateCommandNoEnd(ClawRoller.State.ALGAE_INTAKE));
 
         // Driver Start Button: Climb Request (toggle)
         // m_driver.start().onTrue(Commands.runOnce(() -> {
@@ -479,13 +489,14 @@ public class RobotContainer {
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
             Commands.sequence(
-            // Always move Arm to STOW position before moving Elevator
-            m_profiledArm.setStateCommand(Arm.State.STOW).until(() -> m_profiledArm.atPosition(0.1)),
-            // Move Elevator to homing  position
-            Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-                .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOMING)
-                    .until(m_profiledElevator.getHomedTrigger()))
-                .andThen(m_profiledElevator.zeroSensorCommand())));
+                // Always move Arm to STOW position before moving Elevator
+                m_profiledArm.setStateCommand(Arm.State.STOW)
+                    .until(() -> m_profiledArm.atPosition(0.1)),
+                // Move Elevator to homing position
+                Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
+                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOMING)
+                        .until(m_profiledElevator.getHomedTrigger()))
+                    .andThen(m_profiledElevator.zeroSensorCommand())));
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
@@ -528,7 +539,8 @@ public class RobotContainer {
         NamedCommands.registerCommand(
             "IntakeCoral",
             Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE),
+                m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE),
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                     .until(m_clawRollerLaserCAN.triggered)
                     .andThen(m_clawRoller.setStateCommandNoEnd(ClawRoller.State.HOLDCORAL))
