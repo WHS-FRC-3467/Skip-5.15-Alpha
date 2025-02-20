@@ -151,6 +151,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Week1",
   "choreoAuto": false
 }

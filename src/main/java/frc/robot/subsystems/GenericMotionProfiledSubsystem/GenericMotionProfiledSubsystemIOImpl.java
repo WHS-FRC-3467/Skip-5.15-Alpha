@@ -125,10 +125,10 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
             mFollower =
                 new TalonFX(mConstants.kFollowMotor.getDeviceNumber(),
                     mConstants.kFollowMotor.getBus());
-            mFollowerConfig = mConstants.kFollowerConfig;
+            mFollowerConfig = mMainConfig;
 
             // ... configure it with the same settings as the main motor ...
-            mFollowerConfig.deserialize(mMainConfig.serialize());
+            // mFollowerConfig.deserialize(mMainConfig.serialize());
             // Always disable soft limits in the Follower
             mFollowerConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
             mFollowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
