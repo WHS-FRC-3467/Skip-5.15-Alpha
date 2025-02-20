@@ -93,7 +93,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public Trigger homedTrigger =
         new Trigger(
             () -> homedDebouncer.calculate(
-                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
+                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
 
     public Command zeroSensorCommand()
     {

@@ -105,11 +105,11 @@ public class RobotContainer {
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
-                // m_vision =
-                // new Vision(
-                // m_drive,
-                // new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                // new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                m_vision =
+                    new Vision(
+                        m_drive,
+                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
                 // break;
 
@@ -130,7 +130,7 @@ public class RobotContainer {
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
-                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+                // m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
 
