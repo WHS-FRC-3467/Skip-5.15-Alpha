@@ -25,6 +25,7 @@ import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
 import java.util.ArrayList;
 import java.util.List;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Generic motion IO implementation for any motion mechanism using a TalonFX motor controller, an
@@ -127,8 +128,6 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                     mConstants.kFollowMotor.getBus());
             mFollowerConfig = mMainConfig;
 
-            // ... configure it with the same settings as the main motor ...
-            // mFollowerConfig.deserialize(mMainConfig.serialize());
             // Always disable soft limits in the Follower
             mFollowerConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
             mFollowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
