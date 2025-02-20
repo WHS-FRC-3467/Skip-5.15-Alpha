@@ -453,19 +453,23 @@ public class RobotContainer {
         // Go to the L1 Position
         NamedCommands.registerCommand(
             "L1",
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
+            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)));
         // Go to the L2 Position
         NamedCommands.registerCommand(
             "L2",
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
+            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)));
         // Go to the L3 Position
         NamedCommands.registerCommand(
             "L3",
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
+            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3)));
         // Go to the L4 Position
         NamedCommands.registerCommand(
             "L4",
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4));
+            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4)));
         // Go to the Home Position
         NamedCommands.registerCommand(
             "Home",
