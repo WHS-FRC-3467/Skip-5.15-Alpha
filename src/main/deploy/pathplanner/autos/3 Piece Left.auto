@@ -38,12 +38,6 @@
                 "data": {
                   "pathName": "J-TopSource"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeCoral"
-                }
               }
             ]
           }
@@ -51,20 +45,7 @@
         {
           "type": "deadline",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "WaitForCoral"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeCoral"
-                }
-              }
-            ]
+            "commands": []
           }
         },
         {
@@ -100,12 +81,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "K-TopSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeCoral"
                 }
               }
             ]
