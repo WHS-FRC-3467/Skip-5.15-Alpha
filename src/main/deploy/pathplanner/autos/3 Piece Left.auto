@@ -11,15 +11,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -44,20 +38,14 @@
                 "data": {
                   "pathName": "J-TopSource"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
               }
             ]
           }
         },
         {
-          "type": "wait",
+          "type": "deadline",
           "data": {
-            "waitTime": 1.0
+            "commands": []
           }
         },
         {
@@ -67,15 +55,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -100,20 +82,27 @@
                 "data": {
                   "pathName": "K-TopSource"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
               }
             ]
           }
         },
         {
-          "type": "wait",
+          "type": "deadline",
           "data": {
-            "waitTime": 1.0
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitForCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              }
+            ]
           }
         },
         {
@@ -123,15 +112,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -157,6 +140,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Week1",
+  "folder": null,
   "choreoAuto": false
 }
