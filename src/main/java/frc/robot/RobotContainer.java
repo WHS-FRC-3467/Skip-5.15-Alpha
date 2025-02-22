@@ -340,7 +340,8 @@ public class RobotContainer {
         m_driver
             .y().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.0,
+                    0.8));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
         // Elevator to NET
