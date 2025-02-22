@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.6512414383561644,
-        "y": 2.9356378424657534
+        "x": 3.6322745901639335,
+        "y": 2.982069672131148
       },
       "prevControl": {
-        "x": 3.4366034179877483,
-        "y": 2.7405337178382783
+        "x": 3.4176365697955173,
+        "y": 2.786965547503673
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,9 +41,22 @@
         "data": {
           "commands": [
             {
-              "type": "named",
+              "type": "sequential",
               "data": {
-                "name": "L2"
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "IntakeCoral"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "L4"
+                    }
+                  }
+                ]
               }
             }
           ]

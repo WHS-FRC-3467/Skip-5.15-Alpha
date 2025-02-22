@@ -30,28 +30,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "E-SourceTop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
+            "pathName": "E-SourceTop"
           }
         },
         {
@@ -80,28 +61,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "D-SourceTop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
-              }
-            ]
+            "name": "Home"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "IntakeCoral"
+            "pathName": "D-SourceTop"
           }
         },
         {
