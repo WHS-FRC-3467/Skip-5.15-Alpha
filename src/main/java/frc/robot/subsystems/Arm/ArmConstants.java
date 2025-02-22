@@ -116,7 +116,7 @@ public final class ArmConstants {
         kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
         kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
         kSubSysConstants.kArmSimConfig.kArmReduction =
-            54.4; // RotorToSensorRatio * SensorToMechanismRatio
-        kSubSysConstants.kArmSimConfig.kSensorReduction = 7.04; // SensorToMechanismRatio
+        (9 / 1) * (48 / 22) * (70 / 22); // RotorToSensorRatio * SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kSensorReduction =  (9 / 1) * (48 / 22) * (70 / 22); // SensorToMechanismRatio
     }
 }

@@ -37,9 +37,9 @@ public class Vision extends SubsystemBase {
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
-    private boolean[] cameraIsDisconnected;
+    private boolean[] cameraIsDisconnected = new boolean[]{false, false};;
     public boolean camerasDisconnected = false;
-    public BooleanSupplier camerasConnected = () -> !camerasDisconnected;
+    public BooleanSupplier camerasConnected = () -> true;
 
     public Vision(VisionConsumer consumer, VisionIO... io)
     {
@@ -60,6 +60,8 @@ public class Vision extends SubsystemBase {
                     "Vision camera " + Integer.toString(i) + " is disconnected.",
                     AlertType.kWarning);
         }
+
+        // cameraIsDisconnected = new boolean[]{false, false};
     }
 
     /**
@@ -182,6 +184,7 @@ public class Vision extends SubsystemBase {
         }
 
         camerasDisconnected = cameraIsDisconnected[0] && cameraIsDisconnected[1];
+        camerasConnected = () -> !camerasDisconnected;
 
         // Log summary data
         Logger.recordOutput(

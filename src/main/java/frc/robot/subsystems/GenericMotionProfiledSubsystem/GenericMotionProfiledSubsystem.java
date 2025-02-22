@@ -193,6 +193,8 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
             Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);
             Logger.recordOutput(m_name + "/CANCoder Connected", (m_constants.kCANcoder != null) ? ((inputs.CANcoderConnected) ? "Connected" : "Disconnected") : "Null");
+            Logger.recordOutput(m_name + "/SensorToMechRatio", m_constants.kMotorConfig.Feedback.SensorToMechanismRatio);
+            Logger.recordOutput(m_name + "/RotorToSensorRatio", m_constants.kMotorConfig.Feedback.RotorToSensorRatio);
         }
     }
 }
