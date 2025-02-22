@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Ports;
+import frc.robot.Robot;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants.simType;
 
@@ -58,6 +59,7 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
             InvertedValue.CounterClockwise_Positive;
+
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
@@ -90,7 +92,7 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         /* SIM system profile constants */
-        kSubSysConstants.kSimMotorConfig.Slot0.kP = 700;
+        kSubSysConstants.kSimMotorConfig.Slot0.kP = 1400;
         kSubSysConstants.kSimMotorConfig.Slot0.kI = 0;
         kSubSysConstants.kSimMotorConfig.Slot0.kD = 100;
         kSubSysConstants.kSimMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -102,6 +104,13 @@ public final class ArmConstants {
         kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicAcceleration = 50;
         kSubSysConstants.kSimMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
+        if (Robot.isSimulation()) {
+            kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.0;
+            kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
+                InvertedValue.Clockwise_Positive;
+
+        }
+
         // Simulation Type
         kSubSysConstants.SimType = simType.ARM;
 
@@ -110,13 +119,15 @@ public final class ArmConstants {
 
         // Arm Simulation
         kSubSysConstants.kArmSimConfig.kIsComboSim = true;
-        kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
-        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(30);
-        kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 75.0;
-        kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -75.0;
-        kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 255.0;
-        kSubSysConstants.kArmSimConfig.kArmReduction =
-        (9 / 1) * (48 / 22) * (70 / 22); // RotorToSensorRatio * SensorToMechanismRatio
-        kSubSysConstants.kArmSimConfig.kSensorReduction =  (9 / 1) * (48 / 22) * (70 / 22); // SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kArmMass = Units.lbsToKilograms(11); // Kilograms
+        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(14);
+        kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees =
+            Units.rotationsToDegrees(-0.405);
+        kSubSysConstants.kArmSimConfig.kMinAngleDegrees = Units.rotationsToDegrees(-.405);
+        kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 0;
+        kSubSysConstants.kArmSimConfig.kArmReduction = (9 / 1) * (48 / 22) * (70 / 22); // RotorToSensorRatio
+                                                                                        // *
+                                                                                        // SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kSensorReduction = 1; // SensorToMechanismRatio
     }
 }

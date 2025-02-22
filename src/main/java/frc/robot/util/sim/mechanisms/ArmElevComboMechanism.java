@@ -86,7 +86,6 @@ public class ArmElevComboMechanism implements MotionProfiledMechanism {
     /** Controls the Elevator segment & updates the mech2d widget in GUI. */
     public void updateElevator(double position)
     {
-
         m_Elevator.setLength(position);
 
         // Publish Pose3d for 3D mechanism sim of 2 stage elevator

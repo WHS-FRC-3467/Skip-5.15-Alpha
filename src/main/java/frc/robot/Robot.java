@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -120,8 +121,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic()
     {
-        // Switch thread to high priority to improve loop timing
-        Threads.setCurrentThreadPriority(true, 99);
 
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled commands, running already-scheduled commands, removing
@@ -130,8 +129,7 @@ public class Robot extends LoggedRobot {
         // the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        // Return to normal thread priority
-        Threads.setCurrentThreadPriority(false, 10);
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     /** This function is called once when the robot is disabled. */
@@ -139,7 +137,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
-        Elastic.selectTab(1);
+        Elastic.selectTab(0);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
     }
 
@@ -187,7 +185,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Elastic.selectTab(2);
+        Elastic.selectTab(1);
     }
 
     /** This function is called periodically during operator control. */

@@ -178,12 +178,14 @@ public class DriveCommands {
     {
 
         // Create PID controller
-        ProfiledPIDController angleController =
-            new ProfiledPIDController(
+        TuneableProfiledPID angleController =
+            new TuneableProfiledPID(
+                "angleController",
                 ANGLE_KP,
                 0.0,
                 ANGLE_KD,
-                new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+                ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_ACCELERATION);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
         TuneableProfiledPID alignController =
@@ -219,6 +221,8 @@ public class DriveCommands {
                 Translation2d offsetVector =
                     new Translation2d(alignController.calculate(distanceToGoal), 0)
                         .rotateBy(robotToGoal.getAngle());
+
+                Logger.recordOutput("AlignDebug/Current", distanceToGoal);
 
                 // Calculate total linear velocity
                 Translation2d linearVelocity =

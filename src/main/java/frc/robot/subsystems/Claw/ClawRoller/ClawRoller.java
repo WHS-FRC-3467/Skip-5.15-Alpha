@@ -21,6 +21,7 @@ public class ClawRoller
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
     static LoggedTunableNumber algaeIntakeSP =
+       
         new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
 
     public static boolean isCurrentDipped;
@@ -51,11 +52,6 @@ public class ClawRoller
     }
 
     public Command setStateCommand(State state)
-    {
-        return startEnd(() -> this.state = state, () -> this.state = State.OFF);
-    }
-
-    public Command setStateCommandNoEnd(State state)
     {
         return runOnce(() -> this.state = state);
     }
