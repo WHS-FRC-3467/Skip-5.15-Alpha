@@ -37,29 +37,9 @@
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "deadline",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "sequential",
-              "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L2"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L4"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
+          "name": "L2"
         }
       }
     }
