@@ -63,21 +63,14 @@
                 "data": {
                   "name": "IntakeCoral"
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SourceTop-D"
-                      }
-                    }
-                  ]
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceTop-D"
           }
         },
         {
@@ -133,21 +126,14 @@
                 "data": {
                   "name": "IntakeCoral"
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SourceTop-C"
-                      }
-                    }
-                  ]
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceTop-C"
           }
         },
         {
@@ -179,6 +165,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Week1",
+  "folder": null,
   "choreoAuto": false
 }

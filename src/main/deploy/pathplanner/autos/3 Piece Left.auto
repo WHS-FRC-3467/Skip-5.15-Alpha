@@ -11,7 +11,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -63,25 +63,18 @@
                 "data": {
                   "name": "IntakeCoral"
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TopSource-K"
-                      }
-                    }
-                  ]
-                }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-K"
+          }
+        },
+        {
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -133,25 +126,18 @@
                 "data": {
                   "name": "IntakeCoral"
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "TopSource-L"
-                      }
-                    }
-                  ]
-                }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-L"
+          }
+        },
+        {
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -179,6 +165,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Week1",
+  "folder": null,
   "choreoAuto": false
 }
