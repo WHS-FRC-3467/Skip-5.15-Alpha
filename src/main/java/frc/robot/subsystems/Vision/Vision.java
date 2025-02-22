@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
             // Add tag poses
             for (int tagId : inputs[cameraIndex].tagIds) {
                 var tagPose = aprilTagLayout.getTagPose(tagId);
-                if (tagPose.isPresent()) {
+                if (tagPose.isPresent() && !rejectedTags.contains(tagId)) {
                     tagPoses.add(tagPose.get());
                     seesThisTarget = true;
                 }
