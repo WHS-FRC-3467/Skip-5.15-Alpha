@@ -192,6 +192,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
 
             Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
             Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);
+            Logger.recordOutput(m_name + "/CANCoder Connected", (m_constants.kCANcoder != null) ? ((inputs.CANcoderConnected) ? "Connected" : "Disconnected") : "Null");
         }
     }
 }

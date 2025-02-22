@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
@@ -92,6 +93,8 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
     private final CoastOut coastOut = new CoastOut();
     private final StaticBrake staticBrake = new StaticBrake();
+
+    LoggedTunableNumber simCanCoderConnected = new LoggedTunableNumber("Arm" + "/SimCancoderConnected", 1);
 
     /*
      * Constructor
@@ -292,7 +295,10 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                 BaseStatusSignal.refreshAll(
                     mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
                     .isOK();
-            if (!inputs.CANcoderConnected) {
+            // if (!inputs.CANcoderConnected) {
+            //     encoderFallback(checkDeviceConfiguration());
+            // }
+            if (simCanCoderConnected.getAsDouble() != 1) {
                 encoderFallback(checkDeviceConfiguration());
             }
         }
