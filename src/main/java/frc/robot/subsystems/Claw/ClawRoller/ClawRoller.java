@@ -26,6 +26,7 @@ public class ClawRoller
         INTAKESLOW(() -> 5, ProfileType.VELOCITY),
         EJECT(() -> 10.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
+        SHUFFLE(() -> -1, ProfileType.VELOCITY),
         HOLDCORAL(() -> 0, ProfileType.DISABLED_BRAKE),
         ALGAE_INTAKE(() -> -90, ProfileType.OPEN_CURRENT);
 

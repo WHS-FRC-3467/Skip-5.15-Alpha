@@ -488,7 +488,9 @@ public class RobotContainer {
                 .andThen(Commands
                     .waitUntil(m_intakeLaserCAN.triggered.negate()
                         .and(m_clawRollerLaserCAN.triggered)))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SHUFFLE)
+                    .andThen(Commands.waitSeconds(0.3))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))));
 
         NamedCommands.registerCommand(
             "Score",
