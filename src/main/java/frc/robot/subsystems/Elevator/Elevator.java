@@ -35,7 +35,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         // TODO: Test Voltage and position values (rotations)
         STOW(() -> 0, ProfileType.MM_POSITION),
         CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
-        LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
+        LEVEL_1(() -> 0.913, ProfileType.MM_POSITION),
         LEVEL_2(() -> 1.2, ProfileType.MM_POSITION),
         LEVEL_3(() -> 2.7, ProfileType.MM_POSITION),
         LEVEL_4(() -> 5, ProfileType.MM_POSITION),
