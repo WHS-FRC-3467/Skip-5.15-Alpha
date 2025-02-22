@@ -42,22 +42,42 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Home"
+                  "name": "IntakeCoral"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceTop-D"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitForCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "SourceTop-D"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -92,22 +112,42 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Home"
+                  "name": "IntakeCoral"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceTop-C"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WaitForCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "SourceTop-C"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
