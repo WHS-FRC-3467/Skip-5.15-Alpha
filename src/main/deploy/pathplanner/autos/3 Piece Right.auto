@@ -51,12 +51,6 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "IntakeCoral"
           }
         },
@@ -107,12 +101,6 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "IntakeCoral"
           }
         },
@@ -151,6 +139,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Week1",
   "choreoAuto": false
 }
