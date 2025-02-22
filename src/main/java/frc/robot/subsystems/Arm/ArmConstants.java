@@ -71,6 +71,11 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
+        // "Fallback" Constants for Arm CANCoder
+        kSubSysConstants.FallbackEncoderToMechanismRatio = (9 / 1) * (48 / 22) * (70 / 22);
+        kSubSysConstants.RotorToFallbackEncoderRatio = 1;
+        kSubSysConstants.FallbackRotorOffset = 0; // TODO: Tune
+
         /* REAL system profile constants */
         kSubSysConstants.kMotorConfig.Slot0.kP = 800;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;

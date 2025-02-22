@@ -121,4 +121,7 @@ public interface GenericMotionProfiledSubsystemIO {
     {
         return false;
     }
+
+    public default void encoderFallback(boolean check)
+    {}
 }
