@@ -366,7 +366,8 @@ public class RobotContainer {
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+                    .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)))
+            .and(m_clawRollerLaserCAN.triggered.negate())
             .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,

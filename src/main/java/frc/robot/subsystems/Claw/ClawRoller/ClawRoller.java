@@ -2,6 +2,7 @@ package frc.robot.subsystems.Claw.ClawRoller;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
@@ -52,5 +53,21 @@ public class ClawRoller
     {
         return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
             Math.max(0.0001, tolerance));
+    }
+
+    public Command holdCoralCommand(Trigger clawTriggered)
+    {
+        return this.setStateCommand(State.HOLDCORAL).andThen(
+            this.run(() -> {
+                clawTriggered.negate().whileTrue(
+                    Commands.sequence(
+                        this.setStateCommand(State.SHUFFLE),
+                        Commands.waitSeconds(0.2),
+                        this.setStateCommand(State.INTAKESLOW),
+                        Commands.waitSeconds(0.2),
+                        this.setStateCommand(State.OFF)))
+                    .onFalse(
+                        this.setStateCommand(State.HOLDCORAL));
+            }));
     }
 }
