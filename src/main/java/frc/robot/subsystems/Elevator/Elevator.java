@@ -38,7 +38,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         LEVEL_1(() -> 0.913, ProfileType.MM_POSITION),
         LEVEL_2(() -> 1.2, ProfileType.MM_POSITION),
         LEVEL_3(() -> 2.7, ProfileType.MM_POSITION),
-        LEVEL_4(() -> 5, ProfileType.MM_POSITION),
+        LEVEL_4(() -> 5.1, ProfileType.MM_POSITION),
         CLIMB(() -> 0.05, ProfileType.MM_POSITION),
         ALGAE_LOW(() -> 2, ProfileType.MM_POSITION),
         ALGAE_HIGH(() -> 3.2, ProfileType.MM_POSITION),

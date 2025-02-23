@@ -432,7 +432,8 @@ public class RobotContainer {
                 Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
                     .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOMING)
                         .until(m_profiledElevator.getHomedTrigger()))
-                    .andThen(m_profiledElevator.zeroSensorCommand())));
+                    .andThen(m_profiledElevator.zeroSensorCommand())
+                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))));
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
@@ -488,7 +489,9 @@ public class RobotContainer {
                 .andThen(Commands
                     .waitUntil(m_intakeLaserCAN.triggered.negate()
                         .and(m_clawRollerLaserCAN.triggered)))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SHUFFLE)
+                    .andThen(Commands.waitSeconds(0.3))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))));
 
         NamedCommands.registerCommand(
             "Score",
