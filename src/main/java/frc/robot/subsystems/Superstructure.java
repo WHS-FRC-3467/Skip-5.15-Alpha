@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.ControllerCommands;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Elevator.Elevator;
 
@@ -36,6 +37,35 @@ public class Superstructure {
      * @param elevTolerance
      * @return A Command
      */
+    public Command getTransitionCommandRmbl(Arm.State armState, Elevator.State elevatorState,
+        double armTolerance, double elevTolerance)
+    {
+        return (Commands.sequence(
+            // Always move Arm to STOW position before moving Elevator
+            m_Arm.setStateCommand(Arm.State.STOW).until(() -> m_Arm.atPosition(armTolerance)),
+            // Move Elevator to new position
+            Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))
+                .andThen(m_Elevator.setStateCommand(elevatorState)
+                    .until(() -> m_Elevator.atPosition(elevTolerance))),
+            // Reposition Arm to new position
+            Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)).andThen(
+                m_Arm.setStateCommand(armState).until(() -> m_Arm.atPosition(armTolerance))
+                .andThen(ControllerCommands.rumbleForTime(1, 1)))));
+    }
+
+        /**
+     * Get a Command to transition the states of the Arm and Elevator in the proper order.
+     * 
+     * This version allows you to pass individual tolerances for each mechanism.
+     * 
+     * (NOTE: Tolerances still have a floor as specified by the subsystem's kminTolerance
+     * 
+     * @param armState
+     * @param elevatorState
+     * @param armTolerance
+     * @param elevTolerance
+     * @return A Command
+     */
     public Command getTransitionCommand(Arm.State armState, Elevator.State elevatorState,
         double armTolerance, double elevTolerance)
     {
@@ -49,6 +79,20 @@ public class Superstructure {
             // Reposition Arm to new position
             Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)).andThen(
                 m_Arm.setStateCommand(armState).until(() -> m_Arm.atPosition(armTolerance)))));
+    }
+
+    /**
+     * Get a Command to transition the states of the Arm and Elevator in the proper order.
+     * 
+     * This version uses the defualt tolerances as specified by the subsystem's kminTolerance
+     * 
+     * @param armState
+     * @param elevatorState
+     * @return A Command
+     */
+    public Command getTransitionCommandRmbl(Arm.State armState, Elevator.State elevatorState)
+    {
+        return getTransitionCommandRmbl(armState, elevatorState, 0.0, 0.0);
     }
 
     /**
