@@ -348,7 +348,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
     @Override
     public void runCurrent(double amps)
     {
-        mMainMotor.setControl(currentControl.withOutput(amps).withMaxAbsDutyCycle(0.3));
+        mMainMotor.setControl(currentControl.withOutput(amps).withMaxAbsDutyCycle(0.6));
         // TODO: PLEASE CHANGE THIS ITS JUST FOR GSD
     }
 

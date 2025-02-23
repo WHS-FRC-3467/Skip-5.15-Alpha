@@ -274,13 +274,13 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
-        m_driver.rightBumper()
+        m_driver.rightBumper().and(isCoralMode)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
-        m_driver.leftBumper()
+        m_driver.leftBumper().and(isCoralMode)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
@@ -343,12 +343,20 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
-        m_driver.rightTrigger()
+        m_driver.rightTrigger().and(isCoralMode)
             .whileTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+
+        m_driver.rightTrigger().and(isCoralMode.negate())
+            .whileTrue(
+                m_superStruct
+                    .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_SCORE)
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SCORE)))
+            .onFalse(
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -438,7 +446,9 @@ public class RobotContainer {
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
         m_driver.start().and(m_driver.leftBumper().negate())
-            .onTrue(setCoralAlgaeModeCommand());
+            .onTrue(setCoralAlgaeModeCommand()
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
     }
 
