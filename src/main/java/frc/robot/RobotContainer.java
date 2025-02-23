@@ -432,7 +432,8 @@ public class RobotContainer {
                 Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
                     .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOMING)
                         .until(m_profiledElevator.getHomedTrigger()))
-                    .andThen(m_profiledElevator.zeroSensorCommand())));
+                    .andThen(m_profiledElevator.zeroSensorCommand())
+                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))));
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
