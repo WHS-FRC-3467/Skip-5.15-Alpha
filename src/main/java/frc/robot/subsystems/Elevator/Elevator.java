@@ -32,7 +32,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
-        // TODO: Test Voltage and position values (rotations)
         STOW(() -> 0, ProfileType.MM_POSITION),
         CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
         LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),

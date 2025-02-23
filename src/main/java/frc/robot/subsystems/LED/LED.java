@@ -146,7 +146,7 @@ public class LED extends SubsystemBase {
             modeSim = "Auto - Mode Flame";
         } else {
             // All the teleop states/logic comes here
-            if (m_Superstructure.getArmState() == Arm.State.CORAL_INTAKE || m_Superstructure.getArmState() == Arm.State.ALGAE_GROUND
+            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE || m_Superstructure.getArmState() == Arm.State.ALGAE_GROUND
             || m_Superstructure.getArmState() == Arm.State.ALGAE_HIGH || m_Superstructure.getArmState() == Arm.State.ALGAE_LOW) {
                 if (m_ClawRoller.atPosition(0.1)) {
                     // Checks to see if intaking is complete
@@ -161,7 +161,7 @@ public class LED extends SubsystemBase {
             } else if (m_Superstructure.getArmState() == Arm.State.CLIMB || m_Climber.getState() == Climber.State.PREP
             | m_Climber.getState() == Climber.State.CLIMB) {
                 // If climb is complete, set state LED to green
-                if (m_Climber.atPosition(0.1)) {
+                if (m_Climber.atPosition(0.1) && m_Climber.getState() == Climber.State.CLIMB) {
                     m_State.setColor(green);
                     stateSim = "Climb - State Green";
                 } else {
@@ -169,8 +169,9 @@ public class LED extends SubsystemBase {
                     m_State.setAnimation(a_Intaking);
                     stateSim = "Climb - State Red";
                 }
-             } else if (m_Superstructure.getElevatorState() != Elevator.State.STOW && m_Superstructure.getElevatorState() != Elevator.State.CHARACTERIZATION 
-                && m_Superstructure.getElevatorState() != Elevator.State.CLIMB && m_Superstructure.getElevatorState() != Elevator.State.HOMING) {
+            } else if (m_Superstructure.getElevatorState() == Elevator.State.LEVEL_1 || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_2 
+                || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_3 || m_Superstructure.getElevatorState() != Elevator.State.LEVEL_4
+                || m_Superstructure.getElevatorState() == Elevator.State.ALGAE_SCORE) {
                 // The above statement says that the robot's superstructure is going to a state if the arm isn't in the above states
                 // This superstructure part of LED control may be deleted if the driver changes his mind about keeping this
                     // When robot is successfully auto aligned, set one LED to green, the other to the
@@ -188,18 +189,13 @@ public class LED extends SubsystemBase {
                     stateSim = "Superstructure - State Red";
                 }
 
-            // } else if (m_Drive.getCurrentCommand().getClass() == edu.wpi.first.wpilibj2.command.SequentialCommandGroup.class) {
-                // The robot is also aiming if the drivetrain isn't in its default command,
-                // assuming that the robot has finished aiming
-                // m_State.setAnimation(a_AimingPingPong);
-                // stateSim = "Drivetrain is Aiming something";
             } else {
                 try {
                     if (m_Drive.getCurrentCommand().getClass() == edu.wpi.first.wpilibj2.command.SequentialCommandGroup.class) {
                         // The robot is also aiming if the drivetrain isn't in its default command,
                         // assuming that the robot has finished aiming
                         m_State.setAnimation(a_AimingPingPong);
-                        stateSim = "Drivetrain is Aiming something";
+                        stateSim = "Drivetrain is Aiming At something";
                     } else {
                         // Default Teleop
                         stateSim = "Teleop";
