@@ -3,38 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.6063524590163931,
+        "y": 7.345594262295082
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9640813819875045,
-        "y": 1.0957011184380394
+        "x": 2.390889993790531,
+        "y": 5.874014806933813
       },
       "isLocked": false,
-      "linkedName": "SourceTop"
+      "linkedName": "LSourceTop"
     },
     {
       "anchor": {
-        "x": 3.668237704918033,
-        "y": 2.9461065573770493
+        "x": 3.1527663934426227,
+        "y": 4.192827868852459
       },
       "prevControl": {
-        "x": 3.4535996845496166,
-        "y": 2.751002432749574
+        "x": 2.898600928283939,
+        "y": 4.811697705729912
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ReefC"
+      "linkedName": "ReefA"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.3591635916359158,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -74,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.67130713219583
+    "rotation": -0.5787255656077198
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 53.47114463301483
+    "rotation": -54.605204155013034
   },
   "useDefaultConstraints": true
 }
