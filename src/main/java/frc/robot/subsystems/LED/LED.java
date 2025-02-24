@@ -44,8 +44,8 @@ public class LED extends SubsystemBase {
     private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
 
     // Sim strings
-    String modeSim = "";
-    String stateSim = "";
+    // String modeSim = "";
+    // String stateSim = "";
     String driveCommand = "";
 
     /*
@@ -95,8 +95,8 @@ public class LED extends SubsystemBase {
         // Use the LEDStateMachine to set the LEDs
         LEDStateMachine();
         // Smartdashboard the LEDs for Sim
-        SmartDashboard.putString("State LED", stateSim);
-        SmartDashboard.putString("Mode LED", modeSim);
+        // SmartDashboard.putString("State LED", stateSim);
+        // SmartDashboard.putString("Mode LED", modeSim);
         try {
             driveCommand = m_Drive.getCurrentCommand().getClass().toString();
         } catch (Exception e) {
@@ -111,10 +111,10 @@ public class LED extends SubsystemBase {
         // Set the color of the mode LED strip based on Coral/Algae Mode
         if (m_isCoralMode.getAsBoolean()) {
             m_Mode.setColor(white);
-            modeSim = "Coral";
+            // modeSim = "Coral";
         } else {
             m_Mode.setColor(cyan);
-            modeSim = "Algae";
+            // modeSim = "Algae";
         }
 
         /*
@@ -131,46 +131,46 @@ public class LED extends SubsystemBase {
             if (m_Vision.visionHasTarget) {
                 m_State.setAnimation(a_LeftElevatorRainbow);
                 m_Mode.setAnimation(a_RightElevatorRainbow);
-                stateSim = "Left Elevator Rainbow";
-                modeSim = "Right Elevator Rainbow";
+                // stateSim = "Left Elevator Rainbow";
+                // modeSim = "Right Elevator Rainbow";
             } else {
                 m_Mode.setAnimation(a_DisabledMode);
                 m_State.setAnimation(a_DisabledState);
-                stateSim = "Disabled State";
-                modeSim = "Disabled Mode";
+                // stateSim = "Disabled State";
+                // modeSim = "Disabled Mode";
             }
         } else if (DriverStation.isAutonomousEnabled()) {
             m_State.setAnimation(a_LeftFlame);
             m_Mode.setAnimation(a_RightFlame);
-            stateSim = "Auto - State Flame";
-            modeSim = "Auto - Mode Flame";
+            // stateSim = "Auto - State Flame";
+            // modeSim = "Auto - Mode Flame";
         } else {
             // All the teleop states/logic comes here
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE || m_Superstructure.getArmState() == Arm.State.ALGAE_GROUND
-            || m_Superstructure.getArmState() == Arm.State.ALGAE_HIGH || m_Superstructure.getArmState() == Arm.State.ALGAE_LOW) {
-                if (m_ClawRoller.atPosition(0.1)) {
-                    // Checks to see if intaking is complete
-                    // If so, tell driver to back away from coral station
-                    m_State.setColor(green);
-                    stateSim = "Intake - State Green";
+            if (m_ClawRoller.getState() == ClawRoller.State.ALGAE_INTAKE || m_ClawRoller.getState() == ClawRoller.State.INTAKE
+                || m_ClawRoller.getState() == ClawRoller.State.INTAKESLOW) {
+                if (m_clawLaserCAN.isTriggered() || m_ClawRoller.getState() == ClawRoller.State.INTAKESLOW) {
+                    // Checks to see if robot is intaking and coral is in robot
+                    // If so, alert driver that coral is being intaked
+                    m_State.setColor(blue);
+                    // stateSim = "Intaking in Progress - State Blue";
                 } else {
-                    // When intaking, set the state LED to red
-                    m_State.setAnimation(a_Intaking);
-                    stateSim = "Intake - State Red";
+                    // Intaking but no piece detected, so set the state LED to red
+                    m_State.setAnimation(a_FlashRed);
+                    // stateSim = "Intake - State Red";
                 }
             } else if (m_Superstructure.getArmState() == Arm.State.CLIMB || m_Climber.getState() == Climber.State.PREP
-            | m_Climber.getState() == Climber.State.CLIMB) {
+            || m_Climber.getState() == Climber.State.CLIMB) {
                 // If climb is complete, set state LED to green
                 if (m_Climber.atPosition(0.1) && m_Climber.getState() == Climber.State.CLIMB) {
                     m_State.setColor(green);
-                    stateSim = "Climb - State Green";
+                    // stateSim = "Climb - State Green";
                 } else {
                     // If robot is still climbing, then set the state LED red
-                    m_State.setAnimation(a_Intaking);
-                    stateSim = "Climb - State Red";
+                    m_State.setAnimation(a_FlashRed);
+                    // stateSim = "Climb - State Red";
                 }
             } else if (m_Superstructure.getElevatorState() == Elevator.State.LEVEL_1 || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_2 
-                || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_3 || m_Superstructure.getElevatorState() != Elevator.State.LEVEL_4
+                || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_3 || m_Superstructure.getElevatorState() == Elevator.State.LEVEL_4
                 || m_Superstructure.getElevatorState() == Elevator.State.ALGAE_SCORE) {
                 // The above statement says that the robot's superstructure is going to a state if the arm isn't in the above states
                 // This superstructure part of LED control may be deleted if the driver changes his mind about keeping this
@@ -178,7 +178,7 @@ public class LED extends SubsystemBase {
                     // coral/algae and rumble the controller
                 if (m_Superstructure.atPosition(0.1, 0.1) && m_ClawRoller.atPosition(0.1)) {
                     m_State.setColor(green);
-                    stateSim = "Superstructure - State Green";
+                    // stateSim = "Superstructure - State Green";
                 } else {
                     // Else: the robot is aiming, set state LED to aiming ping pong
                     // The robot is aiming if the drivetrain isn't in its default command
@@ -186,8 +186,12 @@ public class LED extends SubsystemBase {
                     // This else if being underneath intaking and climbing 
                     // means that an intaking or climbing robot will never reach this statement
                     m_State.setAnimation(a_AimingPingPong);
-                    stateSim = "Superstructure - State Red";
+                    // stateSim = "Superstructure - State Red";
                 }
+            } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
+                // Intaking: Coral is firmly in  If so, tell driver to back away from coral station
+                m_State.setColor(green);
+                // stateSim = "Intake - State Green";
 
             } else {
                 try {
@@ -195,15 +199,15 @@ public class LED extends SubsystemBase {
                         // The robot is also aiming if the drivetrain isn't in its default command,
                         // assuming that the robot has finished aiming
                         m_State.setAnimation(a_AimingPingPong);
-                        stateSim = "Drivetrain is Aiming At something";
+                        // stateSim = "Drivetrain is Aiming At something";
                     } else {
                         // Default Teleop
-                        stateSim = "Teleop";
+                        // stateSim = "Default Teleop";
                         m_State.setColor(black);
                     }
                 } catch (Exception e) {
                     // Default Teleop
-                    stateSim = "Teleop";
+                    // stateSim = "Default Teleop";
                     m_State.setColor(black);
                 }
 
@@ -281,8 +285,8 @@ public class LED extends SubsystemBase {
     LEDSegment m_State = new LEDSegment(152, 144, 2);
 
     // Animations
-    Animation a_Intaking =
-        new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_State.segmentSize, m_State.startIndex);
+    Animation a_FlashRed =
+        new StrobeAnimation(red.r, red.g, red.b, 0, 0.5, m_Mode.segmentSize, m_Mode.startIndex);
     Animation a_LeftElevatorRainbow =
         new RainbowAnimation(0.7, 0.5, m_State.segmentSize, false, m_State.startIndex);
     Animation a_RightElevatorRainbow =
