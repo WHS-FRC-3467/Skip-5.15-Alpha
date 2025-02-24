@@ -361,7 +361,7 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)
                     .andThen(
                         Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
-                            m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                            m_clawRoller.setStateCommand(ClawRoller.State.OFF),
                             m_clawRoller.stalled)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
