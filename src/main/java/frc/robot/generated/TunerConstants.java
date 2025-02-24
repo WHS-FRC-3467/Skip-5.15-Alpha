@@ -179,17 +179,18 @@ public class TunerConstants {
     public static final Angle kGortBackLeftEncoderOffset = Rotations.of(-0.00927734375);
     public static final Angle kGortBackRightEncoderOffset = Rotations.of(-0.0615234375);
 
-    public static final Angle kBajaFrontLeftEncoderOffset = Rotations.of(0);
-    public static final Angle kBajaFrontRightEncoderOffset = Rotations.of(0);
-    public static final Angle kBajaBackLeftEncoderOffset = Rotations.of(0);
-    public static final Angle kBajaBackRightEncoderOffset = Rotations.of(0);
+    public static final Angle kBajaFrontLeftEncoderOffset = Rotations.of(-0.17431640625);
+    public static final Angle kBajaFrontRightEncoderOffset = Rotations.of(0.455322265625);
+    public static final Angle kBajaBackLeftEncoderOffset = Rotations.of(0.10693359375);
+    public static final Angle kBajaBackRightEncoderOffset = Rotations.of(0.032470703125);
 
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
         ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId,
             kFrontLeftDriveMotorId,
             kFrontLeftEncoderId,
-            (Constants.getRobot() == RobotType.GORT) ? kGortFrontLeftEncoderOffset : kBajaFrontLeftEncoderOffset,
+            (Constants.getRobot() == RobotType.GORT) ? kGortFrontLeftEncoderOffset
+                : kBajaFrontLeftEncoderOffset,
             kFrontLeftXPos,
             kFrontLeftYPos,
             kInvertLeftSide,
@@ -200,7 +201,8 @@ public class TunerConstants {
             kFrontRightSteerMotorId,
             kFrontRightDriveMotorId,
             kFrontRightEncoderId,
-            (Constants.getRobot() == RobotType.GORT) ? kGortFrontRightEncoderOffset : kBajaFrontRightEncoderOffset,
+            (Constants.getRobot() == RobotType.GORT) ? kGortFrontRightEncoderOffset
+                : kBajaFrontRightEncoderOffset,
             kFrontRightXPos,
             kFrontRightYPos,
             kInvertRightSide,
@@ -211,7 +213,8 @@ public class TunerConstants {
             kBackLeftSteerMotorId,
             kBackLeftDriveMotorId,
             kBackLeftEncoderId,
-            (Constants.getRobot() == RobotType.GORT) ? kGortBackLeftEncoderOffset : kBajaBackLeftEncoderOffset,
+            (Constants.getRobot() == RobotType.GORT) ? kGortBackLeftEncoderOffset
+                : kBajaBackLeftEncoderOffset,
             kBackLeftXPos,
             kBackLeftYPos,
             kInvertLeftSide,
@@ -222,7 +225,8 @@ public class TunerConstants {
             kBackRightSteerMotorId,
             kBackRightDriveMotorId,
             kBackRightEncoderId,
-            (Constants.getRobot() == RobotType.GORT) ? kGortBackRightEncoderOffset : kBajaBackRightEncoderOffset,
+            (Constants.getRobot() == RobotType.GORT) ? kGortBackRightEncoderOffset
+                : kBajaBackRightEncoderOffset,
             kBackRightXPos,
             kBackRightYPos,
             kInvertRightSide,
