@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -76,7 +77,6 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
-    // public final LED m_LED;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
@@ -198,9 +198,10 @@ public class RobotContainer {
         // Superstructure coordinates Arm and Elevator motions
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
-        // LED subsystem reads status from all other subsystems to control LEDs via CANdle
-        // m_LED = new LED(m_driver, m_profiledArm, m_clawRoller, m_profiledClimber, m_drive,
-        // m_profiledElevator, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        // Instantiate LED Subsystem on BAJA only
+        if (Constants.getRobot() == RobotType.BAJA) {
+            final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct, m_vision, m_clawRollerLaserCAN, isCoralMode);
+        }
 
         // Logic Triggers
         registerNamedCommands();

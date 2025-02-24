@@ -13,6 +13,12 @@ public class Constants {
     // Use LoggedTunableNumbers
     public static final boolean tuningMode = true;
 
+    private static RobotType robotType = RobotType.GORT;
+
+    public static RobotType getRobot() {
+        return robotType;
+    }
+
     /**
      * This enum defines the runtime mode used by AdvantageKit. The mode is always "real" when
      * running on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and
@@ -31,6 +37,10 @@ public class Constants {
         REPLAY
     }
 
+    public enum RobotType {
+        GORT,
+        BAJA
+    }
 }
 
 
