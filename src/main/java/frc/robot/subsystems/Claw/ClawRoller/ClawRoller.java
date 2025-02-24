@@ -17,7 +17,7 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
+    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
     @RequiredArgsConstructor
     @Getter

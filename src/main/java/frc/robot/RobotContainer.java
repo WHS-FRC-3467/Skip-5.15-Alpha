@@ -200,7 +200,8 @@ public class RobotContainer {
 
         // Instantiate LED Subsystem on BAJA only
         if (Constants.getRobot() == RobotType.BAJA) {
-            final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct, m_vision, m_clawRollerLaserCAN, isCoralMode);
+            final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct,
+                m_vision, m_clawRollerLaserCAN, isCoralMode);
         }
 
         // Logic Triggers
@@ -352,12 +353,16 @@ public class RobotContainer {
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         m_driver.rightTrigger().and(isCoralMode.negate())
-            .whileTrue(
+            .onTrue(
                 m_superStruct
                     .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_SCORE)
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SCORE)))
             .onFalse(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)
+                    .andThen(
+                        Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                            m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                            m_clawRoller.stalled)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -460,6 +465,9 @@ public class RobotContainer {
                         .until(m_profiledElevator.getHomedTrigger()))
                     .andThen(m_profiledElevator.zeroSensorCommand())
                     .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))));
+
+        m_driver.povUp().onTrue(
+            m_profiledElevator.setStateCommand(Elevator.State.STOW));
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
