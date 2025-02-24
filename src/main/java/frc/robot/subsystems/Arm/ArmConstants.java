@@ -54,8 +54,9 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = (9 / 1) * (48 / 22) * (70 / 22);
         // Different encoder offsets for each robot
         double kGortCANcoderOffset = 0.826416015625;
-        double kBajaCANcoderOffset = 0;
-        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = (Constants.getRobot() == RobotType.GORT) ? kGortCANcoderOffset : kBajaCANcoderOffset;
+        double kBajaCANcoderOffset = -0.575439453125;
+        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset =
+            (Constants.getRobot() == RobotType.GORT) ? kGortCANcoderOffset : kBajaCANcoderOffset;
         kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
             SensorDirectionValue.Clockwise_Positive;
         kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;

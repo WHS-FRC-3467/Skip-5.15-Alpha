@@ -13,7 +13,6 @@ public class Ports {
     public static final CanDeviceId CLAW_LASERCAN = new CanDeviceId(16, "rio");
     public static final CanDeviceId CLAW_ROLLER = new CanDeviceId(17, "rio");
 
-
     public static final CanDeviceId ARM_CANCODER = new CanDeviceId(18, "rio");
     public static final CanDeviceId ARM_MAIN = new CanDeviceId(19, "rio");
 
