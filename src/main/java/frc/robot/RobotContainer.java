@@ -360,6 +360,22 @@ public class RobotContainer {
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
+        // m_driver
+        // .leftTrigger().and(isCoralMode)
+        // .whileTrue(
+        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)
+        // .andThen(
+        // m_superStruct
+        // .getTransitionCommand(Arm.State.CORAL_INTAKE,
+        // Elevator.State.CORAL_INTAKE))
+        // .andThen(
+        // Commands.waitUntil(m_intakeLaserCAN.triggered
+        // .and(m_clawRollerLaserCAN.triggered.negate())))
+        // .andThen(
+        // Commands.waitUntil(m_intakeLaserCAN.triggered.negate()
+        // .and(m_clawRollerLaserCAN.triggered)))
+        // .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
+
         m_driver
             .leftTrigger().and(isCoralMode)
             .whileTrue(
@@ -368,13 +384,18 @@ public class RobotContainer {
                         m_superStruct
                             .getTransitionCommand(Arm.State.CORAL_INTAKE,
                                 Elevator.State.CORAL_INTAKE))
-                    .andThen(
-                        Commands.waitUntil(m_intakeLaserCAN.triggered
+
+                    .andThen(Commands
+                        .waitUntil(m_intakeLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered.negate())))
-                    .andThen(
-                        Commands.waitUntil(m_intakeLaserCAN.triggered.negate()
+                    .andThen(Commands
+                        .waitUntil(m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+            .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
+                .andThen(m_superStruct
+                    .getTransitionCommand(Arm.State.STOW,
+                        Elevator.State.STOW)));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9517551369863013,
-        "y": 2.755329623287671
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 4.238359126339035,
-        "y": 2.8739409725342324
-      },
-      "isLocked": false,
-      "linkedName": "ReefD"
-    },
-    {
-      "anchor": {
         "x": 1.607748287671233,
         "y": 0.7268621575342468
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0917501078367473,
+        "y": 1.3040792224549538
+      },
+      "isLocked": false,
+      "linkedName": "SourceTop"
+    },
+    {
+      "anchor": {
+        "x": 3.1287909836065575,
+        "y": 3.80922131147541
+      },
       "prevControl": {
-        "x": 1.3877942421904927,
-        "y": 0.5668827934251714
+        "x": 2.2297131147540985,
+        "y": 3.089959016393443
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SourceTop"
+      "linkedName": "ReefB"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
+      "name": "Score",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
@@ -47,13 +47,13 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "SuperstructureIntake"
+                      "name": "IntakeCoral"
                     }
                   },
                   {
                     "type": "named",
                     "data": {
-                      "name": "IntakeCoral"
+                      "name": "L4"
                     }
                   }
                 ]
@@ -74,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.47114463301483
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 60.25511870305781
+    "rotation": 53.47114463301483
   },
   "useDefaultConstraints": true
 }

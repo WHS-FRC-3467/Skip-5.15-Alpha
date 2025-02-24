@@ -29,7 +29,7 @@ public class ClawRoller
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
         SHUFFLE(() -> -1, ProfileType.VELOCITY),
         HOLDCORAL(() -> 0, ProfileType.DISABLED_BRAKE),
-        ALGAE_INTAKE(() -> -90, ProfileType.OPEN_CURRENT);
+        ALGAE_INTAKE(() -> -100, ProfileType.OPEN_CURRENT);
 
         private final DoubleSupplier output;
         private final ProfileType profileType;
