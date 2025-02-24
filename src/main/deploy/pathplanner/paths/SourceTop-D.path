@@ -33,35 +33,30 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L3",
-      "waypointRelativePos": 0.2902829028290287,
+      "name": "L2",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
           "commands": [
             {
-              "type": "named",
+              "type": "sequential",
               "data": {
-                "name": "L3"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "L4",
-      "waypointRelativePos": 0.7232472324723196,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "deadline",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "L4"
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "IntakeCoral"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "L4"
+                    }
+                  }
+                ]
               }
             }
           ]
@@ -82,7 +77,7 @@
     "rotation": 60.25511870305781
   },
   "reversed": false,
-  "folder": "3 Piece Right",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 53.47114463301483

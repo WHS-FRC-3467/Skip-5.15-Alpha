@@ -11,15 +11,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -36,28 +30,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "J-TopSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "J-TopSource"
           }
         },
         {
@@ -67,21 +42,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -92,28 +55,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "K-TopSource"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "K-TopSource"
           }
         },
         {
@@ -123,21 +67,34 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              },
-              {
                 "type": "named",
                 "data": {
-                  "name": "L4"
+                  "name": "Score"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L-TopSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-A"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -157,6 +114,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Week1",
   "choreoAuto": false
 }

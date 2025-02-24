@@ -34,16 +34,16 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
         STOW(() -> 0, ProfileType.MM_POSITION),
         CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
-        LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
-        LEVEL_2(() -> 1.4, ProfileType.MM_POSITION),
-        LEVEL_3(() -> 2.85, ProfileType.MM_POSITION),
-        LEVEL_4(() -> 5.20, ProfileType.MM_POSITION),
+        LEVEL_1(() -> 0.913, ProfileType.MM_POSITION),
+        LEVEL_2(() -> 1.2, ProfileType.MM_POSITION),
+        LEVEL_3(() -> 2.7, ProfileType.MM_POSITION),
+        LEVEL_4(() -> 5.1, ProfileType.MM_POSITION),
         CLIMB(() -> 0.05, ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> 0.8, ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> 1.5, ProfileType.MM_POSITION),
+        ALGAE_LOW(() -> 2, ProfileType.MM_POSITION),
+        ALGAE_HIGH(() -> 3.2, ProfileType.MM_POSITION),
         ALGAE_GROUND(() -> 0.05, ProfileType.MM_POSITION),
         ALGAE_SCORE(() -> 0.05, ProfileType.MM_POSITION),
-        BARGE(() -> 4.0, ProfileType.MM_POSITION),
+        BARGE(() -> 5.3, ProfileType.MM_POSITION),
         TUNING(() -> positionTuning.getAsDouble(), ProfileType.MM_POSITION),
         CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION),
         COAST(() -> 0.0, ProfileType.DISABLED_COAST),
@@ -92,7 +92,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public Trigger homedTrigger =
         new Trigger(
             () -> homedDebouncer.calculate(
-                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .001)));
+                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
 
     public Command zeroSensorCommand()
     {
