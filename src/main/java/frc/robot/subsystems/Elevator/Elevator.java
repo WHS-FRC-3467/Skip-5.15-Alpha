@@ -33,7 +33,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
         STOW(() -> 0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> 0.1, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0.06, ProfileType.MM_POSITION),
         LEVEL_1(() -> 0.913, ProfileType.MM_POSITION),
         LEVEL_2(() -> 1.1281, ProfileType.MM_POSITION),
         LEVEL_3(() -> 2.558, ProfileType.MM_POSITION),
@@ -87,7 +87,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.runOnce(() -> this.state = State.BRAKE);
     }
 
-    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(.01, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(

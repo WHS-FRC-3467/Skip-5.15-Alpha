@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4624999999999997,
-        "y": 0.8482581967213116
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8188330943162712,
-        "y": 1.2170971576251042
+        "x": 1.9163330943162715,
+        "y": 1.234838960903792
       },
       "isLocked": false,
       "linkedName": "SourceTop"
@@ -37,20 +37,19 @@
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "deadline",
+        "type": "sequential",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L4"
-                    }
-                  }
-                ]
+                "name": "IntakeCoral"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "L4Prep"
               }
             }
           ]

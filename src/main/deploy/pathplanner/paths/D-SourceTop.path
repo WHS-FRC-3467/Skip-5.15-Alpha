@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.4624999999999997,
-        "y": 0.8482581967213116
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.2425459545192594,
-        "y": 0.6882788326122363
+        "x": 1.3400459545192598,
+        "y": 0.7060206358909238
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",

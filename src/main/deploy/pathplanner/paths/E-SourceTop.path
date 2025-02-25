@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.977771305861217,
-        "y": 2.0239564619357737
+        "x": 4.388900077723231,
+        "y": 2.31396868961764
       },
       "isLocked": false,
       "linkedName": "ReefE"
     },
     {
       "anchor": {
-        "x": 1.4624999999999997,
-        "y": 0.8482581967213116
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.710663820410633,
-        "y": 0.8785025059248448
+        "x": 1.8204210227595239,
+        "y": 0.9022728934568967
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
