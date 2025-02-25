@@ -47,12 +47,6 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "IntakeCoral"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
                       "name": "L4"
                     }
                   }
