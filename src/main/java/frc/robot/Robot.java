@@ -13,7 +13,10 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Threads;
@@ -47,6 +50,10 @@ public class Robot extends LoggedRobot {
     private RobotContainer m_robotContainer;
     private List<Pose2d> m_pathsToShow = new ArrayList<Pose2d>();
     private Field2d m_autoTraj = new Field2d();
+    public static final double fieldLength = Units.inchesToMeters(690.876);
+    public static final double fieldWidth = Units.inchesToMeters(317);
+    public static final Translation2d fieldCenter =
+        new Translation2d(fieldLength / 2, fieldWidth / 2);
 
     public Robot()
     {
@@ -139,6 +146,7 @@ public class Robot extends LoggedRobot {
         m_robotContainer.resetSimulationField();
         Elastic.selectTab(0);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
+        // Get currently selected command
     }
 
     /** This function is called periodically when disabled. */
@@ -147,9 +155,36 @@ public class Robot extends LoggedRobot {
     {
         // Test
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        var alliance = DriverStation.getAlliance();
-        // Test
-        // Get currently selected command
+        // Check if is the same as the last one
+        if (m_autonomousCommand != m_lastAutonomousCommand && m_autonomousCommand != null) {
+            // Check if its contained in the list of our autos
+            if (AutoBuilder.getAllAutoNames().contains(m_autonomousCommand.getName())) {
+                // Clear the current path
+                m_pathsToShow.clear();
+                // Grabs all paths from the auto
+                try {
+                    for (PathPlannerPath path : PathPlannerAuto
+                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
+                        // Adds all poses to master list
+                        // Swap depending on the alliance
+                        m_pathsToShow.addAll(path.getPathPoses());
+                    }
+                } catch (IOException | ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (DriverStation.getAlliance().get() == Alliance.Red) {
+                    for (int i = 0; i < m_pathsToShow.size(); i++) {
+                        m_pathsToShow.set(i,
+                            m_pathsToShow.get(i).rotateAround(fieldCenter, Rotation2d.k180deg));
+                    }
+                }
+                // Displays all poses on Field2d widget
+                m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
+            }
+        }
+        m_lastAutonomousCommand = m_autonomousCommand;
+        // Logger.recordOutput("AutoPath", m_pathsToShow);
 
 
     }
