@@ -529,20 +529,17 @@ public class RobotContainer {
         NamedCommands.registerCommand("SuperstructureIntake",
             m_superStruct
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, 0.1, 0.8));
+                    Elevator.State.CORAL_INTAKE, 0.1, 0.8)
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)));
 
         // Intake Coral
         NamedCommands.registerCommand(
-            "WaitForCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)
-                .andThen(Commands
-                    .waitUntil(m_intakeLaserCAN.triggered
-                        .and(m_clawRollerLaserCAN.triggered))));
-
-        NamedCommands.registerCommand(
             "IntakeCoral",
-            Commands.waitUntil(m_intakeLaserCAN.triggered.negate()
-                .and(m_clawRollerLaserCAN.triggered))
+            Commands
+                .waitUntil(m_intakeLaserCAN.triggered.and(m_clawRollerLaserCAN.triggered.negate()))
+                .andThen(
+                    Commands.waitUntil(
+                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
 

@@ -17,12 +17,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "L4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Score"
                 }
               }
@@ -36,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "SourceTop-D"
@@ -45,12 +45,6 @@
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -69,7 +63,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitForCoral"
+            "name": "IntakeCoral"
           }
         },
         {
@@ -82,12 +76,6 @@
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -106,7 +94,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitForCoral"
+            "name": "IntakeCoral"
           }
         },
         {
@@ -119,12 +107,6 @@
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4"
-                }
-              },
               {
                 "type": "named",
                 "data": {

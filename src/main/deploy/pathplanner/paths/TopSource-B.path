@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.4624999999999997,
+        "y": 0.8482581967213116
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.098615546534609,
-        "y": 1.4091554106953628
+        "x": 1.9533672588633753,
+        "y": 1.5305514498824275
       },
       "isLocked": false,
       "linkedName": "SourceTop"
@@ -34,29 +34,16 @@
   "eventMarkers": [
     {
       "name": "Score",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L4"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "IntakeCoral"
-                    }
-                  }
-                ]
+                "name": "L4"
               }
             }
           ]

@@ -34,12 +34,12 @@
   "eventMarkers": [
     {
       "name": "PrepScore",
-      "waypointRelativePos": 0.06212018906144747,
+      "waypointRelativePos": 0.39702903443619253,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "L3"
+          "name": "L4"
         }
       }
     }
