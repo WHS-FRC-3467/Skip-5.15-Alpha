@@ -45,6 +45,7 @@ import frc.robot.subsystems.Elevator.Elevator.State;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
+import frc.robot.util.LoggedTunableNumber;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -78,6 +79,11 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
+
+    private final LoggedTunableNumber m_speedLimiter =
+        new LoggedTunableNumber("Drive/SpeedLimiter");
+    private final double L3Limit = 0.6;
+    private final double L4Limit = 0.4;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
@@ -237,29 +243,46 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
+    private double getSpeedLimit()
+    {
+        final double speedLimit = m_speedLimiter.get();
+        final double elevLimit;
+        if (m_profiledElevator.getState() == Elevator.State.LEVEL_3) {
+            elevLimit = L3Limit;
+        } else if (m_profiledElevator.getState() == Elevator.State.LEVEL_4) {
+            elevLimit = L4Limit;
+        } else {
+            elevLimit = 1;
+        }
+        return speedLimit <= 100 && speedLimit >= 0 ? speedLimit / 100 : 1 * elevLimit;
+    }
+
     private Command joystickDrive()
     {
+        final double speedLimitPercent = getSpeedLimit();
         return DriveCommands.joystickDrive(
             m_drive,
-            () -> -m_driver.getLeftY(),
-            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getLeftY() * speedLimitPercent,
+            () -> -m_driver.getLeftX() * speedLimitPercent,
             () -> -m_driver.getRightX());
     }
 
     private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
     {
+        final double speedLimitPercent = getSpeedLimit();
         return DriveCommands.joystickDriveAtAngle(
             m_drive,
-            () -> -m_driver.getLeftY(),
-            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getLeftY() * speedLimitPercent,
+            () -> -m_driver.getLeftX() * speedLimitPercent,
             angle);
     }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
     {
+        final double speedLimitPercent = getSpeedLimit();
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftY() * speedLimitPercent,
             approachPose);
     }
 
