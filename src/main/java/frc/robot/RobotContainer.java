@@ -6,6 +6,7 @@ package frc.robot;
 
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
+import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -200,8 +201,9 @@ public class RobotContainer {
 
         // Instantiate LED Subsystem on BAJA only
         if (Constants.getRobot() == RobotType.BAJA) {
-            final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct,
-                m_vision, m_clawRollerLaserCAN, isCoralMode);
+            // if (false) {
+            // final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct,
+            // m_vision, m_clawRollerLaserCAN, isCoralMode);
         }
 
         // Logic Triggers
