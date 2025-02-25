@@ -81,9 +81,9 @@ public class RobotContainer {
     public final Vision m_vision;
 
     private final LoggedTunableNumber m_speedLimiter =
-        new LoggedTunableNumber("Drive/SpeedLimiter");
-    private final double L3Limit = 0.6;
-    private final double L4Limit = 0.4;
+        new LoggedTunableNumber("SpeedLimiter", 100);
+    private final double L3Limit = 0.4;
+    private final double L4Limit = 0.1;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
@@ -254,7 +254,7 @@ public class RobotContainer {
         } else {
             elevLimit = 1;
         }
-        return speedLimit <= 100 && speedLimit >= 0 ? speedLimit / 100 : 1 * elevLimit;
+        return (speedLimit <= 100 && speedLimit >= 0 ? speedLimit / 100 : 1) * elevLimit;
     }
 
     private Command joystickDrive()
