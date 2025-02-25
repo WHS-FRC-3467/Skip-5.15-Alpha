@@ -394,15 +394,27 @@ public class RobotContainer {
                                 Elevator.State.CORAL_INTAKE))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered
-                            .and(m_clawRollerLaserCAN.triggered.negate())))
+                            .and(m_clawRollerLaserCAN.triggered)))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
-            .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
-                .andThen(m_superStruct
-                    .getTransitionCommand(Arm.State.STOW,
-                        Elevator.State.STOW)));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .andThen(
+                        m_superStruct
+                            .getTransitionCommand(Arm.State.STOW,
+                                Elevator.State.STOW)))
+            .onFalse(
+                Commands.either(
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF)
+                        .andThen(m_superStruct
+                            .getTransitionCommand(Arm.State.STOW,
+                                Elevator.State.STOW)),
+                    Commands
+                        .waitUntil(m_intakeLaserCAN.triggered.negate()
+                            .and(m_clawRollerLaserCAN.triggered))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
+                    m_intakeLaserCAN.triggered.negate()
+                        .and(m_clawRollerLaserCAN.triggered.negate())));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
