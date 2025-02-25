@@ -30,12 +30,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "SourceTop-D"
@@ -61,12 +55,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "SourceTop-C"
@@ -89,12 +77,6 @@
           "type": "path",
           "data": {
             "pathName": "C-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         },
         {
