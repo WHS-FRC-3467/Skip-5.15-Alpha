@@ -524,7 +524,7 @@ public class RobotContainer {
             "WaitForCoral",
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)
                 .andThen(Commands
-                    .waitUntil(m_intakeLaserCAN.triggered.negate()
+                    .waitUntil(m_intakeLaserCAN.triggered
                         .and(m_clawRollerLaserCAN.triggered))));
 
         NamedCommands.registerCommand(

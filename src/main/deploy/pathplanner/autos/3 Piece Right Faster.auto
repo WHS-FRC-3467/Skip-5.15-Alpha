@@ -67,6 +67,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitForCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "SourceTop-C"
@@ -95,6 +101,12 @@
           "type": "path",
           "data": {
             "pathName": "C-TopSource"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForCoral"
           }
         },
         {
