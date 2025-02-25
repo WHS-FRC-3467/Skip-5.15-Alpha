@@ -45,12 +45,6 @@
               "data": {
                 "name": "SuperstructureIntake"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "IntakeCoral"
-              }
             }
           ]
         }

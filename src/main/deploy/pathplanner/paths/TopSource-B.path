@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0917501078367473,
-        "y": 1.3040792224549538
+        "x": 2.098615546534609,
+        "y": 1.4091554106953628
       },
       "isLocked": false,
       "linkedName": "SourceTop"
@@ -20,8 +20,8 @@
         "y": 3.80922131147541
       },
       "prevControl": {
-        "x": 2.2297131147540985,
-        "y": 3.089959016393443
+        "x": 2.268100334805057,
+        "y": 3.170129265983059
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,13 +47,19 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "IntakeCoral"
+                      "name": "WaitForCoral"
                     }
                   },
                   {
                     "type": "named",
                     "data": {
                       "name": "L4"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "IntakeCoral"
                     }
                   }
                 ]

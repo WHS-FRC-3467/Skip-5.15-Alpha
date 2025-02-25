@@ -47,13 +47,19 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "IntakeCoral"
+                      "name": "WaitForCoral"
                     }
                   },
                   {
                     "type": "named",
                     "data": {
                       "name": "L4"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "IntakeCoral"
                     }
                   }
                 ]
