@@ -290,7 +290,7 @@ public class RobotContainer {
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.leftBumper().and(isCoralMode.negate())
+        m_driver.rightBumper().and(isCoralMode.negate())
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
