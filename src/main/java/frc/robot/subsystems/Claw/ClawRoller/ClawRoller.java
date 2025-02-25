@@ -24,7 +24,7 @@ public class ClawRoller
     public enum State implements TargetState {
         OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE),
         INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
-        INTAKESLOW(() -> 2.5, ProfileType.VELOCITY),
+        INTAKESLOW(() -> 3, ProfileType.VELOCITY),
         EJECT(() -> 10.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
         SHUFFLE(() -> -1, ProfileType.VELOCITY),
