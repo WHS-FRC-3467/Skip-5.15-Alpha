@@ -162,7 +162,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         } else if (m_proType instanceof ProfileType.OPEN_CURRENT) {
             /* Run Open Loop using specified current in amps */
             ProfileType.OPEN_CURRENT proType = (ProfileType.OPEN_CURRENT) m_proType;
-            io.runVoltage(proType.current.getAsDouble());
+            io.runCurrent(proType.current.getAsDouble(), proType.maxDutyCycle.getAsDouble());
         } else if (m_proType instanceof ProfileType.DISABLED_COAST) {
             /* Stop all output and put motor in Coast mode */
             io.stopCoast();
