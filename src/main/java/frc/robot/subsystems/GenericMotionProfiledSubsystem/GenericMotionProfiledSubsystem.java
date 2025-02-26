@@ -15,21 +15,29 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
     // Tunable numbers
     private LoggedTunableNumber kP, kI, kD, kG, kS, kV, kA, kCruiseVelocity, kAcceleration, kJerk;
 
-    public enum ProfileType {
-        POSITION,
-        VELOCITY,
-        MM_POSITION,
-        MM_VELOCITY,
-        OPEN_VOLTAGE,
-        OPEN_CURRENT,
-        DISABLED_COAST,
-        DISABLED_BRAKE,
-        CHARACTERIZATION
+    public sealed interface ProfileType {
+        record POSITION(DoubleSupplier position) implements ProfileType {
+        }
+        record VELOCITY(DoubleSupplier velocity) implements ProfileType {
+        }
+        record MM_POSITION(DoubleSupplier position) implements ProfileType {
+        }
+        record MM_VELOCITY(DoubleSupplier velocity) implements ProfileType {
+        }
+        record OPEN_VOLTAGE(DoubleSupplier voltage) implements ProfileType {
+        }
+        record OPEN_CURRENT(DoubleSupplier current, DoubleSupplier maxDutyCycle)
+            implements ProfileType {
+        }
+        record DISABLED_COAST() implements ProfileType {
+        }
+        record DISABLED_BRAKE() implements ProfileType {
+        }
+        record CHARACTERIZATION() implements ProfileType {
+        }
     }
 
     public interface TargetState {
-        public DoubleSupplier getOutput();
-
         public ProfileType getProfileType();
     }
 
@@ -131,46 +139,41 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         }
 
         // Run system based on Profile Type
-        switch (m_proType) {
-            default:
-            case POSITION:
-                /* Run Closed Loop to position in rotations */
-                io.runToPosition(getState().getOutput().getAsDouble());
-                break;
-            case VELOCITY:
-                /* Run Closed Loop to velocity in rotations/second */
-                io.runToVelocity(getState().getOutput().getAsDouble());
-                break;
-            case MM_POSITION:
-                /* Run Motion Magic to the specified position setpoint (in rotations) */
-                io.runMotionMagicPosition(getState().getOutput().getAsDouble());
-                break;
-            case MM_VELOCITY:
-                /* Run Motion Magic to the specified velocity setpoint (in rotations/second) */
-                io.runMotionMagicVelocity(getState().getOutput().getAsDouble());
-                break;
-            case OPEN_VOLTAGE:
-                /* Run Open Loop using specified voltage in volts */
-                io.runVoltage(getState().getOutput().getAsDouble());
-                break;
-            case OPEN_CURRENT:
-                /* Run Open Loop using specified current in amps */
-                io.runCurrent(getState().getOutput().getAsDouble());
-                break;
-            case DISABLED_COAST:
-                /* Stop all output and put motor in Coast mode */
-                io.stopCoast();
-                break;
-            case DISABLED_BRAKE:
-                /* Stop all output and put motor in Brake mode */
-                io.stopBrake();
-                break;
-            case CHARACTERIZATION:
-                /*
-                 * Run Open Loop for characterization in the child subsystem class's
-                 * characterization command. Do nothing here.
-                 */
-                break;
+        if (m_proType instanceof ProfileType.POSITION) {
+            /* Run Closed Loop to position in rotations */
+            ProfileType.POSITION proType = (ProfileType.POSITION) m_proType;
+            io.runToPosition(proType.position.getAsDouble());
+        } else if (m_proType instanceof ProfileType.VELOCITY) {
+            /* Run Closed Loop to velocity in rotations/second */
+            ProfileType.VELOCITY proType = (ProfileType.VELOCITY) m_proType;
+            io.runToVelocity(proType.velocity.getAsDouble());
+        } else if (m_proType instanceof ProfileType.MM_POSITION) {
+            /* Run Motion Magic to the specified position setpoint (in rotations) */
+            ProfileType.MM_POSITION proType = (ProfileType.MM_POSITION) m_proType;
+            io.runMotionMagicPosition(proType.position.getAsDouble());
+        } else if (m_proType instanceof ProfileType.MM_VELOCITY) {
+            /* Run Motion Magic to the specified velocity setpoint (in rotations/second) */
+            ProfileType.MM_VELOCITY proType = (ProfileType.MM_VELOCITY) m_proType;
+            io.runMotionMagicVelocity(proType.velocity.getAsDouble());
+        } else if (m_proType instanceof ProfileType.OPEN_VOLTAGE) {
+            /* Run Open Loop using specified voltage in volts */
+            ProfileType.OPEN_VOLTAGE proType = (ProfileType.OPEN_VOLTAGE) m_proType;
+            io.runVoltage(proType.voltage.getAsDouble());
+        } else if (m_proType instanceof ProfileType.OPEN_CURRENT) {
+            /* Run Open Loop using specified current in amps */
+            ProfileType.OPEN_CURRENT proType = (ProfileType.OPEN_CURRENT) m_proType;
+            io.runVoltage(proType.current.getAsDouble());
+        } else if (m_proType instanceof ProfileType.DISABLED_COAST) {
+            /* Stop all output and put motor in Coast mode */
+            io.stopCoast();
+        } else if (m_proType instanceof ProfileType.DISABLED_BRAKE) {
+            /* Stop all output and put motor in Brake mode */
+            io.stopBrake();
+        } else if (m_proType instanceof ProfileType.CHARACTERIZATION) {
+            /*
+             * Run Open Loop for characterization in the child subsystem class's characterization
+             * command. Do nothing here.
+             */
         }
 
         displayInfo();
@@ -189,8 +192,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
                 (Units.rotationsToDegrees(io.getPosition())));
             Logger.recordOutput(m_name + "/Velocity", io.getVelocity());
             Logger.recordOutput(m_name + "/CurrTrajPos", io.getCurrTrajPos());
-            Logger.recordOutput(m_name + "/AtPosition?", io.atPosition(0.0));
-
+            Logger.recordOutput(m_name + "/AtPosition?", io.atPosition(m_proType, 0.0));
             Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
             Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);
         }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.GenericMotionProfiledSubsystem;
 
 import org.littletonrobotics.junction.AutoLog;
+import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType;
 
 public interface GenericMotionProfiledSubsystemIO {
     @AutoLog
@@ -34,7 +35,7 @@ public interface GenericMotionProfiledSubsystemIO {
     {}
 
     /** Run Open Loop at the specified current */
-    public default void runCurrent(double amps)
+    public default void runCurrent(double amps, double maxDutyCycle)
     {}
 
     /** Run Closed Loop to position in rotations */
@@ -108,7 +109,7 @@ public interface GenericMotionProfiledSubsystemIO {
     }
 
     /* Has the closed loop completed (within tolerance)? */
-    public default boolean atPosition(double tolerance)
+    public default boolean atPosition(ProfileType profileType, double tolerance)
     {
         return false;
     }

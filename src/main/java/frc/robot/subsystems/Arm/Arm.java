@@ -27,26 +27,25 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(() -> Units.degreesToRotations(127.18), ProfileType.MM_POSITION),
+        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(127.18))),
         // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> Units.degreesToRotations(141.7), ProfileType.MM_POSITION),
-        LEVEL_1(() -> Units.degreesToRotations(127.0), ProfileType.MM_POSITION),
-        LEVEL_2(() -> Units.degreesToRotations(120.0), ProfileType.MM_POSITION),
-        LEVEL_3(() -> Units.degreesToRotations(120.0), ProfileType.MM_POSITION),
-        LEVEL_4(() -> Units.degreesToRotations(100.0), ProfileType.MM_POSITION),
-        CLIMB(() -> Units.degreesToRotations(50.4), ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> Units.degreesToRotations(110.0), ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> Units.degreesToRotations(110.0), ProfileType.MM_POSITION),
-        ALGAE_GROUND(() -> Units.degreesToRotations(70.0), ProfileType.MM_POSITION),
-        ALGAE_SCORE(() -> Units.degreesToRotations(120.0), ProfileType.MM_POSITION),
-        BARGE(() -> Units.degreesToRotations(140.0), ProfileType.MM_POSITION),
-        TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()),
-            ProfileType.MM_POSITION),
-        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION),
-        COAST(() -> 0.0, ProfileType.DISABLED_COAST),
-        BRAKE(() -> 0.0, ProfileType.DISABLED_BRAKE);
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(141.7))),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(127.0))),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(100.0))),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
+        BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(140.0))),
+        TUNING(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(positionTuning.getAsDouble()))),
+        CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
+        COAST(new ProfileType.DISABLED_COAST()),
+        BRAKE(new ProfileType.DISABLED_BRAKE());
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -62,7 +61,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     public Arm(ArmIO io, boolean isSim)
     {
-        super(ProfileType.MM_POSITION, ArmConstants.kSubSysConstants, io, isSim);
+        super(State.STOW.profileType, ArmConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Arm Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Arm Brake Command", setBrakeStateCommand());
     }
@@ -85,7 +84,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     public boolean atPosition(double tolerance)
     {
-        return io.atPosition(tolerance);
+        return io.atPosition(state.profileType, tolerance);
     }
 
     public Command staticCharacterization(double outputRampRate)
@@ -99,7 +98,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
             },
             () -> {
                 characterizationState.characterizationOutput = outputRampRate * timer.get();
-                io.runCurrent(characterizationState.characterizationOutput);
+                io.runCurrent(characterizationState.characterizationOutput, 1);
                 Logger.recordOutput(
                     "Arm/StaticCharacterizationOutput",
                     characterizationState.characterizationOutput);
