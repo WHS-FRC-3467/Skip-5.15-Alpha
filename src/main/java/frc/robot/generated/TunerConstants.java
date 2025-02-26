@@ -179,10 +179,10 @@ public class TunerConstants {
     public static final Angle kGortBackLeftEncoderOffset = Rotations.of(-0.00927734375);
     public static final Angle kGortBackRightEncoderOffset = Rotations.of(-0.0615234375);
 
-    public static final Angle kBajaFrontLeftEncoderOffset = Rotations.of(-0.17333984375);
-    public static final Angle kBajaFrontRightEncoderOffset = Rotations.of(0.453369140625);
-    public static final Angle kBajaBackLeftEncoderOffset = Rotations.of(0.04541015625);
-    public static final Angle kBajaBackRightEncoderOffset = Rotations.of(0.033447265625);
+    public static final Angle kBajaFrontLeftEncoderOffset = Rotations.of(-0.176513671875);
+    public static final Angle kBajaFrontRightEncoderOffset = Rotations.of(0.452392578125);
+    public static final Angle kBajaBackLeftEncoderOffset = Rotations.of(0.0478515625);
+    public static final Angle kBajaBackRightEncoderOffset = Rotations.of(0.026123046875);
 
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =
         ConstantCreator.createModuleConstants(
