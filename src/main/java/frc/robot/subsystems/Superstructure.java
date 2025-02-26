@@ -65,32 +65,4 @@ public class Superstructure {
         return getTransitionCommand(armState, elevatorState, 0.0, 0.0);
     }
 
-    /**
-     * Get a boolean that determines whether the Arm and Elevator are at their intended state.
-     * 
-     * This version allows you to pass individual tolerances for each mechanism.
-     * 
-     * (NOTE: Tolerances still have a floor as specified by the subsystem's kminTolerance
-     * 
-     * @param armTolerance
-     * @param elevTolerance
-     * @return A boolean
-     */
-    public boolean atPosition(double armTolerance, double elevTolerance) {
-        return m_Arm.atPosition(armTolerance) && m_Elevator.atPosition(elevTolerance);
-    }
-
-    /**
-     * Get the state of the Arm
-     */
-    public Arm.State getArmState() {
-        return m_Arm.getState();
-    }
-
-    /**
-     * Get the state of the Elevator
-     */
-    public Elevator.State getElevatorState() {
-        return m_Elevator.getState();
-    }
 }

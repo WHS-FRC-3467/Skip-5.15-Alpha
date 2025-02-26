@@ -1,0 +1,494 @@
+package frc.robot.subsystems.LED;
+
+import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+import frc.robot.subsystems.Arm.Arm;
+import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
+import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.subsystems.Vision.Vision;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Ports;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveCommands.DriveMode;
+
+public class LEDSubsystem extends SubsystemBase {
+
+    // Subsystems to query
+    ClawRoller m_ClawRoller;
+    Arm m_Arm;
+    Elevator m_Elevator;
+    Climber m_Climber;
+    Vision m_Vision;
+    ClawRollerLaserCAN m_clawLaserCAN;
+    IntakeLaserCAN m_intakeLaserCAN;
+    Trigger m_isCoralMode;
+
+    // Control everything with a CANdle
+    private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
+
+    /*
+     * Robot LED States
+     */
+    private static enum LEDState {
+        START,
+        DISABLED,
+        DISABLED_TARGET,
+        AUTONOMOUS,
+        INTAKING,
+        FEEDING,
+        CLIMBING,
+        CLIMBED,
+        SUPER_MOVE,
+        ALIGNING,
+        HAVE_CORAL,
+        ENABLED
+    }
+
+    // Game Piece Mode
+    private static enum GPMode {
+        START,
+        CORAL,
+        ALGAE
+    }
+
+    LEDState m_currentState = LEDState.START;
+    GPMode m_currentGPMode = GPMode.START;
+
+    /*
+     * Constructor Creates a new LEDSubsystem
+     */
+    public LEDSubsystem(
+        ClawRoller clawRoller,
+        Arm arm,
+        Elevator elevator,
+        Climber climber,
+        Vision vision,
+        ClawRollerLaserCAN clawLaserCAN,
+        IntakeLaserCAN intakeLaserCAN,
+        Trigger isCoralMode)
+    {
+
+        m_ClawRoller = clawRoller;
+        m_Arm = arm;
+        m_Elevator = elevator;
+        m_Climber = climber;
+        m_Vision = vision;
+        m_clawLaserCAN = clawLaserCAN;
+        m_intakeLaserCAN = intakeLaserCAN;
+        m_isCoralMode = isCoralMode;
+
+        m_candle.configFactoryDefault();
+
+        CANdleConfiguration candleConfiguration = new CANdleConfiguration();
+        // m_candle.getAllConfigs(candleConfiguration);
+
+        candleConfiguration.statusLedOffWhenActive = true;
+        candleConfiguration.disableWhenLOS = false;
+        candleConfiguration.stripType = LEDStripType.RGB;
+        candleConfiguration.brightnessScalar = 0.5;
+        candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
+        m_candle.configAllSettings(candleConfiguration, 100);
+
+        // m_candle.getAllConfigs(candleConfiguration);
+        // m_candle.configLEDType(LEDStripType.RGB, 300);
+        // m_candle.getAllConfigs(candleConfiguration);
+    }
+
+    @Override
+    public void periodic()
+    {
+        // Determine the current state of the robot
+
+        // --- Order of Priorities ---
+        // Whole Robot:
+        // - DISABLED -> Alliance color Larson
+        // - DISABLED_TARGET -> Rainbow
+        // - AUTONOMOUS -> Flames
+        // Mode:
+        // - GPMode -> Tips: White or "algae" color
+        // State:
+        // - INTAKING -> Red Flash Fast
+        // - FEEDING -> Blue
+        // - CLIMBING -> Red Flash Slow
+        // - CLIMBED -> Green
+        // - SUPER_MOVE -> Magenta Flash Medium
+        // - ALIGNING -> Cyan Flash Medium
+        // - HAVE_CORAL -> Green
+        // - ENABLED -> Yellow SingleFade Fast
+
+        LEDState newState = LEDState.START;
+        GPMode newGPMode = GPMode.START;
+
+        // Determine Game Piece Mode
+        if (m_isCoralMode.getAsBoolean()) {
+            newGPMode = GPMode.CORAL;
+        } else {
+            newGPMode = GPMode.ALGAE;
+        }
+
+        // Determine state of robot to be displayed
+        if (DriverStation.isDisabled()) {
+            // Disabled paterns are different depending if
+            // there is a target (AprilTag) in view
+            if (m_Vision.visionHasTarget) {
+                newState = LEDState.DISABLED_TARGET;
+            } else {
+                newState = LEDState.DISABLED;
+            }
+
+        } else if (DriverStation.isAutonomousEnabled()) {
+            // In Autonomous mode
+            newState = LEDState.AUTONOMOUS;
+
+        } else {
+            // If not Disabled or in Auto, determine robot state
+
+            // Run MatchTimer
+            runMatchTimerPattern();
+
+            // Intaking Coral?
+            if (m_ClawRoller.getState() == ClawRoller.State.INTAKESLOW) {
+                if (m_intakeLaserCAN.isTriggered()) {
+                    // Coral has entered and is being positioned
+                    newState = LEDState.FEEDING;
+                } else {
+                    // Waiting for Coral
+                    newState = LEDState.INTAKING;
+                }
+
+                // Climbing?
+            } else if (m_Climber.getState() == Climber.State.PREP ||
+                m_Climber.getState() == Climber.State.CLIMB) {
+                // Climb complete?
+                if (m_Climber.atPosition(0.1)) {
+                    newState = LEDState.CLIMBED;
+                    // m_State.setColor(green);
+                } else {
+                    newState = LEDState.CLIMBING;
+                    // m_State.setAnimation(a_FlashRed);
+                }
+
+                // Moving Superstructure?
+            } else if (m_Elevator.isElevated()) {
+                if (!m_Elevator.atPosition(0.0) || !m_Arm.atPosition(0.0)) {
+                    // An Elevated position has been commanded, but it's not there yet
+                    newState = LEDState.SUPER_MOVE;
+                    // m_State.setAnimation(a_AimingPingPong);
+                }
+
+                // Aligning?
+            } else if (DriveCommands.getDriveMode() == DriveMode.dmApproach) {
+                // The robot is auto-aligning
+                newState = LEDState.ALIGNING;
+                // m_State.setAnimation(a_AimingPingPong);
+
+                // Holding Coral?
+            } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
+                // Claw is holding Coral
+                newState = LEDState.HAVE_CORAL;
+                // m_State.setColor(green);
+
+            } else {
+                // Default state: Just Enabled
+                newState = LEDState.ENABLED;
+            }
+        }
+
+        // If GPMode has changed, run the state machine to change LED patterns
+        if (newGPMode != m_currentGPMode) {
+            GPStateMachine(newGPMode);
+            m_currentGPMode = newGPMode;
+        }
+
+        // If State has changed, run the state machine to change LED patterns
+        if (newState != m_currentState) {
+            LEDStateMachine(newState);
+            m_currentState = newState;
+        }
+
+    }
+
+    // Set the color of the Mode indicator LEDs based on Game Piece Mode
+    private void GPStateMachine(GPMode newMode)
+    {
+        // Only set Mode indicator if robot is Enabled
+        if (DriverStation.isEnabled()) {
+            switch (newMode) {
+                case ALGAE:
+                    m_LeftTip.setColor(algae);
+                    m_RightTip.setColor(algae);
+                    break;
+                case CORAL:
+                default:
+                    m_LeftTip.setColor(white);
+                    m_RightTip.setColor(white);
+                    break;
+            }
+        }
+    }
+
+    // Set the color of the State indicator LEDS
+    private void LEDStateMachine(LEDState newState)
+    {
+        switch (newState) {
+            case DISABLED:
+                if (DriverStation.getAlliance().isPresent()) {
+                    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                        m_FullLeft.setAnimation(a_LeftBlueLarson);
+                        m_FullRight.setAnimation(a_RightBlueLarson);
+                    } else {
+                        m_FullLeft.setAnimation(a_LeftRedLarson);
+                        m_FullRight.setAnimation(a_RightRedLarson);
+                    }
+                }
+                this.timerDisabled();
+                break;
+
+            case DISABLED_TARGET:
+                m_FullLeft.setAnimation(a_LeftRainbow);
+                m_FullRight.setAnimation(a_RightRainbow);
+                this.timerDisabled();
+                break;
+
+            case AUTONOMOUS:
+                m_FullLeft.setAnimation(a_LeftFlame);
+                m_FullRight.setAnimation(a_RightFlame);
+                m_MatchTime.setAnimation(a_InAutonomous);
+                break;
+
+            case INTAKING:
+                m_State.setAnimation(a_FastFlashRed);
+                break;
+
+            case FEEDING:
+                m_State.setColor(blue);
+                break;
+
+            case CLIMBING:
+                m_State.setAnimation(a_SlowFlashRed);
+                break;
+
+            case CLIMBED:
+                m_State.setColor(green);
+                break;
+
+            case SUPER_MOVE:
+                m_State.setAnimation(a_MedFlashMagenta);
+                break;
+
+            case ALIGNING:
+                m_State.setAnimation(a_MedFlashCyan);
+                break;
+
+            case HAVE_CORAL:
+                m_State.setColor(green);
+                break;
+
+            case ENABLED:
+                m_State.setAnimation(a_SingleFadeFastYellow);
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    public void setBrightness(double percent)
+    {
+        /* Here we will set the brightness of the LEDs */
+        m_candle.configBrightnessScalar(percent, 100);
+    }
+
+    /*
+     * Colors
+     */
+    class Color {
+        int r, g, b;
+
+        private Color(int red, int green, int blue)
+        {
+            this.r = red;
+            this.g = green;
+            this.b = blue;
+        }
+    }
+
+    Color black = new Color(0, 0, 0); // This will Turn off the CANdle
+    Color white = new Color(255, 255, 255);
+    Color red = new Color(255, 0, 0);
+    Color green = new Color(0, 255, 0);
+    Color blue = new Color(0, 0, 255);
+    Color yellow = new Color(255, 255, 0);
+    Color cyan = new Color(0, 255, 255);
+    Color magenta = new Color(255, 0, 255);
+    Color algae = new Color(52, 235, 113);
+
+    /*
+     * LED Segments
+     */
+    class LEDSegment {
+
+        int startIndex;
+        int segmentSize;
+        int animationSlot;
+
+        private LEDSegment(int startIndex, int segmentSize, int animationSlot)
+        {
+            this.startIndex = startIndex;
+            this.segmentSize = segmentSize;
+            this.animationSlot = animationSlot;
+        }
+
+        public void setColor(Color color)
+        {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.setLEDs(color.r, color.g, color.b, 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.95);
+        }
+
+        private void setAnimation(Animation animation)
+        {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.animate(animation, animationSlot);
+            m_candle.modulateVBatOutput(0.95);
+        }
+
+        public void setOff()
+        {
+            m_candle.clearAnimation(animationSlot);
+            m_candle.setLEDs(0, 0, 0, 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.0);
+
+        }
+
+    }
+
+    // Define LED Segments
+    // Numbering Sequence: Right LEDs go down, Left LEDs go Up
+    // Match Time Indicator - CANdle module
+    LEDSegment m_MatchTime = new LEDSegment(0, 8, 0);
+    // These are for Disabled/Auto states
+    // They are each a full strip
+    LEDSegment m_FullRight = new LEDSegment(8, 144, 1);
+    LEDSegment m_FullLeft = new LEDSegment(152, 144, 2);
+    // These are for Coral/Algae Mode while robot is Enabled
+    // These are the top pixels on each strip
+    LEDSegment m_RightTip = new LEDSegment(8, 24, 3);
+    LEDSegment m_LeftTip = new LEDSegment(264, 24, 4);
+    // This is for what the robot is doing while robot is Enabled
+    // This is the bottom of each strip combined into one segment
+    LEDSegment m_State = new LEDSegment(32, 240, 5);
+
+    // Disabled Animations
+    Animation a_RightRedLarson =
+        new LarsonAnimation(red.r, red.g, red.b, 0, 0.2, m_FullRight.segmentSize, BounceMode.Front,
+            10, m_FullRight.startIndex);
+    Animation a_LeftRedLarson =
+        new LarsonAnimation(red.r, red.g, red.b, 0, 0.2, m_FullLeft.segmentSize, BounceMode.Front,
+            10, m_FullLeft.startIndex);
+    Animation a_RightBlueLarson =
+        new LarsonAnimation(blue.r, blue.g, blue.b, 0, 0.2, m_FullRight.segmentSize,
+            BounceMode.Front, 10, m_FullRight.startIndex);
+    Animation a_LeftBlueLarson =
+        new LarsonAnimation(blue.r, blue.g, blue.b, 0, 0.2, m_FullLeft.segmentSize,
+            BounceMode.Front, 10, m_FullLeft.startIndex);
+    Animation a_RightRainbow =
+        new RainbowAnimation(0.7, 0.5, m_FullRight.segmentSize, true, m_FullRight.startIndex);
+    Animation a_LeftRainbow =
+        new RainbowAnimation(0.7, 0.5, m_FullLeft.segmentSize, false, m_FullLeft.startIndex);
+    Animation a_RightFlame =
+        new FireAnimation(1.0, 0.75, m_FullRight.segmentSize, 1.0, 0.3, true,
+            m_FullRight.startIndex);
+    Animation a_LeftFlame =
+        new FireAnimation(1.0, 0.75, m_FullLeft.segmentSize, 1.0, 0.3, false,
+            m_FullLeft.startIndex);
+
+    // Robot State Animations
+    Animation a_FastFlashRed = new StrobeAnimation(red.r, red.g, red.b, 0, 0.8,
+        m_State.segmentSize, m_State.startIndex);
+    Animation a_SlowFlashRed = new StrobeAnimation(red.r, red.g, red.b, 0, 0.2,
+        m_State.segmentSize, m_State.startIndex);
+    Animation a_MedFlashMagenta = new StrobeAnimation(magenta.r, magenta.g, magenta.b, 0, 0.5,
+        m_State.segmentSize, m_State.startIndex);
+    Animation a_MedFlashCyan = new StrobeAnimation(cyan.r, cyan.g, cyan.b, 0, 0.5,
+        m_State.segmentSize, m_State.startIndex);
+    Animation a_SingleFadeFastYellow = new SingleFadeAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
+        m_State.segmentSize, m_State.startIndex);
+
+    // Match Timer Animations
+    Animation a_InAutonomous = new StrobeAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
+        m_MatchTime.segmentSize, m_MatchTime.startIndex);
+    Animation a_TimeExpiring = new StrobeAnimation(red.r, red.g, red.b, 0, 0.5,
+        m_MatchTime.segmentSize, m_MatchTime.startIndex);
+
+
+    // Match Timer Module
+    // * Autonomous (15 sec): Flashing Yellow
+    // * 2:15 -> 1:00: Solid Green
+    // * 1:00 -> 0:20: Solid Yellow
+    // * 0:20 -> 0:10: Solid Red
+    // * 0:10 -> 0:00: Strobing Red
+    // * Non-auto periods & Disabled: White
+
+    Timer m_pseudoTimer = new Timer();
+    Color currentColor = black;
+
+    private void runMatchTimerPattern()
+    {
+
+        Color newColor = black;
+
+        double matchTime = DriverStation.getMatchTime();
+        if (matchTime < 0.0) {
+            m_pseudoTimer.start();
+            matchTime = (int) (150.0 - m_pseudoTimer.get());
+        }
+
+        if (matchTime > 60.0) {
+            newColor = green;
+        } else if (matchTime > 20.0) {
+            newColor = yellow;
+        } else if (matchTime > 10.0) {
+            newColor = red;
+        } else if (matchTime > 0.0) {
+            newColor = magenta;
+        } else {
+            newColor = white;
+        }
+
+        if (newColor != currentColor) {
+            if (newColor == magenta) {
+                m_MatchTime.setAnimation(a_TimeExpiring);
+            } else {
+                m_MatchTime.setColor(newColor);
+            }
+            currentColor = newColor;
+        }
+    }
+
+    public void timerDisabled()
+    {
+        m_MatchTime.setOff();
+        m_pseudoTimer.stop();
+        m_pseudoTimer.reset();
+    }
+
+
+}

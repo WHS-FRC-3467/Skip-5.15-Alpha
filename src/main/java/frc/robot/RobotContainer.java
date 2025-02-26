@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -38,10 +37,8 @@ import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
-import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.Elevator.Elevator.State;
-import frc.robot.subsystems.LED.LED;
+import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import org.ironmaple.simulation.SimulatedArena;
@@ -200,7 +197,15 @@ public class RobotContainer {
 
         // Instantiate LED Subsystem on BAJA only
         if (Constants.getRobot() == RobotType.BAJA) {
-            final LED m_LED = new LED(m_clawRoller, m_profiledClimber, m_drive, m_superStruct, m_vision, m_clawRollerLaserCAN, isCoralMode);
+            final LEDSubsystem m_LED = new LEDSubsystem(
+                m_clawRoller,
+                m_profiledArm,
+                m_profiledElevator,
+                m_profiledClimber,
+                m_vision,
+                m_clawRollerLaserCAN,
+                m_intakeLaserCAN,
+                isCoralMode);
         }
 
         // Logic Triggers
@@ -310,7 +315,7 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
 
-        // Driver X Button and Algae mode: Send Arm and Elevator to LEVEL_2
+        // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
             .x().and(isCoralMode.negate())
             .onTrue(
@@ -322,7 +327,7 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
 
-        // Driver B Button and Algae mode: Send Arm and Elevator to LEVEL_3
+        // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver
             .b().and(isCoralMode.negate())
             .onTrue(
@@ -337,7 +342,7 @@ public class RobotContainer {
                     0.8));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
-        // Elevator to NET
+        // Elevator to BARGE
         m_driver
             .y().and(isCoralMode.negate())
             .onTrue(
