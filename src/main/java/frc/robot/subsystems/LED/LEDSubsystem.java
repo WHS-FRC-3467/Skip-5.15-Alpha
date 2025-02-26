@@ -1,5 +1,6 @@
 package frc.robot.subsystems.LED;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -18,6 +19,8 @@ import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.util.LoggedTunableNumber;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -41,6 +44,13 @@ public class LEDSubsystem extends SubsystemBase {
 
     // Control everything with a CANdle
     private static final CANdle m_candle = new CANdle(Ports.ELEVATOR_CANDLE.getDeviceNumber());
+
+    // LoggedTunableNumbers for testing LED states
+    private LoggedTunableNumber kMode, kState;
+    // Flag for testing mode
+    boolean kTesting = false;
+
+    Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
     /*
      * Robot LED States
@@ -103,15 +113,52 @@ public class LEDSubsystem extends SubsystemBase {
         candleConfiguration.stripType = LEDStripType.RGB;
         candleConfiguration.brightnessScalar = 0.5;
         candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
-        m_candle.configAllSettings(candleConfiguration, 100);
+        candleConfiguration.v5Enabled = false;
+        ErrorCode ec = m_candle.configAllSettings(candleConfiguration, 100);
+        if (ec != ErrorCode.OK) {
+            ledConfigError.set(true);
+            ledConfigError.setText(ec.toString());
+        }
 
-        // m_candle.getAllConfigs(candleConfiguration);
-        // m_candle.configLEDType(LEDStripType.RGB, 300);
-        // m_candle.getAllConfigs(candleConfiguration);
+        // StripType setting needs to be done twice (for some reason, once doesn't work)
+        ec = m_candle.configLEDType(LEDStripType.RGB, 300);
+        if (ec != ErrorCode.OK) {
+            ledConfigError.set(true);
+            ledConfigError.setText(ec.toString());
+        }
+
+        // Tunable numbers for testing
+        kMode = new LoggedTunableNumber("LED/Mode", 0);
+        kState = new LoggedTunableNumber("LED/State", 0);
     }
 
     @Override
     public void periodic()
+    {
+        if (kTesting) {
+            LEDState newState = testLEDState((int) kState.get());
+            GPMode newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
+            runMatchTimerPattern();
+
+            // If GPMode has changed, run the state machine to change LED patterns
+            if (newGPMode != m_currentGPMode) {
+                GPStateMachine(newGPMode);
+                m_currentGPMode = newGPMode;
+            }
+
+            // If State has changed, run the state machine to change LED patterns
+            if (newState != m_currentState) {
+                LEDStateMachine(newState);
+                m_currentState = newState;
+            }
+
+        } else {
+            getRobotState();
+        }
+    }
+
+    private void getRobotState()
+
     {
         // Determine the current state of the robot
 
@@ -178,10 +225,8 @@ public class LEDSubsystem extends SubsystemBase {
                 // Climb complete?
                 if (m_Climber.atPosition(0.1)) {
                     newState = LEDState.CLIMBED;
-                    // m_State.setColor(green);
                 } else {
                     newState = LEDState.CLIMBING;
-                    // m_State.setAnimation(a_FlashRed);
                 }
 
                 // Moving Superstructure?
@@ -189,20 +234,17 @@ public class LEDSubsystem extends SubsystemBase {
                 if (!m_Elevator.atPosition(0.0) || !m_Arm.atPosition(0.0)) {
                     // An Elevated position has been commanded, but it's not there yet
                     newState = LEDState.SUPER_MOVE;
-                    // m_State.setAnimation(a_AimingPingPong);
                 }
 
                 // Aligning?
             } else if (DriveCommands.getDriveMode() == DriveMode.dmApproach) {
                 // The robot is auto-aligning
                 newState = LEDState.ALIGNING;
-                // m_State.setAnimation(a_AimingPingPong);
 
                 // Holding Coral?
             } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
                 // Claw is holding Coral
                 newState = LEDState.HAVE_CORAL;
-                // m_State.setColor(green);
 
             } else {
                 // Default state: Just Enabled
@@ -221,7 +263,6 @@ public class LEDSubsystem extends SubsystemBase {
             LEDStateMachine(newState);
             m_currentState = newState;
         }
-
     }
 
     // Set the color of the Mode indicator LEDs based on Game Piece Mode
@@ -247,6 +288,12 @@ public class LEDSubsystem extends SubsystemBase {
     private void LEDStateMachine(LEDState newState)
     {
         switch (newState) {
+            case START:
+                // Test mode only
+                m_FullLeft.setAnimation(a_LeftBlueLarson);
+                m_FullRight.setAnimation(a_RightRedLarson);
+                break;
+
             case DISABLED:
                 if (DriverStation.getAlliance().isPresent()) {
                     if (DriverStation.getAlliance().get() == Alliance.Blue) {
@@ -452,7 +499,6 @@ public class LEDSubsystem extends SubsystemBase {
 
     private void runMatchTimerPattern()
     {
-
         Color newColor = black;
 
         double matchTime = DriverStation.getMatchTime();
@@ -490,5 +536,38 @@ public class LEDSubsystem extends SubsystemBase {
         m_pseudoTimer.reset();
     }
 
+    LEDState testLEDState(int stateNum)
+    {
+
+        switch (stateNum) {
+
+            default:
+            case 0:
+                return LEDState.START;
+            case 1:
+                return LEDState.DISABLED;
+            case 2:
+                return LEDState.DISABLED_TARGET;
+            case 3:
+                return LEDState.AUTONOMOUS;
+            case 4:
+                return LEDState.INTAKING;
+            case 5:
+                return LEDState.FEEDING;
+            case 6:
+                return LEDState.CLIMBING;
+            case 7:
+                return LEDState.CLIMBED;
+            case 8:
+                return LEDState.SUPER_MOVE;
+            case 9:
+                return LEDState.ALIGNING;
+            case 10:
+                return LEDState.HAVE_CORAL;
+            case 11:
+                return LEDState.ENABLED;
+        }
+    }
 
 }
+
