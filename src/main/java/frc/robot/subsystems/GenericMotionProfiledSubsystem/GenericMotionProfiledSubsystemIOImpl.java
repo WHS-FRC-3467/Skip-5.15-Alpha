@@ -20,6 +20,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
@@ -346,9 +347,9 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     /** Run Open Loop at the specified current */
     @Override
-    public void runCurrent(double amps)
+    public void runCurrent(double amps, double maxDutyCycle)
     {
-        mMainMotor.setControl(currentControl.withOutput(amps));
+        mMainMotor.setControl(currentControl.withOutput(amps).withMaxAbsDutyCycle(maxDutyCycle));
     }
 
     /** Run Closed Loop to setpoint in rotations */
@@ -489,8 +490,13 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     @Override
     // Has current motion trajectory completed?
-    public synchronized boolean atPosition(double tolerance)
+    public synchronized boolean atPosition(ProfileType profileType, double tolerance)
     {
+        if (!(profileType instanceof ProfileType.POSITION)
+            && !(profileType instanceof ProfileType.MM_POSITION)) {
+            return false;
+        }
+
         return Util.epsilonEquals(mCurrPosition, mOpSetpoint,
             Math.max(mConstants.kminTolerance, tolerance));
     }

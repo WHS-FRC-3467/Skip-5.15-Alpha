@@ -50,6 +50,19 @@ public class DriveCommands {
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+    public enum DriveMode {
+        dmJoystick,
+        dmAngle,
+        dmApproach
+    }
+
+    private static DriveMode currentDriveMode = DriveMode.dmJoystick;
+
+    public static DriveMode getDriveMode()
+    {
+        return currentDriveMode;
+    }
+
     private DriveCommands()
     {}
 
@@ -79,6 +92,7 @@ public class DriveCommands {
     {
         return Commands.run(
             () -> {
+                currentDriveMode = DriveMode.dmJoystick;
                 // Get linear velocity
                 Translation2d linearVelocity =
                     getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
@@ -133,6 +147,7 @@ public class DriveCommands {
         // Construct command
         return Commands.run(
             () -> {
+                currentDriveMode = DriveMode.dmAngle;
                 // Get linear velocity
                 Translation2d linearVelocity =
                     getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
@@ -201,6 +216,7 @@ public class DriveCommands {
         // Construct command
         return Commands.run(
             () -> {
+                currentDriveMode = DriveMode.dmApproach;
                 // Name constants
                 Translation2d currentTranslation = drive.getPose().getTranslation();
                 Translation2d approachTranslation = approachSupplier.get().getTranslation();

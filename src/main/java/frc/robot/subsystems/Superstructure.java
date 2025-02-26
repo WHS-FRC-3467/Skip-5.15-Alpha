@@ -64,4 +64,5 @@ public class Superstructure {
     {
         return getTransitionCommand(armState, elevatorState, 0.0, 0.0);
     }
+
 }

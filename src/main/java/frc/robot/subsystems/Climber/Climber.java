@@ -23,19 +23,20 @@ import lombok.Setter;
 @Getter
 public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
-    static LoggedTunableNumber positionTuning = new LoggedTunableNumber("Climber/PositionTuningSP", 0.0);
+    static LoggedTunableNumber positionTuning =
+        new LoggedTunableNumber("Climber/PositionTuningSP", 0.0);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis, CLIMB is inwards
-        HOME(() -> Units.degreesToRotations(90.0), ProfileType.MM_POSITION),
-        PREP(() -> Units.degreesToRotations(0.0), ProfileType.MM_POSITION),
-        CLIMB(() -> Units.degreesToRotations(110.0), ProfileType.MM_POSITION),
-        TUNING(() -> Units.degreesToRotations(positionTuning.getAsDouble()), ProfileType.MM_POSITION),
-        ;
+        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
+        // CLIMB is inwards
+        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(90.0))),
+        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        TUNING(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(positionTuning.getAsDouble())));
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -49,7 +50,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     /** Constructor */
     public Climber(ClimberIO io, boolean isSim)
     {
-        super(ProfileType.MM_POSITION, ClimberConstants.kSubSysConstants, io, isSim);
+        super(State.HOME.profileType, ClimberConstants.kSubSysConstants, io, isSim);
     }
 
     public Command setStateCommand(State state)
@@ -60,8 +61,9 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     // Climbing Triggers
     public boolean climbRequested = false; // Whether or not a climb request is active
     private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
-    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when not climbing
-    
+    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when
+                              // not climbing
+
     // Triggers for each step of the climb sequence
     private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
     private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
@@ -72,7 +74,8 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public Trigger climbedTrigger =
         new Trigger(
             () -> climbedDebouncer.calculate(
-                this.state == State.CLIMB && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
+                this.state == State.CLIMB
+                    && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
 
     public Command climbedAlertCommand()
     {
@@ -82,5 +85,9 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             new InstantCommand(() -> climbedAlert.set(false)));
     }
 
+    public boolean atPosition(double tolerance)
+    {
+        return io.atPosition(state.profileType, tolerance);
+    }
 
 }

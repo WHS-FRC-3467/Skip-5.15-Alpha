@@ -33,20 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L2",
+      "name": "PrepScore",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "deadline",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "L2"
-              }
-            }
-          ]
+          "name": "L2"
         }
       }
     }

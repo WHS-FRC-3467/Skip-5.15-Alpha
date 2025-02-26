@@ -7,6 +7,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
+import frc.robot.Constants.RobotType;
 import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystemConstants;
@@ -50,7 +52,11 @@ public final class ArmConstants {
             FeedbackSensorSourceValue.RemoteCANcoder;
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = (9 / 1) * (48 / 22) * (70 / 22);
-        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.826416015625;
+        // Different encoder offsets for each robot
+        double kGortCANcoderOffset = 0.826416015625;
+        double kBajaCANcoderOffset = -0.575439453125;
+        kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset =
+            (Constants.getRobot() == RobotType.GORT) ? kGortCANcoderOffset : kBajaCANcoderOffset;
         kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
             SensorDirectionValue.Clockwise_Positive;
         kSubSysConstants.kEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;

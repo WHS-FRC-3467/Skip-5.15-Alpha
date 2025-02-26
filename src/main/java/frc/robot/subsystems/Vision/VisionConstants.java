@@ -13,29 +13,19 @@
 
 package frc.robot.subsystems.Vision;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Filesystem;
 
 public class VisionConstants {
     // AprilTag layout
-    public static AprilTagFieldLayout aprilTagLayout;
-
-    static {
-        try {
-            aprilTagLayout = new AprilTagFieldLayout(
-                new File(Filesystem.getDeployDirectory(), "vision/andymark.json").toPath());
-        } catch (IOException exception) {
-            aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
-        }
-    }
+    public static AprilTagFieldLayout aprilTagLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "front_left";
@@ -44,11 +34,13 @@ public class VisionConstants {
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)
     public static Transform3d robotToCamera0 =
-        new Transform3d(0.293688, 0.346515, 0.219053,
-            new Rotation3d(0.0, Units.degreesToRadians(-15), 0.0));
+        new Transform3d(Units.inchesToMeters(9.287), Units.inchesToMeters(10.9704),
+            Units.inchesToMeters(7.9167),
+            new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(-30)));
     public static Transform3d robotToCamera1 =
-        new Transform3d(0.293688, -0.346515, 0.219053,
-            new Rotation3d(0.0, Units.degreesToRadians(-15), 0.0));
+        new Transform3d(Units.inchesToMeters(9.287), Units.inchesToMeters(-10.9704),
+            Units.inchesToMeters(7.9167),
+            new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(30)));
 
     // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;
@@ -66,4 +58,6 @@ public class VisionConstants {
                 1.0, // Camera 0
                 1.0 // Camera 1
         };
+
+    public static List<Integer> rejectedTags = Arrays.asList(3, 4, 5, 14, 15, 16);
 }
