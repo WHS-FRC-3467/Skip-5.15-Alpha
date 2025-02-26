@@ -23,8 +23,7 @@ public class ClawRoller
     @Getter
     public enum State implements TargetState {
         OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE),
-        INTAKE(() -> 5.0, ProfileType.MM_VELOCITY),
-        INTAKESLOW(() -> 2.5, ProfileType.MM_VELOCITY),
+        INTAKE(() -> 80, ProfileType.OPEN_CURRENT),
         EJECT(() -> 10.0, ProfileType.OPEN_VOLTAGE),
         SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
         SHUFFLE(() -> -1, ProfileType.VELOCITY),
@@ -53,21 +52,5 @@ public class ClawRoller
     {
         return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
             Math.max(0.0001, tolerance));
-    }
-
-    public Command holdCoralCommand(Trigger clawTriggered)
-    {
-        return this.setStateCommand(State.HOLDCORAL).andThen(
-            this.run(() -> {
-                clawTriggered.negate().whileTrue(
-                    Commands.sequence(
-                        this.setStateCommand(State.SHUFFLE),
-                        Commands.waitSeconds(0.2),
-                        this.setStateCommand(State.INTAKESLOW),
-                        Commands.waitSeconds(0.2),
-                        this.setStateCommand(State.OFF)))
-                    .onFalse(
-                        this.setStateCommand(State.HOLDCORAL));
-            }));
     }
 }

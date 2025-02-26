@@ -42,7 +42,6 @@ import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Elevator.Elevator.State;
-import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.util.LoggedTunableNumber;
@@ -83,6 +82,8 @@ public class RobotContainer {
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
+
+    private double speedMultiplier = 0.8;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -154,6 +155,7 @@ public class RobotContainer {
                         new ModuleIOTalonFXSim(
                             TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
                         m_driveSimulation::setSimulationWorldPose);
+
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
@@ -242,8 +244,8 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDrive(
             m_drive,
-            () -> -m_driver.getLeftY(),
-            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftX() * speedMultiplier,
             () -> -m_driver.getRightX());
     }
 
@@ -251,8 +253,8 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDriveAtAngle(
             m_drive,
-            () -> -m_driver.getLeftY(),
-            () -> -m_driver.getLeftX(),
+            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftX() * speedMultiplier,
             angle);
     }
 
@@ -260,7 +262,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> -m_driver.getLeftY(),
+            () -> -m_driver.getLeftY() * speedMultiplier,
             approachPose);
     }
 
@@ -395,7 +397,6 @@ public class RobotContainer {
                                 Elevator.State.CORAL_INTAKE))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
@@ -546,7 +547,7 @@ public class RobotContainer {
         // Intake Coral
         NamedCommands.registerCommand(
             "IntakeCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)
+            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                 .andThen(
                     Commands.waitUntil(
                         m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))

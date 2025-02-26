@@ -36,7 +36,7 @@ public final class ClawRollerConstants {
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
         kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
-        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = false;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 

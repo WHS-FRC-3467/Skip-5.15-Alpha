@@ -32,8 +32,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
-        STOW(() -> 0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> 0.06, ProfileType.MM_POSITION),
+        STOW(() -> 0.04, ProfileType.MM_POSITION),
+        CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
         LEVEL_1(() -> 0.913, ProfileType.MM_POSITION),
         LEVEL_2(() -> 1.1281, ProfileType.MM_POSITION),
         LEVEL_3(() -> 2.558, ProfileType.MM_POSITION),
