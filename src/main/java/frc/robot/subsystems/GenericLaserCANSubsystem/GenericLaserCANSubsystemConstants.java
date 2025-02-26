@@ -16,5 +16,4 @@ public class GenericLaserCANSubsystemConstants {
     public RegionOfInterest regionOfInterest;
     public TimingBudget timingBudget;
 
-    // TODO: simulation
 }
