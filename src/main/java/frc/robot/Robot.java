@@ -8,26 +8,14 @@ import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Elastic;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
-import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -43,9 +31,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
-    private Command m_lastAutonomousCommand;
     private RobotContainer m_robotContainer;
-    private List<Pose2d> m_pathsToShow = new ArrayList<Pose2d>();
     private Field2d m_autoTraj = new Field2d();
 
     public Robot()
@@ -147,10 +133,6 @@ public class Robot extends LoggedRobot {
     {
         // Test
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        var alliance = DriverStation.getAlliance();
-        // Test
-        // Get currently selected command
-
 
     }
 
@@ -217,6 +199,5 @@ public class Robot extends LoggedRobot {
     {
         SimulatedArena.getInstance().simulationPeriodic();
         m_robotContainer.displaySimFieldToAdvantageScope();
-        // TODO Find out where i need to add this in the robotcontainer
     }
 }

@@ -87,6 +87,26 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.runOnce(() -> this.state = State.BRAKE);
     }
 
+    public boolean isElevated()
+    {
+        switch (this.getState()) {
+            case LEVEL_1:
+            case LEVEL_2:
+            case LEVEL_3:
+            case LEVEL_4:
+            case CLIMB:
+            case ALGAE_LOW:
+            case ALGAE_HIGH:
+            case ALGAE_GROUND:
+            case ALGAE_SCORE:
+            case BARGE:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
     private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
 
     public Trigger homedTrigger =
