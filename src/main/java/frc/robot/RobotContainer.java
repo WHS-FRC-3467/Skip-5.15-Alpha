@@ -354,6 +354,7 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
+                .onlyIf(m_intakeLaserCAN.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
@@ -376,7 +377,8 @@ public class RobotContainer {
             .onFalse(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
                 .andThen(m_superStruct
                     .getTransitionCommand(Arm.State.STOW,
-                        Elevator.State.STOW)));
+                        Elevator.State.STOW))
+                .onlyIf(m_intakeLaserCAN.triggered.negate()));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
