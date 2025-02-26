@@ -92,14 +92,14 @@ public final class ClimberConstants {
         // Motor simulation
         kSubSysConstants.kMotorSimConfig.simMotorModelSupplier = () -> DCMotor.getKrakenX60Foc(2);
 
-        // Climber Simulation 
+        // Climber Simulation
         kSubSysConstants.kArmSimConfig.kArmMass = 8.0; // Kilograms
-        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(14); // - TODO: Fill in with real values once the climber is designed
+        kSubSysConstants.kArmSimConfig.kArmLength = Units.inchesToMeters(14);
         kSubSysConstants.kArmSimConfig.kDefaultArmSetpointDegrees = 90.0;
         kSubSysConstants.kArmSimConfig.kMinAngleDegrees = -10.0;
         kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 135.0;
         kSubSysConstants.kArmSimConfig.kArmReduction =
-            30; // RotorToSensorRatio * SensorToMechanismRatio - TODO: Fill in with real values once the climber is designed
-        kSubSysConstants.kArmSimConfig.kSensorReduction = 5; // SensorToMechanismRatio - TODO: Fill in with real values once the climber is designed
+            30; // RotorToSensorRatio * SensorToMechanismRatio
+        kSubSysConstants.kArmSimConfig.kSensorReduction = 5; // SensorToMechanismRatio
     }
 }

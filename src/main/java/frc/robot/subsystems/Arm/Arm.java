@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Arm;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;

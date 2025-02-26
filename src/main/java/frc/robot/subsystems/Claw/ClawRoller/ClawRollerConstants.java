@@ -41,7 +41,7 @@ public final class ClawRollerConstants {
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 5; // TODO: tune on real robot
+        kSubSysConstants.kMotorConfig.Slot0.kP = 5;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
         kSubSysConstants.kMotorConfig.Slot0.kD = 0;
         kSubSysConstants.kMotorConfig.Slot0.kG = 0;
