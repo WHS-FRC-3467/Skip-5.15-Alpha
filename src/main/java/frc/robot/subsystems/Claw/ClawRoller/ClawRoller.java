@@ -22,15 +22,15 @@ public class ClawRoller
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE),
-        INTAKE(() -> 80, ProfileType.OPEN_CURRENT),
-        EJECT(() -> 10.0, ProfileType.OPEN_VOLTAGE),
-        SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        SHUFFLE(() -> -1, ProfileType.VELOCITY),
-        HOLDCORAL(() -> 0, ProfileType.DISABLED_BRAKE),
-        ALGAE_INTAKE(() -> -100, ProfileType.OPEN_CURRENT);
+        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
+        INTAKE(new ProfileType.OPEN_VOLTAGE(() -> 2.0)),
+        INTAKESLOW(new ProfileType.VELOCITY(() -> 5)),
+        EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
+        SCORE(new ProfileType.OPEN_VOLTAGE(() -> 8.0)),
+        SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
+        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
+        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -40,7 +40,7 @@ public class ClawRoller
     /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
-        super(ProfileType.OPEN_VOLTAGE, ClawRollerConstants.kSubSysConstants, io, isSim);
+        super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
     }
 
     public Command setStateCommand(State state)
@@ -50,7 +50,6 @@ public class ClawRoller
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
-            Math.max(0.0001, tolerance));
+        return io.atPosition(state.profileType, tolerance);
     }
 }

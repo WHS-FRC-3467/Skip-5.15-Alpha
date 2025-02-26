@@ -8,29 +8,14 @@ import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Elastic;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.ironmaple.simulation.SimulatedArena;
-import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -46,9 +31,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
-    private Command m_lastAutonomousCommand;
     private RobotContainer m_robotContainer;
-    private List<Pose2d> m_pathsToShow = new ArrayList<Pose2d>();
     private Field2d m_autoTraj = new Field2d();
     public static final double fieldLength = Units.inchesToMeters(690.876);
     public static final double fieldWidth = Units.inchesToMeters(317);
@@ -155,37 +138,6 @@ public class Robot extends LoggedRobot {
     {
         // Test
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        // Check if is the same as the last one
-        if (m_autonomousCommand != m_lastAutonomousCommand && m_autonomousCommand != null) {
-            // Check if its contained in the list of our autos
-            if (AutoBuilder.getAllAutoNames().contains(m_autonomousCommand.getName())) {
-                // Clear the current path
-                m_pathsToShow.clear();
-                // Grabs all paths from the auto
-                try {
-                    for (PathPlannerPath path : PathPlannerAuto
-                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
-                        // Adds all poses to master list
-                        // Swap depending on the alliance
-                        m_pathsToShow.addAll(path.getPathPoses());
-                    }
-                } catch (IOException | ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                if (DriverStation.getAlliance().get() == Alliance.Red) {
-                    for (int i = 0; i < m_pathsToShow.size(); i++) {
-                        m_pathsToShow.set(i,
-                            m_pathsToShow.get(i).rotateAround(fieldCenter, Rotation2d.k180deg));
-                    }
-                }
-                // Displays all poses on Field2d widget
-                m_autoTraj.getObject("traj").setPoses(m_pathsToShow);
-            }
-        }
-        m_lastAutonomousCommand = m_autonomousCommand;
-        // Logger.recordOutput("AutoPath", m_pathsToShow);
-
 
     }
 
@@ -252,6 +204,5 @@ public class Robot extends LoggedRobot {
     {
         SimulatedArena.getInstance().simulationPeriodic();
         m_robotContainer.displaySimFieldToAdvantageScope();
-        // TODO Find out where i need to add this in the robotcontainer
     }
 }
