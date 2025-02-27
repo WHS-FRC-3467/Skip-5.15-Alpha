@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.482,
-        "y": 7.2035
+        "x": 1.4722500000000003,
+        "y": 7.2132499999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.715018924818099,
-        "y": 6.93658443415027
+        "x": 1.7052689248180992,
+        "y": 6.94633443415027
       },
       "isLocked": false,
       "linkedName": "LSourceTop"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.36,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",

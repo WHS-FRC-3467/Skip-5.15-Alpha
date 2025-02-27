@@ -66,7 +66,7 @@ public class RobotContainer {
     private SwerveDriveSimulation m_driveSimulation = null;
 
     // AK-enabled Subsystems
-    private final Drive m_drive;
+    public final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
@@ -81,7 +81,7 @@ public class RobotContainer {
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
-    private double speedMultiplier = 0.8;
+    private double speedMultiplier = 0.85;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -534,7 +534,7 @@ public class RobotContainer {
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.1,
+                        0.08,
                         0.8)));
 
         NamedCommands.registerCommand(
@@ -555,6 +555,10 @@ public class RobotContainer {
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
                     Elevator.State.CORAL_INTAKE, 0.1, 0.8)
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)));
+
+        NamedCommands.registerCommand(
+            "WaitForCoral",
+            Commands.waitUntil(m_intakeLaserCAN.triggered));
 
         // Intake Coral
         NamedCommands.registerCommand(
