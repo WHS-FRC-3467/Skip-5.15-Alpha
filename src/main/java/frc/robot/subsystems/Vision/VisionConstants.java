@@ -58,5 +58,5 @@ public class VisionConstants {
                 1.0 // Camera 1
         };
 
-    public static List<Integer> rejectedTags = Arrays.asList(3, 4, 5, 14, 15, 16);
+    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);
 }

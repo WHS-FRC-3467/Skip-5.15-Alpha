@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.155852272727272,
-        "y": 6.156420454545455
+        "x": 7.1857500000000005,
+        "y": 6.16025
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.329186138946698,
-        "y": 5.920851182082164
+        "x": 6.138031537919641,
+        "y": 5.894993620955614
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.024431818181818,
-        "y": 5.259943181818182
+        "x": 4.9725,
+        "y": 5.28275
       },
       "prevControl": {
-        "x": 6.011650487265821,
-        "y": 5.753885343175125
+        "x": 5.9478138954371405,
+        "y": 5.681424419015826
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "PrepScore",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.4,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "L3"
+                "name": "L4Prep"
               }
             }
           ]

@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     static LoggedTunableNumber homingTuning =
-        new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2);
+        new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
@@ -31,15 +31,15 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> 0.913)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.2)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7)),
+        STOW(new ProfileType.MM_POSITION(() -> 0.0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> 0.402)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.5834)),
         LEVEL_4(new ProfileType.MM_POSITION(() -> 5.1)),
         CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 2)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.2)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
         BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
@@ -105,7 +105,12 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         }
     }
 
-    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
+    public boolean isL1()
+    {
+        return this.getState() == Elevator.State.LEVEL_1;
+    }
+
+    private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(
