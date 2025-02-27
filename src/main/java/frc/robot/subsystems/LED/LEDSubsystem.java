@@ -48,7 +48,7 @@ public class LEDSubsystem extends SubsystemBase {
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = false;
+    boolean kTesting = true;
 
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
@@ -138,7 +138,12 @@ public class LEDSubsystem extends SubsystemBase {
         if (kTesting) {
             LEDState newState = testLEDState((int) kState.get());
             GPMode newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
-            runMatchTimerPattern();
+
+            if (newState == LEDState.START) {
+                runMatchTimerPattern();
+            } else {
+                timerDisabled();
+            }
 
             // If GPMode has changed, run the state machine to change LED patterns
             if (newGPMode != m_currentGPMode) {
@@ -290,8 +295,9 @@ public class LEDSubsystem extends SubsystemBase {
         switch (newState) {
             case START:
                 // Test mode only
-                m_FullLeft.setAnimation(a_LeftBlueLarson);
-                m_FullRight.setAnimation(a_RightRedLarson);
+                m_LeftTip.setColor(red);
+                m_RightTip.setColor(blue);
+                m_State.setColor(green);
                 break;
 
             case DISABLED:
@@ -433,15 +439,15 @@ public class LEDSubsystem extends SubsystemBase {
     LEDSegment m_MatchTime = new LEDSegment(0, 8, 0);
     // These are for Disabled/Auto states
     // They are each a full strip
-    LEDSegment m_FullRight = new LEDSegment(8, 144, 1);
-    LEDSegment m_FullLeft = new LEDSegment(152, 144, 2);
+    LEDSegment m_FullRight = new LEDSegment(8, 90, 1);
+    LEDSegment m_FullLeft = new LEDSegment(98, 90, 2);
     // These are for Coral/Algae Mode while robot is Enabled
     // These are the top pixels on each strip
-    LEDSegment m_RightTip = new LEDSegment(8, 24, 3);
-    LEDSegment m_LeftTip = new LEDSegment(264, 24, 4);
+    LEDSegment m_RightTip = new LEDSegment(8, 20, 3);
+    LEDSegment m_LeftTip = new LEDSegment(168, 20, 4);
     // This is for what the robot is doing while robot is Enabled
     // This is the bottom of each strip combined into one segment
-    LEDSegment m_State = new LEDSegment(32, 240, 5);
+    LEDSegment m_State = new LEDSegment(28, 148, 5);
 
     // Disabled Animations
     Animation a_RightRedLarson =
