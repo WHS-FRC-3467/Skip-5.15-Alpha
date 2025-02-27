@@ -161,24 +161,17 @@ public class LEDSubsystem extends SubsystemBase {
             newState = getRobotState();
         }
 
-        // If GPMode has changed, run the state machine to change LED patterns
-        if (newGPMode != m_currentGPMode) {
-            GPStateMachine(newGPMode);
+        // Check for changes & process them
+        if ((newGPMode != m_currentGPMode) || (newState != m_currentState)) {
+            LEDStateMachine(newGPMode, newState);
             m_currentGPMode = newGPMode;
-        }
-
-        // If State has changed, run the state machine to change LED patterns
-        if (newState != m_currentState) {
-            LEDStateMachine(newState);
             m_currentState = newState;
         }
-
     }
 
+    // Determine the current state of the robot
     private LEDState getRobotState()
     {
-        // Determine the current state of the robot
-
         // --- Order of Priorities ---
         // Whole Robot:
         // - DISABLED -> Alliance color Larson
@@ -264,97 +257,158 @@ public class LEDSubsystem extends SubsystemBase {
         return newState;
     }
 
-    // Set the color of the Mode indicator LEDs based on Game Piece Mode
-    private void GPStateMachine(GPMode newMode)
+    // Set the Mode and State indicator LEDS
+    private void LEDStateMachine(GPMode newGPMode, LEDState newState)
     {
-        // Only set Mode indicator if robot is Enabled
-        if (DriverStation.isEnabled()) {
-            switch (newMode) {
-                case ALGAE:
-                    m_LeftTip.setColor(algae);
-                    m_RightTip.setColor(algae);
+        // If State has changed, clean up old colors or animations
+        if (newState != m_currentState) {
+            switch (m_currentState) {
+                case DISABLED:
+                case DISABLED_TARGET:
+                case AUTONOMOUS:
+                    switch (newState) {
+                        case DISABLED:
+                        case DISABLED_TARGET:
+                        case AUTONOMOUS:
+                            // No change required
+                            break;
+                        default:
+                            // Need to clean up
+                            m_FullLeft.setOff();
+                            m_FullRight.setOff();
+                            break;
+                    }
                     break;
-                case CORAL:
+
                 default:
-                    m_LeftTip.setColor(white);
-                    m_RightTip.setColor(white);
+                    switch (newState) {
+                        case DISABLED:
+                        case DISABLED_TARGET:
+                        case AUTONOMOUS:
+                            // Need to clean up
+                            m_LeftTip.setOff();
+                            m_RightTip.setOff();
+                            m_State.setOff();
+                            break;
+                        default:
+                            // No change required
+                            break;
+                    }
                     break;
             }
         }
-    }
 
-    // Set the color of the State indicator LEDS
-    private void LEDStateMachine(LEDState newState)
-    {
-        switch (newState) {
-            case START:
-                // Test mode only
-                m_LeftTip.setColor(red);
-                m_RightTip.setColor(blue);
-                m_State.setColor(green);
-                break;
+        // Process and make changes for changed LEDState
+        if (newState != m_currentState) {
+            switch (newState) {
+                case START:
+                    // Test mode only
+                    m_LeftTip.setColor(red);
+                    m_RightTip.setColor(blue);
+                    m_State.setColor(green);
+                    break;
 
-            case DISABLED:
-                if (DriverStation.getAlliance().isPresent()) {
-                    if (DriverStation.getAlliance().get() == Alliance.Blue) {
-                        m_FullLeft.setAnimation(a_LeftBlueLarson);
-                        m_FullRight.setAnimation(a_RightBlueLarson);
-                    } else {
-                        m_FullLeft.setAnimation(a_LeftRedLarson);
-                        m_FullRight.setAnimation(a_RightRedLarson);
+                case DISABLED:
+                    if (DriverStation.getAlliance().isPresent()) {
+                        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                            m_FullLeft.setAnimation(a_LeftBlueLarson);
+                            m_FullRight.setAnimation(a_RightBlueLarson);
+                        } else {
+                            m_FullLeft.setAnimation(a_LeftRedLarson);
+                            m_FullRight.setAnimation(a_RightRedLarson);
+                        }
                     }
-                }
-                this.timerDisabled();
-                break;
+                    this.timerDisabled();
+                    break;
 
-            case DISABLED_TARGET:
-                m_FullLeft.setAnimation(a_LeftRainbow);
-                m_FullRight.setAnimation(a_RightRainbow);
-                this.timerDisabled();
-                break;
+                case DISABLED_TARGET:
+                    m_FullLeft.setAnimation(a_LeftRainbow);
+                    m_FullRight.setAnimation(a_RightRainbow);
+                    this.timerDisabled();
+                    break;
 
-            case AUTONOMOUS:
-                m_FullLeft.setAnimation(a_LeftFlame);
-                m_FullRight.setAnimation(a_RightFlame);
-                m_MatchTime.setAnimation(a_InAutonomous);
-                break;
+                case AUTONOMOUS:
+                    m_FullLeft.setAnimation(a_LeftFlame);
+                    m_FullRight.setAnimation(a_RightFlame);
+                    m_MatchTime.setAnimation(a_InAutonomous);
+                    break;
 
-            case INTAKING:
-                m_State.setAnimation(a_FastFlashRed);
-                break;
+                case INTAKING:
+                    m_State.setAnimation(a_FastFlashRed);
+                    break;
 
-            case FEEDING:
-                m_State.setColor(blue);
-                break;
+                case FEEDING:
+                    m_State.setColor(blue);
+                    break;
 
-            case CLIMBING:
-                m_State.setAnimation(a_SlowFlashRed);
-                break;
+                case CLIMBING:
+                    m_State.setAnimation(a_SlowFlashRed);
+                    break;
 
-            case CLIMBED:
-                m_State.setColor(green);
-                break;
+                case CLIMBED:
+                    m_State.setColor(green);
+                    break;
 
-            case SUPER_MOVE:
-                m_State.setAnimation(a_MedFlashMagenta);
-                break;
+                case SUPER_MOVE:
+                    m_State.setAnimation(a_MedFlashMagenta);
+                    break;
 
-            case ALIGNING:
-                m_State.setAnimation(a_MedFlashCyan);
-                break;
+                case ALIGNING:
+                    m_State.setAnimation(a_MedFlashCyan);
+                    break;
 
-            case HAVE_CORAL:
-                m_State.setColor(green);
-                break;
+                case HAVE_CORAL:
+                    m_State.setColor(green);
+                    break;
 
-            case ENABLED:
-                m_State.setAnimation(a_SingleFadeFastYellow);
-                break;
+                case ENABLED:
+                    m_State.setAnimation(a_SingleFadeFastYellow);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
 
+        // Process and make changes for changed GPMode
+        switch (newState) {
+            case DISABLED:
+            case DISABLED_TARGET:
+            case AUTONOMOUS:
+                // Mode is not displayed in these cases
+                // so just break out
+                break;
+            default:
+                switch (m_currentState) {
+                    case DISABLED:
+                    case DISABLED_TARGET:
+                    case AUTONOMOUS:
+                        // Have to set GPMode in these cases
+                        // regardless of if it changed
+                        switchGPMode(newGPMode);
+                        break;
+                    default:
+                        if (newGPMode != m_currentGPMode)
+                            switchGPMode(newGPMode);
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void switchGPMode(GPMode newMode)
+    {
+        switch (newMode) {
+            case ALGAE:
+                m_LeftTip.setColor(algae);
+                m_RightTip.setColor(algae);
+                break;
+            case CORAL:
+            default:
+                m_LeftTip.setColor(white);
+                m_RightTip.setColor(white);
+                break;
+        }
     }
 
     public void setBrightness(double percent)
