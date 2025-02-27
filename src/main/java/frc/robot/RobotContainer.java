@@ -6,6 +6,7 @@ package frc.robot;
 
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
+import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
+import frc.robot.util.LoggedTunableNumber;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -152,6 +154,7 @@ public class RobotContainer {
                         new ModuleIOTalonFXSim(
                             TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
                         m_driveSimulation::setSimulationWorldPose);
+
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
