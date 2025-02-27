@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Elevator;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;

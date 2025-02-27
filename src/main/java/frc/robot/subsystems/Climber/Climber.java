@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Climber;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -14,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
