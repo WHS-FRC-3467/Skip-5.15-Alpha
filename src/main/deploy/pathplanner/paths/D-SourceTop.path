@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.3877942421904927,
-        "y": 0.5668827934251714
+        "x": 1.3400459545192598,
+        "y": 0.7060206358909238
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -44,12 +44,6 @@
               "type": "sequential",
               "data": {
                 "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "Home"
-                    }
-                  },
                   {
                     "type": "named",
                     "data": {

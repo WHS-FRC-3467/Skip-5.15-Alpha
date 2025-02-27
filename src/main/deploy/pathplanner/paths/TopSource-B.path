@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6855,
-        "y": 5.08775
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.777266629907887,
-        "y": 5.870927141523449
+        "x": 2.0698566776543466,
+        "y": 1.7781356717558947
       },
       "isLocked": false,
-      "linkedName": "ReefL"
+      "linkedName": "SourceTop"
     },
     {
       "anchor": {
-        "x": 1.4722500000000003,
-        "y": 7.2132499999999995
+        "x": 3.1407786885245907,
+        "y": 3.833196721311475
       },
       "prevControl": {
-        "x": 2.6365054390128675,
-        "y": 6.002950943024694
+        "x": 2.7466527537603005,
+        "y": 2.9691547829378324
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LSourceTop"
+      "linkedName": "ReefB"
     }
   ],
   "rotationTargets": [],
@@ -33,24 +33,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
-      "waypointRelativePos": 0,
+      "name": "Score",
+      "waypointRelativePos": 0.15,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "deadline",
+        "type": "sequential",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "SuperstructureIntake"
-                    }
-                  }
-                ]
+                "name": "IntakeCoral"
               }
             }
           ]
@@ -68,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -54.605204155013034
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -60.25511870305775
+    "rotation": 53.47114463301483
   },
   "useDefaultConstraints": true
 }

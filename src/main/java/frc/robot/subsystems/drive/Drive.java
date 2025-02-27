@@ -52,7 +52,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -168,11 +167,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             this::getChassisSpeeds,
             this::runVelocity,
             new PPHolonomicDriveController(
-                new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(3.0, 0.0, 0.0)),
+                new PIDConstants(3, 0.0, 0), new PIDConstants(5.5, 0.0, 0.0)),
             PP_CONFIG,
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
             this);
-        Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback(
             (activePath) -> {
                 Logger.recordOutput(

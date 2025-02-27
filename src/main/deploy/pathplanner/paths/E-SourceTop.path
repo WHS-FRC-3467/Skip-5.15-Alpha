@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.988527397260274,
-        "y": 2.7703553082191785
+        "x": 4.992000000000001,
+        "y": 2.767249999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.943450342465753,
-        "y": 2.004045376712329
+        "x": 4.358051717067494,
+        "y": 2.2909522961750155
       },
       "isLocked": false,
       "linkedName": "ReefE"
     },
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.8559121080818664,
-        "y": 0.7571064667377799
+        "x": 1.8204210227595239,
+        "y": 0.9022728934568967
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -44,12 +44,6 @@
               "type": "sequential",
               "data": {
                 "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "Home"
-                    }
-                  },
                   {
                     "type": "named",
                     "data": {
