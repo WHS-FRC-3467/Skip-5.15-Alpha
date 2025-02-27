@@ -201,17 +201,17 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // Instantiate LED Subsystem on BAJA only
-        if (Constants.getRobot() == RobotType.BAJA) {
-            final LEDSubsystem m_LED = new LEDSubsystem(
-                m_clawRoller,
-                m_profiledArm,
-                m_profiledElevator,
-                m_profiledClimber,
-                m_vision,
-                m_clawRollerLaserCAN,
-                m_intakeLaserCAN,
-                isCoralMode);
-        }
+        // if (Constants.getRobot() == RobotType.BAJA) {
+        // final LEDSubsystem m_LED = new LEDSubsystem(
+        // m_clawRoller,
+        // m_profiledArm,
+        // m_profiledElevator,
+        // m_profiledClimber,
+        // m_vision,
+        // m_clawRollerLaserCAN,
+        // m_intakeLaserCAN,
+        // isCoralMode);
+        // }
 
         // Logic Triggers
         registerNamedCommands();
@@ -354,11 +354,19 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
-        m_driver.rightTrigger().and(isCoralMode)
+        m_driver.rightTrigger().and(isCoralMode).and(() -> !m_profiledElevator.isL1())
             .whileTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
+            .whileTrue(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1))
+            .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                // .andThen(Commands.waitSeconds(1))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         m_driver.rightTrigger().and(isCoralMode.negate())

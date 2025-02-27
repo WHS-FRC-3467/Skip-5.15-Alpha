@@ -48,7 +48,7 @@ public class LEDSubsystem extends SubsystemBase {
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = false;
+    boolean kTesting = true;
 
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
@@ -210,7 +210,7 @@ public class LEDSubsystem extends SubsystemBase {
             runMatchTimerPattern();
 
             // Intaking Coral?
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKESLOW) {
+            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
                 if (m_intakeLaserCAN.isTriggered()) {
                     // Coral has entered and is being positioned
                     newState = LEDState.FEEDING;
