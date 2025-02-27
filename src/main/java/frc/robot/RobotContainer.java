@@ -496,6 +496,8 @@ public class RobotContainer {
         m_driver.povUp().onTrue(
             m_profiledElevator.setStateCommand(Elevator.State.STOW));
 
+        m_driver.povLeft().onTrue(m_clawRoller.setStateCommand(ClawRoller.State.EJECT));
+
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
         m_driver.start().and(m_driver.leftBumper().negate())
