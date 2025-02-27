@@ -135,9 +135,13 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
+        LEDState newState;
+        GPMode newGPMode;
+
         if (kTesting) {
-            LEDState newState = testLEDState((int) kState.get());
-            GPMode newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
+            // Testing Mode - change values using Tunable Numbers
+            newState = testLEDState((int) kState.get());
+            newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
 
             if (newState == LEDState.START) {
                 runMatchTimerPattern();
@@ -145,25 +149,33 @@ public class LEDSubsystem extends SubsystemBase {
                 timerDisabled();
             }
 
-            // If GPMode has changed, run the state machine to change LED patterns
-            if (newGPMode != m_currentGPMode) {
-                GPStateMachine(newGPMode);
-                m_currentGPMode = newGPMode;
-            }
-
-            // If State has changed, run the state machine to change LED patterns
-            if (newState != m_currentState) {
-                LEDStateMachine(newState);
-                m_currentState = newState;
-            }
-
         } else {
-            getRobotState();
+            // Real Robot
+            // Determine Game Piece Mode
+            if (m_isCoralMode.getAsBoolean()) {
+                newGPMode = GPMode.CORAL;
+            } else {
+                newGPMode = GPMode.ALGAE;
+            }
+            // Get latest robot state
+            newState = getRobotState();
         }
+
+        // If GPMode has changed, run the state machine to change LED patterns
+        if (newGPMode != m_currentGPMode) {
+            GPStateMachine(newGPMode);
+            m_currentGPMode = newGPMode;
+        }
+
+        // If State has changed, run the state machine to change LED patterns
+        if (newState != m_currentState) {
+            LEDStateMachine(newState);
+            m_currentState = newState;
+        }
+
     }
 
-    private void getRobotState()
-
+    private LEDState getRobotState()
     {
         // Determine the current state of the robot
 
@@ -185,14 +197,6 @@ public class LEDSubsystem extends SubsystemBase {
         // - ENABLED -> Yellow SingleFade Fast
 
         LEDState newState = LEDState.START;
-        GPMode newGPMode = GPMode.START;
-
-        // Determine Game Piece Mode
-        if (m_isCoralMode.getAsBoolean()) {
-            newGPMode = GPMode.CORAL;
-        } else {
-            newGPMode = GPMode.ALGAE;
-        }
 
         // Determine state of robot to be displayed
         if (DriverStation.isDisabled()) {
@@ -257,17 +261,7 @@ public class LEDSubsystem extends SubsystemBase {
             }
         }
 
-        // If GPMode has changed, run the state machine to change LED patterns
-        if (newGPMode != m_currentGPMode) {
-            GPStateMachine(newGPMode);
-            m_currentGPMode = newGPMode;
-        }
-
-        // If State has changed, run the state machine to change LED patterns
-        if (newState != m_currentState) {
-            LEDStateMachine(newState);
-            m_currentState = newState;
-        }
+        return newState;
     }
 
     // Set the color of the Mode indicator LEDs based on Game Piece Mode
