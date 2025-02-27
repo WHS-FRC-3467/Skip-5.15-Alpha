@@ -76,6 +76,7 @@ public class RobotContainer {
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
+    public final LEDSubsystem m_LED;
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
@@ -201,17 +202,19 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // Instantiate LED Subsystem on BAJA only
-        // if (Constants.getRobot() == RobotType.BAJA) {
-        // final LEDSubsystem m_LED = new LEDSubsystem(
-        // m_clawRoller,
-        // m_profiledArm,
-        // m_profiledElevator,
-        // m_profiledClimber,
-        // m_vision,
-        // m_clawRollerLaserCAN,
-        // m_intakeLaserCAN,
-        // isCoralMode);
-        // }
+        if (Constants.getRobot() == RobotType.BAJA) {
+            m_LED = new LEDSubsystem(
+                m_clawRoller,
+                m_profiledArm,
+                m_profiledElevator,
+                m_profiledClimber,
+                m_vision,
+                m_clawRollerLaserCAN,
+                m_intakeLaserCAN,
+                isCoralMode);
+        } else {
+            m_LED = null;
+        }
 
         // Logic Triggers
         registerNamedCommands();
