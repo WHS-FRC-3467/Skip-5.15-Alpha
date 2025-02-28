@@ -33,7 +33,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
         LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(100.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.4))),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),

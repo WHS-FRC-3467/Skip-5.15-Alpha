@@ -28,9 +28,9 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
         // CLIMB is inwards
-        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(90.0))),
-        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        HOME(new ProfileType.MM_POSITION(() -> 0)),
+        PREP(new ProfileType.MM_POSITION(() -> -167)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 50)),
         TUNING(new ProfileType.MM_POSITION(
             () -> Units.degreesToRotations(positionTuning.getAsDouble())));
 
@@ -52,7 +52,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return this.runOnce(() -> this.state = state);
     }
 
     // Climbing Triggers
