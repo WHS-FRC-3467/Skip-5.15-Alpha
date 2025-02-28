@@ -44,8 +44,6 @@ import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.WindupXboxController;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -62,9 +60,6 @@ public class RobotContainer {
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
-
-    // Maple Sim
-    private SwerveDriveSimulation m_driveSimulation = null;
 
     // AK-enabled Subsystems
     public final Drive m_drive;
@@ -94,12 +89,10 @@ public class RobotContainer {
                 m_drive =
                     new Drive(
                         new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (robotPose) -> {
-                        });
+                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFX(TunerConstants.FrontRight),
+                        new ModuleIOTalonFX(TunerConstants.BackLeft),
+                        new ModuleIOTalonFX(TunerConstants.BackRight));
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
@@ -139,22 +132,13 @@ public class RobotContainer {
 
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
-                m_driveSimulation =
-                    new SwerveDriveSimulation(Drive.mapleSimConfig,
-                        new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
                 m_drive =
                     new Drive(
-                        new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
-                        m_driveSimulation::setSimulationWorldPose);
+                        new GyroIO() {},
+                        new ModuleIOSim(TunerConstants.FrontLeft),
+                        new ModuleIOSim(TunerConstants.FrontRight),
+                        new ModuleIOSim(TunerConstants.BackLeft),
+                        new ModuleIOSim(TunerConstants.BackRight));
 
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
@@ -167,12 +151,8 @@ public class RobotContainer {
                 m_vision =
                     new Vision(
                         m_drive,
-                        new VisionIOPhotonVisionSim(
-                            camera0Name, robotToCamera0,
-                            m_driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                            camera1Name, robotToCamera1,
-                            m_driveSimulation::getSimulatedDriveTrainPose));
+                        new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
+                        new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
 
                 break;
 
@@ -184,9 +164,7 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {},
                         new ModuleIO() {},
-                        new ModuleIO() {},
-                        (robotPose) -> {
-                        });
+                        new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
@@ -606,40 +584,5 @@ public class RobotContainer {
     public Command getAutonomousCommand()
     {
         return m_autoChooser.get();
-    }
-
-    /*
-     * Simulation-specific routines
-     */
-    public void resetSimulation()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
-        SimulatedArena.getInstance().resetFieldForAuto();
-    }
-
-    public void resetSimulationField()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-    }
-
-    public void displaySimFieldToAdvantageScope()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
-        // 2)));
-        Logger.recordOutput(
-            "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
-        Logger.recordOutput(
-            "FieldSimulation/Coral",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-            "FieldSimulation/Algae",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 }
