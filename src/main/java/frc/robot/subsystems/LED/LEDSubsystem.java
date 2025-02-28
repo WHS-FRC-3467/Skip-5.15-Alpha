@@ -1,5 +1,6 @@
 package frc.robot.subsystems.LED;
 
+// import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Ports;
@@ -48,7 +50,7 @@ public class LEDSubsystem extends SubsystemBase {
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = true;
+    boolean kTesting = false;
 
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
@@ -58,7 +60,9 @@ public class LEDSubsystem extends SubsystemBase {
     private static enum LEDState {
         START,
         DISABLED,
-        DISABLED_TARGET,
+        DISABLED_TRANSLATION_OK,
+        DISABLED_ROTATION_OK,
+        DISABLED_BOTH_OK,
         AUTONOMOUS,
         INTAKING,
         FEEDING,
@@ -175,7 +179,9 @@ public class LEDSubsystem extends SubsystemBase {
         // --- Order of Priorities ---
         // Whole Robot:
         // - DISABLED -> Alliance color Larson
-        // - DISABLED_TARGET -> Rainbow
+        // - DISABLED_TRANSLATION_OK -> Left side Green
+        // - DISABLED_ROTATION_OK -> Right side Green
+        // - DISABLED_BOTH_OK -> Both sides Green
         // - AUTONOMOUS -> Flames
         // Mode:
         // - GPMode -> Tips: White or "algae" color
@@ -193,10 +199,16 @@ public class LEDSubsystem extends SubsystemBase {
 
         // Determine state of robot to be displayed
         if (DriverStation.isDisabled()) {
-            // Disabled patterns are different depending if
-            // there is a target (AprilTag) in view
-            if (m_Vision.visionHasTarget) {
-                newState = LEDState.DISABLED_TARGET;
+
+            // Use LEDs while Disabled to indicate proper lineup
+            boolean goodTrans = SmartDashboard.getBoolean("Alignment/Translation", false);
+            boolean goodRot = SmartDashboard.getBoolean("Alignment/Rotation", false);
+            if (goodTrans && goodRot) {
+                newState = LEDState.DISABLED_BOTH_OK;
+            } else if (goodTrans) {
+                newState = LEDState.DISABLED_TRANSLATION_OK;
+            } else if (goodRot) {
+                newState = LEDState.DISABLED_ROTATION_OK;
             } else {
                 newState = LEDState.DISABLED;
             }
@@ -260,15 +272,34 @@ public class LEDSubsystem extends SubsystemBase {
     // Set the Mode and State indicator LEDS
     private void LEDStateMachine(GPMode newGPMode, LEDState newState)
     {
+        // Determine Alliance color
+        Color dsAlliance = purple;
+        if (DriverStation.getAlliance().isPresent()) {
+            if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                dsAlliance = blue;
+            } else {
+                dsAlliance = red;
+            }
+        }
+
+        // Logger.recordOutput("LED/oldGPMode", m_currentGPMode.toString());
+        // Logger.recordOutput("LED/newGPMode", newGPMode.toString());
+        // Logger.recordOutput("LED/oldState", m_currentState.toString());
+        // Logger.recordOutput("LED/newState", newState.toString());
+
         // If State has changed, clean up old colors or animations
         if (newState != m_currentState) {
             switch (m_currentState) {
                 case DISABLED:
-                case DISABLED_TARGET:
+                case DISABLED_TRANSLATION_OK:
+                case DISABLED_ROTATION_OK:
+                case DISABLED_BOTH_OK:
                 case AUTONOMOUS:
                     switch (newState) {
                         case DISABLED:
-                        case DISABLED_TARGET:
+                        case DISABLED_TRANSLATION_OK:
+                        case DISABLED_ROTATION_OK:
+                        case DISABLED_BOTH_OK:
                         case AUTONOMOUS:
                             // No change required
                             break;
@@ -283,7 +314,9 @@ public class LEDSubsystem extends SubsystemBase {
                 default:
                     switch (newState) {
                         case DISABLED:
-                        case DISABLED_TARGET:
+                        case DISABLED_TRANSLATION_OK:
+                        case DISABLED_ROTATION_OK:
+                        case DISABLED_BOTH_OK:
                         case AUTONOMOUS:
                             // Need to clean up
                             m_LeftTip.setOff();
@@ -309,29 +342,26 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case DISABLED:
-                    if (DriverStation.getAlliance().isPresent()) {
-                        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-                            // m_FullLeft.setAnimation(a_LeftBlueLarson);
-                            // m_FullRight.setAnimation(a_RightBlueLarson);
-                            m_FullLeft.setColor(blue);
-                            m_FullRight.setColor(blue);
-                        } else {
-                            // m_FullLeft.setAnimation(a_LeftRedLarson);
-                            // m_FullRight.setAnimation(a_RightRedLarson);
-                            m_FullLeft.setColor(red);
-                            m_FullRight.setColor(red);
-                        }
-                    } else {
-                        m_FullLeft.setColor(purple);
-                        m_FullRight.setColor(purple);
-                    }
-
+                    m_FullLeft.setColor(dsAlliance);
+                    m_FullRight.setColor(dsAlliance);
                     this.timerDisabled();
                     break;
 
-                case DISABLED_TARGET:
-                    m_FullLeft.setAnimation(a_LeftRainbow);
-                    m_FullRight.setAnimation(a_RightRainbow);
+                case DISABLED_TRANSLATION_OK:
+                    m_FullLeft.setColor(green);
+                    m_FullRight.setColor(dsAlliance);
+                    this.timerDisabled();
+                    break;
+
+                case DISABLED_ROTATION_OK:
+                    m_FullLeft.setColor(dsAlliance);
+                    m_FullRight.setColor(green);
+                    this.timerDisabled();
+                    break;
+
+                case DISABLED_BOTH_OK:
+                    m_FullLeft.setColor(green);
+                    m_FullRight.setColor(green);
                     this.timerDisabled();
                     break;
 
@@ -342,8 +372,7 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case INTAKING:
-                    // m_State.setAnimation(a_FastFlashRed);
-                    m_State.setColor(red);
+                    m_State.setAnimation(a_SlowFlashRed);
                     break;
 
                 case FEEDING:
@@ -351,7 +380,7 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case CLIMBING:
-                    m_State.setAnimation(a_SlowFlashRed);
+                    m_State.setAnimation(a_FastFlashRed);
                     break;
 
                 case CLIMBED:
@@ -359,11 +388,13 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case SUPER_MOVE:
-                    m_State.setAnimation(a_MedFlashMagenta);
+                    // m_State.setAnimation(a_MedFlashMagenta);
+                    m_State.setColor(magenta);
                     break;
 
                 case ALIGNING:
-                    m_State.setAnimation(a_MedFlashCyan);
+                    // m_State.setAnimation(a_MedFlashCyan);
+                    m_State.setColor(cyan);
                     break;
 
                 case HAVE_CORAL:
@@ -383,7 +414,9 @@ public class LEDSubsystem extends SubsystemBase {
         // Process and make changes for changed GPMode
         switch (newState) {
             case DISABLED:
-            case DISABLED_TARGET:
+            case DISABLED_TRANSLATION_OK:
+            case DISABLED_ROTATION_OK:
+            case DISABLED_BOTH_OK:
             case AUTONOMOUS:
                 // Mode is not displayed in these cases
                 // so just break out
@@ -391,7 +424,9 @@ public class LEDSubsystem extends SubsystemBase {
             default:
                 switch (m_currentState) {
                     case DISABLED:
-                    case DISABLED_TARGET:
+                    case DISABLED_TRANSLATION_OK:
+                    case DISABLED_ROTATION_OK:
+                    case DISABLED_BOTH_OK:
                     case AUTONOMOUS:
                         // Have to set GPMode in these cases
                         // regardless of if it changed
@@ -498,15 +533,15 @@ public class LEDSubsystem extends SubsystemBase {
     LEDSegment m_MatchTime = new LEDSegment(0, 8, 0);
     // These are for Disabled/Auto states
     // They are each a full strip
-    LEDSegment m_FullRight = new LEDSegment(8, 90, 1);
-    LEDSegment m_FullLeft = new LEDSegment(98, 90, 2);
+    LEDSegment m_FullRight = new LEDSegment(8, 87, 1);
+    LEDSegment m_FullLeft = new LEDSegment(95, 87, 2);
     // These are for Coral/Algae Mode while robot is Enabled
     // These are the top pixels on each strip
     LEDSegment m_RightTip = new LEDSegment(8, 20, 3);
-    LEDSegment m_LeftTip = new LEDSegment(168, 20, 4);
+    LEDSegment m_LeftTip = new LEDSegment(162, 20, 4);
     // This is for what the robot is doing while robot is Enabled
     // This is the bottom of each strip combined into one segment
-    LEDSegment m_State = new LEDSegment(28, 148, 5);
+    LEDSegment m_State = new LEDSegment(28, 134, 5);
 
     // Disabled Animations
     Animation a_RightRedLarson =
@@ -617,24 +652,28 @@ public class LEDSubsystem extends SubsystemBase {
             case 1:
                 return LEDState.DISABLED;
             case 2:
-                return LEDState.DISABLED_TARGET;
+                return LEDState.DISABLED_TRANSLATION_OK;
             case 3:
-                return LEDState.AUTONOMOUS;
+                return LEDState.DISABLED_ROTATION_OK;
             case 4:
-                return LEDState.INTAKING;
+                return LEDState.DISABLED_BOTH_OK;
             case 5:
-                return LEDState.FEEDING;
+                return LEDState.AUTONOMOUS;
             case 6:
-                return LEDState.CLIMBING;
+                return LEDState.INTAKING;
             case 7:
-                return LEDState.CLIMBED;
+                return LEDState.FEEDING;
             case 8:
-                return LEDState.SUPER_MOVE;
+                return LEDState.CLIMBING;
             case 9:
-                return LEDState.ALIGNING;
+                return LEDState.CLIMBED;
             case 10:
-                return LEDState.HAVE_CORAL;
+                return LEDState.SUPER_MOVE;
             case 11:
+                return LEDState.ALIGNING;
+            case 12:
+                return LEDState.HAVE_CORAL;
+            case 13:
                 return LEDState.ENABLED;
         }
     }
