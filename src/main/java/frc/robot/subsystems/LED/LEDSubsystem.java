@@ -193,7 +193,7 @@ public class LEDSubsystem extends SubsystemBase {
 
         // Determine state of robot to be displayed
         if (DriverStation.isDisabled()) {
-            // Disabled paterns are different depending if
+            // Disabled patterns are different depending if
             // there is a target (AprilTag) in view
             if (m_Vision.visionHasTarget) {
                 newState = LEDState.DISABLED_TARGET;
@@ -311,13 +311,21 @@ public class LEDSubsystem extends SubsystemBase {
                 case DISABLED:
                     if (DriverStation.getAlliance().isPresent()) {
                         if (DriverStation.getAlliance().get() == Alliance.Blue) {
-                            m_FullLeft.setAnimation(a_LeftBlueLarson);
-                            m_FullRight.setAnimation(a_RightBlueLarson);
+                            // m_FullLeft.setAnimation(a_LeftBlueLarson);
+                            // m_FullRight.setAnimation(a_RightBlueLarson);
+                            m_FullLeft.setColor(blue);
+                            m_FullRight.setColor(blue);
                         } else {
-                            m_FullLeft.setAnimation(a_LeftRedLarson);
-                            m_FullRight.setAnimation(a_RightRedLarson);
+                            // m_FullLeft.setAnimation(a_LeftRedLarson);
+                            // m_FullRight.setAnimation(a_RightRedLarson);
+                            m_FullLeft.setColor(red);
+                            m_FullRight.setColor(red);
                         }
+                    } else {
+                        m_FullLeft.setColor(purple);
+                        m_FullRight.setColor(purple);
                     }
+
                     this.timerDisabled();
                     break;
 
@@ -334,7 +342,8 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case INTAKING:
-                    m_State.setAnimation(a_FastFlashRed);
+                    // m_State.setAnimation(a_FastFlashRed);
+                    m_State.setColor(red);
                     break;
 
                 case FEEDING:
@@ -362,7 +371,8 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
 
                 case ENABLED:
-                    m_State.setAnimation(a_SingleFadeFastYellow);
+                    // m_State.setAnimation(a_SingleFadeFastYellow);
+                    m_State.setColor(yellow);
                     break;
 
                 default:
@@ -400,8 +410,8 @@ public class LEDSubsystem extends SubsystemBase {
     {
         switch (newMode) {
             case ALGAE:
-                m_LeftTip.setColor(algae);
-                m_RightTip.setColor(algae);
+                m_LeftTip.setColor(green);
+                m_RightTip.setColor(green);
                 break;
             case CORAL:
             default:
@@ -440,6 +450,7 @@ public class LEDSubsystem extends SubsystemBase {
     Color cyan = new Color(0, 255, 255);
     Color magenta = new Color(255, 0, 255);
     Color algae = new Color(52, 235, 113);
+    Color purple = new Color(125, 30, 165);
 
     /*
      * LED Segments
@@ -515,21 +526,26 @@ public class LEDSubsystem extends SubsystemBase {
     Animation a_LeftRainbow =
         new RainbowAnimation(0.7, 0.5, m_FullLeft.segmentSize, false, m_FullLeft.startIndex);
     Animation a_RightFlame =
-        new FireAnimation(1.0, 0.75, m_FullRight.segmentSize, 1.0, 0.3, true,
+        new FireAnimation(1.0, 0.75, m_FullRight.segmentSize, 1.0, 0.1, true,
             m_FullRight.startIndex);
     Animation a_LeftFlame =
-        new FireAnimation(1.0, 0.75, m_FullLeft.segmentSize, 1.0, 0.3, false,
+        new FireAnimation(1.0, 0.75, m_FullLeft.segmentSize, 1.0, 0.1, false,
             m_FullLeft.startIndex);
 
     // Robot State Animations
+    // Intaking
     Animation a_FastFlashRed = new StrobeAnimation(red.r, red.g, red.b, 0, 0.8,
         m_State.segmentSize, m_State.startIndex);
+    // Climbing
     Animation a_SlowFlashRed = new StrobeAnimation(red.r, red.g, red.b, 0, 0.2,
         m_State.segmentSize, m_State.startIndex);
+    // Super Move
     Animation a_MedFlashMagenta = new StrobeAnimation(magenta.r, magenta.g, magenta.b, 0, 0.5,
         m_State.segmentSize, m_State.startIndex);
+    // Aligning
     Animation a_MedFlashCyan = new StrobeAnimation(cyan.r, cyan.g, cyan.b, 0, 0.5,
         m_State.segmentSize, m_State.startIndex);
+    // Enabled
     Animation a_SingleFadeFastYellow = new SingleFadeAnimation(yellow.r, yellow.g, yellow.b, 0, 0.8,
         m_State.segmentSize, m_State.startIndex);
 
