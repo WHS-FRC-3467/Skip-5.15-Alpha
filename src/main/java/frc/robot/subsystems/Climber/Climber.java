@@ -4,6 +4,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,11 +29,10 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
         // CLIMB is inwards
-        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(90.0))),
-        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
-        TUNING(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(positionTuning.getAsDouble())));
+        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
+        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(-90.0))),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(-150.0))),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> 0.5));
 
         private final ProfileType profileType;
     }
@@ -48,11 +48,12 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public Climber(ClimberIO io, boolean isSim)
     {
         super(State.HOME.profileType, ClimberConstants.kSubSysConstants, io, isSim);
+        SmartDashboard.putData(getHomeCommand());
     }
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return this.runOnce(() -> this.state = state);
     }
 
     // Climbing Triggers
@@ -73,6 +74,17 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             () -> climbedDebouncer.calculate(
                 this.state == State.CLIMB
                     && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
+
+    private Trigger homedTrigger =
+        new Trigger(() -> (this.state == State.HOMING && Math.abs(io.getSupplyCurrent()) > 30));
+
+    private Command getHomeCommand()
+    {
+        return this.setStateCommand(State.HOMING)
+            .andThen(Commands.waitUntil(homedTrigger))
+            .andThen(Commands.runOnce(() -> io.zeroSensors()))
+            .andThen(this.setStateCommand(State.HOME));
+    }
 
     public Command climbedAlertCommand()
     {
