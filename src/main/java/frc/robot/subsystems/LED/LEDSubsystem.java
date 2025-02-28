@@ -537,11 +537,11 @@ public class LEDSubsystem extends SubsystemBase {
     LEDSegment m_FullLeft = new LEDSegment(95, 87, 2);
     // These are for Coral/Algae Mode while robot is Enabled
     // These are the top pixels on each strip
-    LEDSegment m_RightTip = new LEDSegment(8, 20, 3);
-    LEDSegment m_LeftTip = new LEDSegment(162, 20, 4);
+    LEDSegment m_RightTip = new LEDSegment(8, 43, 3);
+    LEDSegment m_LeftTip = new LEDSegment(139, 43, 4);
     // This is for what the robot is doing while robot is Enabled
     // This is the bottom of each strip combined into one segment
-    LEDSegment m_State = new LEDSegment(28, 134, 5);
+    LEDSegment m_State = new LEDSegment(51, 88, 5);
 
     // Disabled Animations
     Animation a_RightRedLarson =
