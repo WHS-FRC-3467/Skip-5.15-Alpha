@@ -38,6 +38,7 @@ import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.Vision.*;
@@ -103,7 +104,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
@@ -128,7 +129,7 @@ public class RobotContainer {
 
                 // m_profiledArm = new Arm(new ArmIO() {}, true);
                 // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
@@ -450,50 +451,39 @@ public class RobotContainer {
                 ? m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
                 : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE));
 
-        // Driver Start Button: Climb Request (toggle)
-        // m_driver.start().onTrue(Commands.runOnce(() -> {
-        // m_profiledClimber.climbRequested = true;
-        // m_profiledClimber.climbStep += 1;
-        // }));
+        m_driver.back().onTrue(Commands.runOnce(() -> {
+            m_profiledClimber.climbRequested = true;
+            m_profiledClimber.climbStep += 1;
+            System.out.println("CLIMBING PRESSED!!!!");
+        }));
 
-        // Climb step 1: Get the Arm Down, then the Elevator down, and then and move climber to prep
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).whileTrue(
-        // Commands.parallel(
-        // Commands.parallel(
-        // m_profiledArm.setStateCommand(Arm.State.CLIMB),
-        // Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-        // .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))),
-        // Commands
-        // .waitUntil(
-        // () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
-        // .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).onTrue(
+            m_profiledArm.setStateCommand(Arm.State.CLIMB)
+                .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
 
         // Climb step 2: Move climber to climb
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
-        // .whileTrue(
-        // m_profiledClimber.setStateCommand(Climber.State.CLIMB)
-        // .until(m_profiledClimber.getClimbedTrigger()));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2()).onTrue(
+            m_profiledClimber.setStateCommand(Climber.State.CLIMB));
 
-        // m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
+        // m_driver.povLeft().onTrue();
 
         // Driver POV Right: End Climbing Sequence if needed
-        // m_driver
-        // .povRight()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> {
-        // m_profiledClimber.climbRequested = false;
-        // m_profiledClimber.climbStep = 0;
-        // }));
+        m_driver
+            .povRight()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                        m_profiledClimber.climbRequested = false;
+                        m_profiledClimber.climbStep = 0;
+                    }).andThen(m_profiledClimber.setStateCommand(Climber.State.HOME)));
 
         // Slow drivetrain to 25% while climbing
-        // m_profiledClimber.getClimbRequest().whileTrue(
-        // DriveCommands.joystickDrive(
-        // m_drive,
-        // () -> -m_driver.getLeftY() * 0.25,
-        // () -> -m_driver.getLeftX() * 0.25,
-        // () -> -m_driver.getRightX() * 0.25));
-
+        m_profiledClimber.getClimbRequest().whileTrue(
+            DriveCommands.joystickDrive(
+                m_drive,
+                () -> -m_driver.getLeftY() * 0.5,
+                () -> -m_driver.getLeftX() * 0.5,
+                () -> -m_driver.getRightX() * 0.5));
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
             Commands.sequence(
