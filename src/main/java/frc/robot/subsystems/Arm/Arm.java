@@ -26,21 +26,19 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
+        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(127.18))),
         // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(115.13))),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(138.7))),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(127.0))),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
         LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(100.0))),
         CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
         BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(140.0))),
-        TUNING(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(positionTuning.getAsDouble()))),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());

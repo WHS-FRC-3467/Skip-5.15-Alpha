@@ -22,15 +22,10 @@ import lombok.Setter;
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
-    static LoggedTunableNumber homingTuning =
-        new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
-    static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
-
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> -1)),
         STOW(new ProfileType.MM_POSITION(() -> 0.0)),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> 0.402)),
@@ -43,7 +38,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
         BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
