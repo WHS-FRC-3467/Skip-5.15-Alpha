@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit()
     {
         m_robotContainer.resetSimulationField();
-        Elastic.selectTab(1);
+        // Elastic.selectTab(1);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
         // Get currently selected command
     }
@@ -228,7 +228,7 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Elastic.selectTab(1);
+        // Elastic.selectTab(1);
     }
 
     /** This function is called periodically during operator control. */
