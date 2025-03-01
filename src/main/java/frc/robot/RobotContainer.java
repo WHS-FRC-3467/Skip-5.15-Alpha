@@ -84,7 +84,7 @@ public class RobotContainer {
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
-    private double speedMultiplier = 0.85;
+    private double speedMultiplier = 0.87;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
