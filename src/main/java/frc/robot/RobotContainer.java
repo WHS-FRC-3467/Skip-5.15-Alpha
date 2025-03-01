@@ -545,16 +545,18 @@ public class RobotContainer {
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.08,
-                        0.8)));
+                        0.001,
+                        0.8))
+                .andThen(Commands.waitSeconds(0.5)));
 
         NamedCommands.registerCommand(
             "L4Prep",
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                        0.1,
+                        0.001,
                         0.8)));
+
         // Go to the Home Position
         NamedCommands.registerCommand(
             "Home",
