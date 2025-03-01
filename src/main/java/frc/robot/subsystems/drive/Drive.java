@@ -110,7 +110,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                     Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
                     Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
                     Meters.of(TunerConstants.FrontLeft.WheelRadius),
-                    KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+                    KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia/100),
                     WHEEL_COF));
 
     public Field2d fieldMap = new Field2d();
