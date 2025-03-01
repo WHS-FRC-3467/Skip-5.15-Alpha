@@ -29,7 +29,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
         // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(115.13))),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13))),
         LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
         LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(101.33))),
