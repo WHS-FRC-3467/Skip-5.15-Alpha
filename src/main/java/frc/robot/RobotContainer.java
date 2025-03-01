@@ -546,8 +546,7 @@ public class RobotContainer {
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
                         0.001,
-                        0.8))
-                .andThen(Commands.waitSeconds(0.5)));
+                        0.8)));
 
         NamedCommands.registerCommand(
             "L4Prep",

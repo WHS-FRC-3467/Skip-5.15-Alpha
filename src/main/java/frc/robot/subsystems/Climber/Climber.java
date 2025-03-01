@@ -92,11 +92,11 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     }
 
     private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
-    private Debouncer stateDebouncer = new Debouncer(1, DebounceType.kRising);
+    private Debouncer stateDebouncer = new Debouncer(2, DebounceType.kRising);
 
     private Trigger homedTrigger =
         new Trigger(() -> homedDebouncer
-            .calculate(Math.abs(io.getSupplyCurrent()) > 3.7)
+            .calculate(Math.abs(io.getSupplyCurrent()) > 3.5)
             && stateDebouncer.calculate(this.state == State.HOMING));
 
     private Command getHomeCommand()
