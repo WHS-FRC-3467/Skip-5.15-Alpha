@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Climber;
 
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -32,6 +33,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         HOME(new ProfileType.MM_POSITION(() -> 0)),
         PREP(new ProfileType.MM_POSITION(() -> -180)),
         CLIMB(new ProfileType.MM_POSITION(() -> 15)),
+        ClIMB_MORE(new ProfileType.MM_POSITION(() -> 20)),
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> 3));
 
         private final ProfileType profileType;
@@ -65,6 +67,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     // Triggers for each step of the climb sequence
     private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
     private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+    private Trigger climbStep3 = new Trigger(() -> climbStep == 3);
 
     // Debouncer and trigger checks to see if the climber has finished climbing
     private Debouncer climbedDebouncer = new Debouncer(.25, DebounceType.kRising);
@@ -89,10 +92,12 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     }
 
     private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
+    private Debouncer stateDebouncer = new Debouncer(1, DebounceType.kRising);
 
     private Trigger homedTrigger =
         new Trigger(() -> homedDebouncer
-            .calculate(this.state == State.HOMING && Math.abs(io.getSupplyCurrent()) > 3.7));
+            .calculate(Math.abs(io.getSupplyCurrent()) > 3.7)
+            && stateDebouncer.calculate(this.state == State.HOMING));
 
     private Command getHomeCommand()
     {
@@ -101,5 +106,4 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             .andThen(Commands.runOnce(() -> io.zeroSensors()))
             .andThen(this.setStateCommand(State.HOME));
     }
-
 }

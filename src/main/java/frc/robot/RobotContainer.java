@@ -27,6 +27,7 @@ import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIO;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOSim;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOTalonFX;
+import frc.robot.subsystems.Claw.ClawRoller.ClawRoller.State;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
@@ -465,7 +466,13 @@ public class RobotContainer {
         m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2()).onTrue(
             m_profiledClimber.setStateCommand(Climber.State.CLIMB));
 
-        // m_driver.povLeft().onTrue();
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep3()).onTrue(
+            m_profiledClimber.setStateCommand(Climber.State.ClIMB_MORE));
+
+
+        m_driver.povLeft().onTrue(
+            m_clawRoller.setStateCommand(State.EJECT))
+            .onFalse(m_clawRoller.setStateCommand(State.OFF));
 
         // Driver POV Right: End Climbing Sequence if needed
         m_driver
