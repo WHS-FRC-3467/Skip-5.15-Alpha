@@ -4,6 +4,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,9 +30,9 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
         // CLIMB is inwards
         HOME(new ProfileType.MM_POSITION(() -> 0)),
-        PREP(new ProfileType.MM_POSITION(() -> -167)),
-        CLIMB(new ProfileType.MM_POSITION(() -> 60)),
-        HOMING(new ProfileType.OPEN_VOLTAGE(() -> 0.2));
+        PREP(new ProfileType.MM_POSITION(() -> -180)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 5)),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> 3));
 
         private final ProfileType profileType;
     }
@@ -47,6 +48,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public Climber(ClimberIO io, boolean isSim)
     {
         super(State.HOME.profileType, ClimberConstants.kSubSysConstants, io, isSim);
+        SmartDashboard.putData("Home Climber Command", getHomeCommand());
     }
 
     public Command setStateCommand(State state)
