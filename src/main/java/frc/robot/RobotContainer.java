@@ -85,7 +85,7 @@ public class RobotContainer {
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
-    private double speedMultiplier = 0.87;
+    private double speedMultiplier = 0.9;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -482,7 +482,8 @@ public class RobotContainer {
                     () -> {
                         m_profiledClimber.climbRequested = false;
                         m_profiledClimber.climbStep = 0;
-                    }).andThen(m_profiledClimber.setStateCommand(Climber.State.HOME)));
+                    }).andThen(m_profiledClimber.setStateCommand(Climber.State.HOME)).andThen(
+                        m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Slow drivetrain to 25% while climbing
         m_profiledClimber.getClimbRequest().whileTrue(
