@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -126,6 +127,7 @@ public class Vision extends SubsystemBase {
                         || observation.pose().getX() > aprilTagLayout.getFieldLength()
                         || observation.pose().getY() < 0.0
                         || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+                // || observation.averageTagDistance() > Units.feetToMeters(12); // TESTTTTT
 
                 // Add pose to log
                 robotPoses.add(observation.pose());
