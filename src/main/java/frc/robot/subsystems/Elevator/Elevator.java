@@ -73,20 +73,17 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
 
-        if (Constants.simMode == Constants.Mode.REPLAY) {
-            m_Replay = ArmElevComboReplay.getInstance();
-        }
+        m_Replay = ArmElevComboReplay.getInstance();
+
     }
 
     @Override
     public void periodic() 
     {
         super.periodic();
-        if (Constants.simMode == Constants.Mode.REPLAY) 
-         {
+            // Save elevator length for replay
             // TODO: GET THIS TO UPDATE
             m_Replay.run(io.getPosition());
-        }
     }
 
     public Command setStateCommand(State state)

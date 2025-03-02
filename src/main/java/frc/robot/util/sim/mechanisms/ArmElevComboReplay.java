@@ -38,14 +38,21 @@ public class ArmElevComboReplay {
     /* Update the mechanism on AdvantageScope according to its position */
     public void run(double elevatorPositionRot) 
     {
+        // This Works
+        Logger.recordOutput("/SimMechPoses/PoseRot", elevatorPositionRot);
+        Logger.recordOutput("/SimMechPoses/PoseInches", elevatorPositionRot * 1.9 * Math.PI * ElevatorConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio);
+        // Pose3d not updating yet, TODO: fix
         // Publish Pose3d for 3D mechanism sim of 2 stage elevator
         Logger.recordOutput(
         "/SimMechPoses/Stage1/Pose3d",
-            new Pose3d(0, 0, elevatorPositionRot * 1.9 * Math.PI * ArmConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio, new Rotation3d()));
-            // TODO: Get the 1.9 value the actual diameter of the spinny thing
+            new Pose3d(0, 0, elevatorPositionRot * 1.9 * Math.PI * ElevatorConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio, new Rotation3d()));
+            // TODO: Get the 1.9 value the actual diameter of the spinny thing/pulley from CAD
         Logger.recordOutput(
         "/SimMechPoses/Stage2/Pose3d",
-            new Pose3d(0, 0, elevatorPositionRot * 1.9 * Math.PI * ArmConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio / 2, new Rotation3d()));
-        SmartDashboard.putNumber("ElevatorInches", elevatorPositionRot * 1.9 * Math.PI * ArmConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio); // Creates mech2d in SmartDashboard
+            new Pose3d(0, 0, elevatorPositionRot * 1.9 * Math.PI * ElevatorConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio / 2, new Rotation3d()));
+        SmartDashboard.putNumber("ElevatorInches", elevatorPositionRot * 1.9 * Math.PI * ElevatorConstants.kSubSysConstants.kSimMotorConfig.Feedback.SensorToMechanismRatio); // Creates mech2d in SmartDashboard
+
+        // TODO: what I want to do: put the entire Arm ElevComboMechanism into sim and have it update in REPLAY mode only
+
     }
 }
