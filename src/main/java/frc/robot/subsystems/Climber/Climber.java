@@ -1,9 +1,11 @@
 package frc.robot.subsystems.Climber;
 
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,11 +30,11 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
         // CLIMB is inwards
-        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(90.0))),
-        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
-        TUNING(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(positionTuning.getAsDouble())));
+        HOME(new ProfileType.MM_POSITION(() -> 0)),
+        PREP(new ProfileType.MM_POSITION(() -> -185)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 15)),
+        ClIMB_MORE(new ProfileType.MM_POSITION(() -> 20)),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> 3));
 
         private final ProfileType profileType;
     }
@@ -48,11 +50,12 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public Climber(ClimberIO io, boolean isSim)
     {
         super(State.HOME.profileType, ClimberConstants.kSubSysConstants, io, isSim);
+        SmartDashboard.putData("Home Climber Command", getHomeCommand());
     }
 
     public Command setStateCommand(State state)
     {
-        return startEnd(() -> this.state = state, () -> this.state = State.HOME);
+        return this.runOnce(() -> this.state = state);
     }
 
     // Climbing Triggers
@@ -64,6 +67,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     // Triggers for each step of the climb sequence
     private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
     private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
+    private Trigger climbStep3 = new Trigger(() -> climbStep == 3);
 
     // Debouncer and trigger checks to see if the climber has finished climbing
     private Debouncer climbedDebouncer = new Debouncer(.25, DebounceType.kRising);
@@ -87,4 +91,19 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         return io.atPosition(state.profileType, tolerance);
     }
 
+    private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
+    private Debouncer stateDebouncer = new Debouncer(1, DebounceType.kRising);
+
+    private Trigger homedTrigger =
+        new Trigger(() -> homedDebouncer
+            .calculate(Math.abs(io.getSupplyCurrent()) > 2)
+            && stateDebouncer.calculate(this.state == State.HOMING));
+
+    private Command getHomeCommand()
+    {
+        return this.setStateCommand(State.HOMING)
+            .andThen(Commands.waitUntil(homedTrigger))
+            .andThen(Commands.runOnce(() -> io.zeroSensors()))
+            .andThen(this.setStateCommand(State.HOME));
+    }
 }

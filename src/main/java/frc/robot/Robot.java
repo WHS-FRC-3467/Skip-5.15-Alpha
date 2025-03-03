@@ -26,7 +26,6 @@ import frc.robot.util.Elastic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.ironmaple.simulation.SimulatedArena;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -140,7 +139,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit()
     {
-        m_robotContainer.resetSimulationField();
         Elastic.selectTab(1);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
         // Get currently selected command
@@ -257,8 +255,5 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically whilst in simulation. */
     @Override
     public void simulationPeriodic()
-    {
-        SimulatedArena.getInstance().simulationPeriodic();
-        m_robotContainer.displaySimFieldToAdvantageScope();
-    }
+    {}
 }
