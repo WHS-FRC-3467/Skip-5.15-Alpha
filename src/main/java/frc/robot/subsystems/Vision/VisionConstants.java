@@ -13,18 +13,33 @@
 
 package frc.robot.subsystems.Vision;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 
 public class VisionConstants {
     // AprilTag layout
-    public static AprilTagFieldLayout aprilTagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    public static AprilTagFieldLayout aprilTagLayout;
+    private static boolean usedCustomField = false;
+    static {
+        try {
+            aprilTagLayout =
+                new AprilTagFieldLayout(Path
+                    .of(Filesystem.getDeployDirectory().getAbsolutePath()
+                        + "/vision/andymark.json"));
+            usedCustomField = true;
+        } catch (Exception e) {
+            aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        }
+        Logger.recordOutput("Used Custom Field?", usedCustomField);
+    }
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "front_left";
