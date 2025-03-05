@@ -28,6 +28,7 @@ import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIO;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOSim;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOTalonFX;
+import frc.robot.subsystems.Claw.ClawRoller.ClawRoller.State;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
@@ -39,14 +40,13 @@ import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.WindupXboxController;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -63,9 +63,6 @@ public class RobotContainer {
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
-
-    // Maple Sim
-    private SwerveDriveSimulation m_driveSimulation = null;
 
     // AK-enabled Subsystems
     public final Drive m_drive;
@@ -84,7 +81,7 @@ public class RobotContainer {
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
-    private double speedMultiplier = 0.95;
+    private double speedMultiplier = 0.9;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -95,16 +92,14 @@ public class RobotContainer {
                 m_drive =
                     new Drive(
                         new GyroIOPigeon2(),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (robotPose) -> {
-                        });
+                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFX(TunerConstants.FrontRight),
+                        new ModuleIOTalonFX(TunerConstants.BackLeft),
+                        new ModuleIOTalonFX(TunerConstants.BackRight));
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
@@ -129,7 +124,7 @@ public class RobotContainer {
 
                 // m_profiledArm = new Arm(new ArmIO() {}, true);
                 // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
@@ -140,22 +135,13 @@ public class RobotContainer {
 
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
-                m_driveSimulation =
-                    new SwerveDriveSimulation(Drive.mapleSimConfig,
-                        new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
                 m_drive =
                     new Drive(
-                        new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
-                        m_driveSimulation::setSimulationWorldPose);
+                        new GyroIO() {},
+                        new ModuleIOSim(TunerConstants.FrontLeft),
+                        new ModuleIOSim(TunerConstants.FrontRight),
+                        new ModuleIOSim(TunerConstants.BackLeft),
+                        new ModuleIOSim(TunerConstants.BackRight));
 
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
@@ -168,12 +154,8 @@ public class RobotContainer {
                 m_vision =
                     new Vision(
                         m_drive,
-                        new VisionIOPhotonVisionSim(
-                            camera0Name, robotToCamera0,
-                            m_driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                            camera1Name, robotToCamera1,
-                            m_driveSimulation::getSimulatedDriveTrainPose));
+                        new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
+                        new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
 
                 break;
 
@@ -185,9 +167,7 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {},
                         new ModuleIO() {},
-                        new ModuleIO() {},
-                        (robotPose) -> {
-                        });
+                        new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
@@ -443,62 +423,57 @@ public class RobotContainer {
                 ? m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
                 : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE));
 
-        // Driver Start Button: Climb Request (toggle)
-        // m_driver.start().onTrue(Commands.runOnce(() -> {
-        // m_profiledClimber.climbRequested = true;
-        // m_profiledClimber.climbStep += 1;
-        // }));
+        m_driver.back().onTrue(Commands.runOnce(() -> {
+            m_profiledClimber.climbRequested = true;
+            m_profiledClimber.climbStep += 1;
+            System.out.println("CLIMBING PRESSED!!!!");
+        }));
 
-        // Climb step 1: Get the Arm Down, then the Elevator down, and then and move climber to prep
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).whileTrue(
-        // Commands.parallel(
-        // Commands.parallel(
-        // m_profiledArm.setStateCommand(Arm.State.CLIMB),
-        // Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-        // .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))),
-        // Commands
-        // .waitUntil(
-        // () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
-        // .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).onTrue(
+            m_profiledArm.setStateCommand(Arm.State.CLIMB)
+                .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
 
         // Climb step 2: Move climber to climb
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
-        // .whileTrue(
-        // m_profiledClimber.setStateCommand(Climber.State.CLIMB)
-        // .until(m_profiledClimber.getClimbedTrigger()));
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2()).onTrue(
+            m_profiledClimber.setStateCommand(Climber.State.CLIMB));
 
-        // m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
+        m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep3()).onTrue(
+            m_profiledClimber.setStateCommand(Climber.State.ClIMB_MORE));
+
+
+        m_driver.povLeft().onTrue(
+            m_clawRoller.setStateCommand(State.EJECT))
+            .onFalse(m_clawRoller.setStateCommand(State.OFF));
 
         // Driver POV Right: End Climbing Sequence if needed
-        // m_driver
-        // .povRight()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> {
-        // m_profiledClimber.climbRequested = false;
-        // m_profiledClimber.climbStep = 0;
-        // }));
+        m_driver
+            .povRight()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                        m_profiledClimber.climbRequested = false;
+                        m_profiledClimber.climbStep = 0;
+                    }).andThen(m_profiledClimber.setStateCommand(Climber.State.HOME)).andThen(
+                        m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Slow drivetrain to 25% while climbing
-        // m_profiledClimber.getClimbRequest().whileTrue(
-        // DriveCommands.joystickDrive(
-        // m_drive,
-        // () -> -m_driver.getLeftY() * 0.25,
-        // () -> -m_driver.getLeftX() * 0.25,
-        // () -> -m_driver.getRightX() * 0.25));
-
+        m_profiledClimber.getClimbRequest().whileTrue(
+            DriveCommands.joystickDrive(
+                m_drive,
+                () -> -m_driver.getLeftY() * 0.5,
+                () -> -m_driver.getLeftX() * 0.5,
+                () -> -m_driver.getRightX() * 0.5));
         // Driver POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().whileTrue(
             Commands.sequence(
                 // Always move Arm to STOW position before moving Elevator
-                m_profiledArm.setStateCommand(Arm.State.STOW)
-                    .until(() -> m_profiledArm.atPosition(0.1)),
+                m_profiledArm.setStateCommand(Arm.State.STOW),
                 // Move Elevator to homing position
-                Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.HOMING)
-                        .until(m_profiledElevator.getHomedTrigger()))
-                    .andThen(m_profiledElevator.zeroSensorCommand())
-                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))));
+                Commands.waitUntil(() -> m_profiledArm.atPosition(0.1)),
+                m_profiledElevator.setStateCommand(Elevator.State.HOMING),
+                Commands.waitUntil(m_profiledElevator.getHomedTrigger()),
+                m_profiledElevator.zeroSensorCommand(),
+                m_profiledElevator.setStateCommand(Elevator.State.STOW)));
 
         m_driver.povUp().onTrue(
             m_profiledElevator.setStateCommand(Elevator.State.STOW));
@@ -546,16 +521,17 @@ public class RobotContainer {
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        Units.degreesToRotations(10),
-                        0.25)));
+                        0.001,
+                        0.8)));
 
         NamedCommands.registerCommand(
             "L4Prep",
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                        Units.degreesToRotations(15),
-                        0.4)));
+                        0.001,
+                        0.8)));
+
         // Go to the Home Position
         NamedCommands.registerCommand(
             "Home",
@@ -605,40 +581,5 @@ public class RobotContainer {
     public Command getAutonomousCommand()
     {
         return m_autoChooser.get();
-    }
-
-    /*
-     * Simulation-specific routines
-     */
-    public void resetSimulation()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
-        SimulatedArena.getInstance().resetFieldForAuto();
-    }
-
-    public void resetSimulationField()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-    }
-
-    public void displaySimFieldToAdvantageScope()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
-        // 2)));
-        Logger.recordOutput(
-            "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
-        Logger.recordOutput(
-            "FieldSimulation/Coral",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-            "FieldSimulation/Algae",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 }
