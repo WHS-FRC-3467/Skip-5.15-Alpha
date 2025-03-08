@@ -23,7 +23,7 @@ public class ClawRoller
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, () -> 0.06)),
         EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 3.0)),
+        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
         SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
