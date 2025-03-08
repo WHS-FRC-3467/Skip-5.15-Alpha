@@ -24,6 +24,9 @@ public class GenericMotionProfiledSubsystemConstants {
 
     public CANcoderConfiguration kEncoderConfig = new CANcoderConfiguration();
 
+    // Homing Setpoint - The position at which a homed subsystem should be set to
+    public double kHomingPosition = 0;
+
     // Sensor Fallback Constants
     // Subclasses should set their own values based on the mechanism they represent.
     public double FallbackEncoderToMechanismRatio = 1;

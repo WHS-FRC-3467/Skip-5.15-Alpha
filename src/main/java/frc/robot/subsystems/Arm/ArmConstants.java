@@ -47,9 +47,9 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.Feedback.FeedbackRemoteSensorID =
             Ports.ARM_CANCODER.getDeviceNumber();
         kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-            FeedbackSensorSourceValue.RemoteCANcoder;
+            FeedbackSensorSourceValue.FusedCANcoder;
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 1;
-        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = (9 / 1) * (48 / 22) * (70 / 22);
+        kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 62.47933884; //(9.0 / 1.0) * (48.0 / 22.0) * (70.0 / 22.0);
         kSubSysConstants.kEncoderConfig.MagnetSensor.MagnetOffset = 0.826416015625;
         kSubSysConstants.kEncoderConfig.MagnetSensor.SensorDirection =
             SensorDirectionValue.Clockwise_Positive;
@@ -73,8 +73,10 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
+        kSubSysConstants.kHomingPosition = 0; // Tune this. Ideas: arm against hardstop position, or arm against ground position.
+
         // "Fallback" Constants for Arm CANCoder
-        kSubSysConstants.FallbackEncoderToMechanismRatio = (9 / 1) * (48 / 22) * (70 / 22);
+        kSubSysConstants.FallbackEncoderToMechanismRatio = 62.47933884; //(9.0 / 1.0) * (48.0 / 22.0) * (70.0 / 22.0);
         kSubSysConstants.RotorToFallbackEncoderRatio = 1;
         kSubSysConstants.FallbackRotorOffset = 0; // TODO: Tune
 
@@ -125,9 +127,10 @@ public final class ArmConstants {
             Units.rotationsToDegrees(-0.405);
         kSubSysConstants.kArmSimConfig.kMinAngleDegrees = Units.rotationsToDegrees(-.405);
         kSubSysConstants.kArmSimConfig.kMaxAngleDegrees = 0;
-        kSubSysConstants.kArmSimConfig.kArmReduction = (9 / 1) * (48 / 22) * (70 / 22); // RotorToSensorRatio
+        kSubSysConstants.kArmSimConfig.kArmReduction = 62.47933884; // RotorToSensorRatio
                                                                                         // *
                                                                                         // SensorToMechanismRatio
+                                                                                        //(9.0 / 1.0) * (48.0 / 22.0) * (70.0 / 22.0);
         kSubSysConstants.kArmSimConfig.kSensorReduction = 1; // SensorToMechanismRatio
     }
 }

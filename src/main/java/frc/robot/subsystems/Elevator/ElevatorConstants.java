@@ -41,6 +41,8 @@ public final class ElevatorConstants {
         kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 9.6;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
+        kSubSysConstants.kHomingPosition = 0; // Elevator is homed at the zero position
+
         // Using a remote CANcoder
         /*
          * kSubSysConstants.kCANcoder = Ports.ELEVATOR_CANCODER;

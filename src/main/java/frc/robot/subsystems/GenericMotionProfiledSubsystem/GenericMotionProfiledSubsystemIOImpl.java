@@ -294,12 +294,12 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                 BaseStatusSignal.refreshAll(
                     mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
                     .isOK();
-            // if (!inputs.CANcoderConnected) {
+            // if (!inputs.CANcoderConnected) { // For real
             //     encoderFallback(checkDeviceConfiguration());
             // }
-            if (simCanCoderConnected.getAsDouble() != 1) {
-                encoderFallback(checkDeviceConfiguration());
-            }
+            // if (simCanCoderConnected.getAsDouble() != 1) { // For Sim
+            //     encoderFallback(checkDeviceConfiguration());
+            // }
         }
 
         // Due to an unfixed firmware error, certain closed-loop signals do not get
@@ -512,7 +512,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     public synchronized void zeroSensors()
     {
-        Phoenix6Util.checkErrorAndRetry(() -> mMainMotor.setPosition(0, mConstants.kCANTimeout));
+        Phoenix6Util.checkErrorAndRetry(() -> mMainMotor.setPosition(mConstants.kHomingPosition, mConstants.kCANTimeout));
         mHasBeenZeroed = true;
     }
 
@@ -597,7 +597,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                     FeedbackSensorSourceValue.RotorSensor;
         mConstants.kMotorConfig.Feedback.SensorToMechanismRatio = mConstants.FallbackEncoderToMechanismRatio;
         mConstants.kMotorConfig.Feedback.RotorToSensorRatio = mConstants.RotorToFallbackEncoderRatio;
-        mConstants.kMotorConfig.Feedback.FeedbackRotorOffset = mConstants.FallbackRotorOffset;
+        mConstants.kMotorConfig.Feedback.FeedbackRotorOffset = 0.0;
         
         // Get the motor configuration group and configure the main motor
         /*
