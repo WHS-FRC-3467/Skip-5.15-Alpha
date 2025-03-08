@@ -17,7 +17,7 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 30);
+    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
     static LoggedTunableNumber algaeIntakeSP =
@@ -29,16 +29,15 @@ public class ClawRoller
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(() -> 0.0, ProfileType.OPEN_VOLTAGE), // TODO: tune on real robot
-        INTAKE(() -> 2.0, ProfileType.OPEN_VOLTAGE),
-        INTAKESLOW(() -> 1, ProfileType.OPEN_VOLTAGE),
-        SHUFFLE(() -> -0.5, ProfileType.OPEN_VOLTAGE),
-        EJECT(() -> 6.0, ProfileType.OPEN_VOLTAGE),
-        SCORE(() -> 8.0, ProfileType.OPEN_VOLTAGE),
-        HOLDCORAL(() -> holdCoralSP.getAsDouble(), ProfileType.MM_POSITION),
-        ALGAE_INTAKE(() -> algaeIntakeSP.getAsDouble(), ProfileType.OPEN_CURRENT);
+        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, () -> 0.06)),
+        EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
+        SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
+        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
+        SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
+        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
+        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -48,7 +47,7 @@ public class ClawRoller
     /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
-        super(ProfileType.OPEN_VOLTAGE, ClawRollerConstants.kSubSysConstants, io, isSim);
+        super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
     }
 
     public Command setStateCommand(State state)
@@ -58,8 +57,7 @@ public class ClawRoller
 
     public boolean atPosition(double tolerance)
     {
-        return Util.epsilonEquals(io.getPosition(), state.output.getAsDouble(),
-            Math.max(0.0001, tolerance));
+        return io.atPosition(state.profileType, tolerance);
     }
 
     public BooleanSupplier isCurrentSpiked(double spikedCurrentThreshold)
