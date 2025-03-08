@@ -32,7 +32,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(new ProfileType.HOMING(() -> homingTuning.getAsDouble())),
+        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
         STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
         // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
