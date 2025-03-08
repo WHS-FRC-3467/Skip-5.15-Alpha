@@ -48,7 +48,7 @@ public class LEDSubsystem extends SubsystemBase {
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = true;
+    boolean kTesting = false;
 
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 

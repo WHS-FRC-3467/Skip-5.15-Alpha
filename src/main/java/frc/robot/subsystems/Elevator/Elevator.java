@@ -41,8 +41,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
-        BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
+        PROCESSOR_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
+        BARGE(new ProfileType.MM_POSITION(() -> 5.5)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
@@ -96,7 +96,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             case ALGAE_LOW:
             case ALGAE_HIGH:
             case ALGAE_GROUND:
-            case ALGAE_SCORE:
+            case PROCESSOR_SCORE:
             case BARGE:
                 return true;
 
@@ -110,7 +110,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.getState() == Elevator.State.LEVEL_1;
     }
 
-    private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(
