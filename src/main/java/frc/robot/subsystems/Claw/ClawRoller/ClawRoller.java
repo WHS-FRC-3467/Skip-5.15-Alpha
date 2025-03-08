@@ -26,8 +26,8 @@ public class ClawRoller
         SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 3.0)),
         SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
-        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6)),
-        BARGE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6));
+        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
+        ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
     }
