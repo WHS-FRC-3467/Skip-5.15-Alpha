@@ -1,16 +1,11 @@
 package frc.robot.subsystems.Arm;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
@@ -22,8 +17,6 @@ import lombok.Setter;
 @Getter
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
-    static LoggedTunableNumber homingTuning =
-        new LoggedTunableNumber("Arm/HomingVoltageSP", -0.2);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
 
@@ -71,7 +64,6 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         super(State.STOW.profileType, ArmConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Arm Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Arm Brake Command", setBrakeStateCommand());
-        SmartDashboard.putData("Arm HOMING Command", zeroSensorCommand());
     }
 
     /** Constructor */
@@ -93,19 +85,6 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
-    }
-
-    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
-
-    public Trigger homedTrigger =
-        new Trigger(
-            () -> homedDebouncer.calculate(
-                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
-
-    public Command zeroSensorCommand() {
-        return this.setStateCommand(Arm.State.HOMING)
-            .until(this.getHomedTrigger())
-            .andThen(new InstantCommand(() -> io.zeroSensors()));
     }
 
     public Command staticCharacterization(double outputRampRate)
