@@ -22,6 +22,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
@@ -293,7 +294,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                 BaseStatusSignal.refreshAll(
                     mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
                     .isOK();
-            // if (!inputs.CANcoderConnected) { // For real
+            // if (!inputs.CANcoderConnected) { // For real - call if FusedCANCoder does not adjust ratios
             //     encoderFallback(checkDeviceConfiguration());
             // }
             // if (simCanCoderConnected.getAsDouble() != 1) { // For Sim
