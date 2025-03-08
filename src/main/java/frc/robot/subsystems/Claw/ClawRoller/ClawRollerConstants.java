@@ -35,18 +35,19 @@ public final class ClawRollerConstants {
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
-        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
         kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 50; // TODO: tune on real robot
+
+        kSubSysConstants.kMotorConfig.Slot0.kP = 10;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
         kSubSysConstants.kMotorConfig.Slot0.kD = 0;
         kSubSysConstants.kMotorConfig.Slot0.kG = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kV = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kS = 15;
+        kSubSysConstants.kMotorConfig.Slot0.kV = 1;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 10;

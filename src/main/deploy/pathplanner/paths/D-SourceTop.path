@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9517551369863013,
-        "y": 2.755329623287671
+        "x": 3.955942622950819,
+        "y": 2.7902663934426233
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.238359126339035,
-        "y": 2.8739409725342324
+        "x": 4.242546612303553,
+        "y": 2.9088777426891848
       },
       "isLocked": false,
       "linkedName": "ReefD"
     },
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.3877942421904927,
-        "y": 0.5668827934251714
+        "x": 1.3400459545192598,
+        "y": 0.7060206358909238
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,33 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Home",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "sequential",
+              "data": {
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "SuperstructureIntake"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

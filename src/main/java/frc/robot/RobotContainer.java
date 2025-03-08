@@ -7,17 +7,18 @@ package frc.robot;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIO;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOSim;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRollerIOTalonFX;
+import frc.robot.subsystems.Claw.ClawRoller.ClawRoller.State;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
@@ -57,7 +59,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
     // Controllers
-    private final CommandXboxController m_driver = new CommandXboxController(0);
+    private final WindupXboxController m_driver = new WindupXboxController(0);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -133,10 +135,6 @@ public class RobotContainer {
 
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
-                m_driveSimulation =
-                    new SwerveDriveSimulation(Drive.mapleSimConfig,
-                        new Pose2d(3, 3, new Rotation2d()));
-                SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
                 m_drive =
                     new Drive(
                         new GyroIO() {},
@@ -562,11 +560,20 @@ public class RobotContainer {
                         m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
+
         NamedCommands.registerCommand(
             "Score",
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                 .andThen(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+
+        NamedCommands.registerCommand("Coast", m_drive.run(() -> {
+        }));
+
+        NamedCommands.registerCommand("HoldCoral",
+            m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+
+        NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
     }
 
     /**
@@ -577,40 +584,5 @@ public class RobotContainer {
     public Command getAutonomousCommand()
     {
         return m_autoChooser.get();
-    }
-
-    /*
-     * Simulation-specific routines
-     */
-    public void resetSimulation()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        m_drive.setPose(new Pose2d(3, 3, new Rotation2d()));
-        SimulatedArena.getInstance().resetFieldForAuto();
-    }
-
-    public void resetSimulationField()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-    }
-
-    public void displaySimFieldToAdvantageScope()
-    {
-        if (Constants.currentMode != Constants.Mode.SIM)
-            return;
-
-        // SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,
-        // 2)));
-        Logger.recordOutput(
-            "FieldSimulation/RobotPosition", m_driveSimulation.getSimulatedDriveTrainPose());
-        Logger.recordOutput(
-            "FieldSimulation/Coral",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-            "FieldSimulation/Algae",
-            SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 }

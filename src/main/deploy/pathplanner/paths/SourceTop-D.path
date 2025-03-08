@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 0.7268621575342468
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.088105231988017,
-        "y": 1.110912623122874
+        "x": 2.040356944316784,
+        "y": 1.2500504655886262
       },
       "isLocked": false,
       "linkedName": "SourceTop"
     },
     {
       "anchor": {
-        "x": 3.9517551369863013,
-        "y": 2.755329623287671
+        "x": 3.955942622950819,
+        "y": 2.7902663934426233
       },
       "prevControl": {
-        "x": 3.4146688138478285,
-        "y": 2.3274972163717824
+        "x": 3.4188562998123464,
+        "y": 2.3624339865267348
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,17 +33,23 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L2",
-      "waypointRelativePos": 0.4378843788437865,
+      "name": "L4",
+      "waypointRelativePos": 0.4,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "deadline",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "L2"
+                "name": "IntakeCoral"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "L4Prep"
               }
             }
           ]

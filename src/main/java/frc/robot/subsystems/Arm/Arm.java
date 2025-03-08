@@ -45,7 +45,6 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 

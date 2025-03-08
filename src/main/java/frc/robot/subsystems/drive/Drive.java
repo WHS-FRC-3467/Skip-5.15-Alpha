@@ -52,13 +52,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 // Maple Sim
@@ -95,25 +91,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 1),
             getModuleTranslations());
 
-    // Maple Sim Config
-    public static final DriveTrainSimulationConfig mapleSimConfig =
-        DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
-            .withBumperSize(Inches.of(35.1875), Inches.of(35.1875))
-            .withCustomModuleTranslations(getModuleTranslations())
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModule(
-                new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60(1),
-                    DCMotor.getFalcon500(1),
-                    TunerConstants.FrontLeft.DriveMotorGearRatio,
-                    TunerConstants.FrontLeft.SteerMotorGearRatio,
-                    Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
-                    Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
-                    Meters.of(TunerConstants.FrontLeft.WheelRadius),
-                    KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
-                    WHEEL_COF));
-
     public Field2d fieldMap = new Field2d();
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
@@ -136,19 +113,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     private final SwerveDrivePoseEstimator poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
             new Pose2d());
-    private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
     public Drive(
         GyroIO gyroIO,
         ModuleIO flModuleIO,
         ModuleIO frModuleIO,
         ModuleIO blModuleIO,
-        ModuleIO brModuleIO,
-        Consumer<Pose2d> resetSimulationPoseCallBack)
+        ModuleIO brModuleIO)
     {
         SmartDashboard.putData("Robot Pose Field Map", fieldMap);
         this.gyroIO = gyroIO;
-        this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -168,11 +142,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             this::getChassisSpeeds,
             this::runVelocity,
             new PPHolonomicDriveController(
-                new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(1.0, 0.0, 0.0)),
+                new PIDConstants(3, 0.0, 0), new PIDConstants(5.5, 0.0, 0.0)),
             PP_CONFIG,
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
             this);
-        Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback(
             (activePath) -> {
                 Logger.recordOutput(
@@ -389,7 +362,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Resets the current odometry pose. */
     public void setPose(Pose2d pose)
     {
-        resetSimulationPoseCallBack.accept(pose);
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 

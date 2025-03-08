@@ -21,7 +21,7 @@ public class IntakeLaserCAN extends GenericLaserCANSubsystem<IntakeLaserCAN.Stat
     @RequiredArgsConstructor
     @Getter
     public enum State implements DistanceState {
-        DEFAULT(Distance.ofBaseUnits(0.15, Meter));
+        DEFAULT(Distance.ofBaseUnits(0.1, Meter));
 
         @Getter
         private final Distance distance;

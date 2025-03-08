@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Elevator;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -24,33 +23,31 @@ import lombok.Setter;
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     static LoggedTunableNumber homingTuning =
-        new LoggedTunableNumber("Elevator/HomingVoltageSP", -0.2);
+        new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOMING(() -> homingTuning.getAsDouble(), ProfileType.OPEN_VOLTAGE),
-        // TODO: Test Voltage and position values (rotations)
-        STOW(() -> 0, ProfileType.MM_POSITION),
-        CORAL_INTAKE(() -> 0, ProfileType.MM_POSITION),
-        LEVEL_1(() -> 0.2, ProfileType.MM_POSITION),
-        LEVEL_2(() -> 1.2, ProfileType.MM_POSITION),
-        LEVEL_3(() -> 2.7, ProfileType.MM_POSITION),
-        LEVEL_4(() -> 5, ProfileType.MM_POSITION),
-        CLIMB(() -> 0.05, ProfileType.MM_POSITION),
-        ALGAE_LOW(() -> 2, ProfileType.MM_POSITION),
-        ALGAE_HIGH(() -> 3.2, ProfileType.MM_POSITION),
-        ALGAE_GROUND(() -> 0.05, ProfileType.MM_POSITION),
-        ALGAE_SCORE(() -> 0.05, ProfileType.MM_POSITION),
-        BARGE(() -> 5.3, ProfileType.MM_POSITION),
-        TUNING(() -> positionTuning.getAsDouble(), ProfileType.MM_POSITION),
-        CHARACTERIZATION(() -> 0.0, ProfileType.CHARACTERIZATION),
-        COAST(() -> 0.0, ProfileType.DISABLED_COAST),
-        BRAKE(() -> 0.0, ProfileType.DISABLED_BRAKE);
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
+        STOW(new ProfileType.MM_POSITION(() -> 0.0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> 1)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> 4.95)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
+        BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
+        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
+        CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
+        COAST(new ProfileType.DISABLED_COAST()),
+        BRAKE(new ProfileType.DISABLED_BRAKE());
 
-        private final DoubleSupplier output;
         private final ProfileType profileType;
     }
 
@@ -68,7 +65,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
     {
-        super(ProfileType.MM_POSITION, ElevatorConstants.kSubSysConstants, io, isSim);
+        super(State.STOW.profileType, ElevatorConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
     }
@@ -88,7 +85,32 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.runOnce(() -> this.state = State.BRAKE);
     }
 
-    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
+    public boolean isElevated()
+    {
+        switch (this.getState()) {
+            case LEVEL_1:
+            case LEVEL_2:
+            case LEVEL_3:
+            case LEVEL_4:
+            case CLIMB:
+            case ALGAE_LOW:
+            case ALGAE_HIGH:
+            case ALGAE_GROUND:
+            case ALGAE_SCORE:
+            case BARGE:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    public boolean isL1()
+    {
+        return this.getState() == Elevator.State.LEVEL_1;
+    }
+
+    private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(
@@ -102,7 +124,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean atPosition(double tolerance)
     {
-        return io.atPosition(tolerance);
+        return io.atPosition(state.profileType, tolerance);
     }
 
     public Command homedAlertCommand()
@@ -124,7 +146,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             },
             () -> {
                 state.characterizationOutput = outputRampRate * timer.get();
-                io.runCurrent(state.characterizationOutput);
+                io.runCurrent(state.characterizationOutput, 1);
                 Logger.recordOutput(
                     "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
             })
