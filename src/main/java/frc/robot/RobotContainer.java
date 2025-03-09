@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -237,13 +238,14 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
+    private Command joystickApproachBarge(Translation2d bargePos)
     {
-        return DriveCommands.joystickDriveAtAngle(
+        return DriveCommands.joystickApproachBarge(
             m_drive,
             () -> -m_driver.getLeftY() * speedMultiplier,
             () -> -m_driver.getLeftX() * speedMultiplier,
-            angle);
+            bargePos,
+            FieldConstants.Barge.kOffsetFromBarge);
     }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
@@ -280,7 +282,12 @@ public class RobotContainer {
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
-        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
+        // Driver Left Bumper and Algae mode: Approach Barge
+        m_driver.leftBumper().and(isCoralMode.negate())
+            .whileTrue(
+                joystickApproachBarge(FieldConstants.Barge.middleCage));
+
+        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));

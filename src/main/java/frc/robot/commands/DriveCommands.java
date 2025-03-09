@@ -274,6 +274,96 @@ public class DriveCommands {
     }
 
     /**
+     * Robot relative drive command using joystick for linear control towards the approach target,
+     * PID for aligning with the target laterally, and PID for angular control. Used for approaching
+     * a known target, usually from a short distance. The approachSupplier must supply a Pose2d with
+     * a rotation facing away from the target
+     */
+    public static Command joystickApproachBarge(
+        Drive drive,
+        DoubleSupplier xSupplier,
+        DoubleSupplier ySupplier,
+        Translation2d approachSupplier,
+        double offsetFromBarge)
+    {
+
+        // Create PID controller
+        TuneableProfiledPID angleController =
+            new TuneableProfiledPID(
+                "angleController",
+                ANGLE_KP * 1.2,
+                0.0,
+                ANGLE_KD,
+                ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_ACCELERATION);
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+        TuneableProfiledPID alignController =
+            new TuneableProfiledPID(
+                "alignController",
+                1,
+                0.0,
+                0.1,
+                20,
+                8);
+        alignController.setGoal(0);
+
+        // Construct command
+        return Commands.run(
+            () -> {
+                currentDriveMode = DriveMode.dmApproach;
+                // Name constants
+                double currentTranslationX = drive.getPose().getTranslation().getX();
+                double approachTranslationX = approachSupplier.getX() - offsetFromBarge;
+                double distanceToGoal = currentTranslationX - approachTranslationX;
+
+
+                // The x distance between robot and goal - barge approach approaches a vertical line
+                // double distanceToGoal = currentTranslationX - approachTranslationX;
+
+                // Calculate lateral linear velocity
+                Translation2d offsetVector =
+                    new Translation2d(alignController.calculate(distanceToGoal), 0);
+                Logger.recordOutput("BargeAlignDebug/Current", distanceToGoal);
+
+                // Calculate total linear velocity - magnitude (x) and direction
+                Translation2d linearVelocity =
+                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                        ySupplier.getAsDouble()).rotateBy(Rotation2d.kCCW_90deg)
+                            .plus(offsetVector);
+
+                SmartDashboard.putData(alignController); // TODO: Calibrate PID
+                Logger.recordOutput("BargeAlignDebug/approachTarget", approachTranslationX);
+
+                // Calculate angular speed
+                double omega =
+                    angleController.calculate(
+                        drive.getRotation().getRadians(), Rotation2d.kZero
+                            .getRadians());
+
+                // Convert to field relative speeds & send command
+                ChassisSpeeds speeds =
+                new ChassisSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    ySupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omega);
+                // ChassisSpeeds speeds =
+                //     new ChassisSpeeds(
+                //         linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                //         linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                //         omega);
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        drive.getRotation()));
+            },
+            drive)
+
+            // Reset PID controller when command starts
+            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+    }
+
+    /**
      * Measures the velocity feedforward constants for the drive motors.
      *
      * <p>
