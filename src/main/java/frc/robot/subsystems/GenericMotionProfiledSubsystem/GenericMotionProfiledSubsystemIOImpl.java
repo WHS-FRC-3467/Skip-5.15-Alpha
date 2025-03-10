@@ -294,12 +294,6 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
                 BaseStatusSignal.refreshAll(
                     mEncoderAbsolutePositionRotations, mEncoderRelativePositionRotations)
                     .isOK();
-            // if (!inputs.CANcoderConnected) { // For real - call if FusedCANCoder does not adjust ratios
-            //     encoderFallback(checkDeviceConfiguration());
-            // }
-            // if (simCanCoderConnected.getAsDouble() != 1) { // For Sim
-            //     encoderFallback(checkDeviceConfiguration());
-            // }
         }
 
         // Due to an unfixed firmware error, certain closed-loop signals do not get
@@ -517,7 +511,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     public synchronized void zeroSensors()
     {
-        Phoenix6Util.checkErrorAndRetry(() -> mMainMotor.setPosition(mConstants.kHomingPosition, mConstants.kCANTimeout));
+        Phoenix6Util.checkErrorAndRetry(() -> mMainMotor.setPosition(0, mConstants.kCANTimeout));
         mHasBeenZeroed = true;
     }
 
@@ -587,35 +581,5 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
             }
         }
         return true;
-    }
-
-    /*
-     * This method will only be called if the the CANcoder loses its connection
-     * Currently only the Arm uses a CANCoder
-     */
-    public void encoderFallback(boolean check) 
-    {
-        // Stops updateInputs() from getting encoder position and trying to run this method again
-        mConstants.kCANcoder = null; 
-        // Set the sensor to internal rotor sensor and now the sensor to mechanism ratio is the former rotor to cancoder ratio
-        mConstants.kMotorConfig.Feedback.FeedbackSensorSource =
-                    FeedbackSensorSourceValue.RotorSensor;
-        mConstants.kMotorConfig.Feedback.SensorToMechanismRatio = mConstants.FallbackEncoderToMechanismRatio;
-        mConstants.kMotorConfig.Feedback.RotorToSensorRatio = mConstants.RotorToFallbackEncoderRatio;
-        mConstants.kMotorConfig.Feedback.FeedbackRotorOffset = 0.0;
-        
-        // Get the motor configuration group and configure the main motor
-        /*
-         * Note: We can use the kMotorcConfig constants here for both REAL and SIM, because after
-         * this class is instantiated, if needed, the Subsystem's constructor will pull the SIM
-         * constants into LoggedTunableNumbers and update this config.
-         */
-        mMainConfig = mConstants.kMotorConfig;
-
-        if (check) {
-            Phoenix6Util.applyAndCheckConfiguration(mMainMotor, mMainConfig);
-        } else {
-            mMainMotor.getConfigurator().apply(mMainConfig);
-        }
     }
 }

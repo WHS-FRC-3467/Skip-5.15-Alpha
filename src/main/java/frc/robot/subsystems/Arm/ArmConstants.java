@@ -80,13 +80,6 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
-        kSubSysConstants.kHomingPosition = 0; // Tune this. Ideas: arm against hardstop position, or arm against ground position.
-
-        // "Fallback" Constants for Arm CANCoder - if not automatically handled by FusedCANCoder
-        kSubSysConstants.FallbackEncoderToMechanismRatio = (9.0 / 1.0) * (48.0 / 22.0) * (70.0 / 22.0);
-        kSubSysConstants.RotorToFallbackEncoderRatio = 1;
-        kSubSysConstants.FallbackRotorOffset = 0; // TODO: Tune
-
         /* REAL system profile constants */
         kSubSysConstants.kMotorConfig.Slot0.kP = 800;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;

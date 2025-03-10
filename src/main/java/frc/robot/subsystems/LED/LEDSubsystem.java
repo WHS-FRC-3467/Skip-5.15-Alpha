@@ -54,6 +54,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
+    int visionOutCounter = 0;
     /*
      * Robot LED States
      */
@@ -71,6 +72,7 @@ public class LEDSubsystem extends SubsystemBase {
         SUPER_MOVE,
         ALIGNING,
         HAVE_CORAL,
+        VISION_OUT,
         ENABLED
     }
 
@@ -223,8 +225,15 @@ public class LEDSubsystem extends SubsystemBase {
             // Run MatchTimer
             runMatchTimerPattern();
 
+            // Vision Out? For 0.500 seconds, quickly flash the LEDs red
+            if ((visionOutCounter > 0) && (visionOutCounter < 26)) {
+                if (!m_Vision.anyCameraConnected.getAsBoolean()) {
+                    visionOutCounter++;
+                    newState = LEDState.VISION_OUT;
+                }
+            }
             // Intaking Coral?
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
+            else if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
                 if (m_intakeLaserCAN.isTriggered()) {
                     // Coral has entered and is being positioned
                     newState = LEDState.FEEDING;
@@ -399,6 +408,10 @@ public class LEDSubsystem extends SubsystemBase {
 
                 case HAVE_CORAL:
                     m_State.setColor(green);
+                    break;
+
+                case VISION_OUT:
+                    m_State.setAnimation(a_FastFlashRed);
                     break;
 
                 case ENABLED:

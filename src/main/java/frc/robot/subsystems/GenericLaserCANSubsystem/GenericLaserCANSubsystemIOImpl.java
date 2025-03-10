@@ -94,8 +94,8 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
     }
 
     @Override
-    public BooleanSupplier getValidStatus()
+    public boolean getValidStatus()
     {
-        return () -> validStatus;
+        return validStatus;
     }
 }

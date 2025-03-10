@@ -200,7 +200,7 @@ public class RobotContainer {
         }
 
         // Trigger for whether laser cans are reporting valid data
-        validLaserCANs = new Trigger(m_clawRollerLaserCAN.getValidMeasurement()).and(m_intakeLaserCAN.getValidMeasurement());
+        validLaserCANs = m_clawRollerLaserCAN.validMeasurement.and(m_intakeLaserCAN.validMeasurement);
 
         // Logic Triggers
         registerNamedCommands();

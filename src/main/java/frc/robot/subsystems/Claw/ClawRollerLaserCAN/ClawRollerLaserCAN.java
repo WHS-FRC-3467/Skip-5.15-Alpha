@@ -1,7 +1,8 @@
 package frc.robot.subsystems.Claw.ClawRollerLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
-import java.util.function.BooleanSupplier;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
@@ -14,9 +15,12 @@ public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaser
 
     public Trigger triggered = new Trigger(() -> super.isTriggered());
 
-    public BooleanSupplier getValidMeasurement() {
-        return io.getValidStatus();
-    }
+    private Debouncer validDebouncer = new Debouncer(2, DebounceType.kRising);
+
+    public Trigger validMeasurement =
+        new Trigger(
+            () -> validDebouncer.calculate(io.getValidStatus()));
+
 
     @RequiredArgsConstructor
     @Getter

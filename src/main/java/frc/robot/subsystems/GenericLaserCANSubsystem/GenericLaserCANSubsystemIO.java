@@ -11,9 +11,9 @@ public interface GenericLaserCANSubsystemIO {
         public Distance distance;
     }
 
-    default BooleanSupplier getValidStatus() 
+    default boolean getValidStatus() 
     {
-        return ()-> true;
+        return true;
     }
 
     default void updateInputs(LaserCANIOInputs inputs)
