@@ -80,6 +80,7 @@ public class RobotContainer {
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
 
+
     private double speedMultiplier = 0.9;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -289,67 +290,58 @@ public class RobotContainer {
         m_driver
             .a().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
 
         // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
         m_driver
             .a().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_SCORE)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                    Elevator.State.ALGAE_SCORE));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
             .x().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
             .x().and(isCoralMode.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
             .b().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
 
         // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver
             .b().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
-                    Elevator.State.ALGAE_HIGH)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                    Elevator.State.ALGAE_HIGH));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
             .y().and(isCoralMode)
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.0,
-                    0.8)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                    0.8));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
         // Elevator to BARGE
         m_driver
             .y().and(isCoralMode.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE)
-                    .andThen(m_driver.rumbleForTime(1, 1)));
+                m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger().and(isCoralMode).and(() -> !m_profiledElevator.isL1())
             .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
-                    .andThen(m_driver.rumbleForTime(1, 1)))
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
@@ -490,7 +482,8 @@ public class RobotContainer {
         m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_driver.rumbleForTime(1, 1)));
 
     }
 
