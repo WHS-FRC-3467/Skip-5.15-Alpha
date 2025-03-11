@@ -227,7 +227,7 @@ public class LEDSubsystem extends SubsystemBase {
 
             // Vision Out? For 0.500 seconds, quickly flash the LEDs red
             if ((visionOutCounter > 0) && (visionOutCounter < 26)) {
-                if (!m_Vision.anyCameraConnected.getAsBoolean()) {
+                if (!m_Vision.anyCameraConnected) {
                     visionOutCounter++;
                     newState = LEDState.VISION_OUT;
                 }

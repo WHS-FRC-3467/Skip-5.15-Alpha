@@ -155,9 +155,8 @@ public class RobotContainer {
                 m_vision =
                     new Vision(
                         m_drive,
-                        new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
-                        new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
-
+                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
                 break;
 
             default:
@@ -274,19 +273,19 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
-        m_driver.rightBumper().and(isCoralMode).and(m_vision.anyCameraConnected)
+        m_driver.rightBumper().and(isCoralMode).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
-        m_driver.leftBumper().and(isCoralMode).and(m_vision.anyCameraConnected)
+        m_driver.leftBumper().and(isCoralMode).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(isCoralMode.negate()).and(m_vision.anyCameraConnected)
+        m_driver.rightBumper().and(isCoralMode.negate()).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 

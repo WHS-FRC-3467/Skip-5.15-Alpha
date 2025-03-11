@@ -26,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Getter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -38,8 +39,9 @@ public class Vision extends SubsystemBase {
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
-    private boolean[] cameraIsDisconnected = new boolean[]{false, false};;
-    public BooleanSupplier anyCameraConnected = () -> true;
+    private boolean[] cameraConnected = new boolean[]{true, true};
+    @Getter
+    public boolean anyCameraConnected = true;
 
     public Vision(VisionConsumer consumer, VisionIO... io)
     {
@@ -61,7 +63,7 @@ public class Vision extends SubsystemBase {
                     AlertType.kWarning);
         }
 
-        // cameraIsDisconnected = new boolean[]{false, false};
+        // cameraConnected = new boolean[]{false, false};
     }
 
     /**
@@ -92,7 +94,7 @@ public class Vision extends SubsystemBase {
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
             // Update disconnected alert
             disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
-            cameraIsDisconnected[cameraIndex] = !inputs[cameraIndex].connected;
+            cameraConnected[cameraIndex] = inputs[cameraIndex].connected;
 
             // Initialize logging values
             List<Pose3d> tagPoses = new LinkedList<>();
@@ -184,7 +186,7 @@ public class Vision extends SubsystemBase {
             allRobotPosesRejected.addAll(robotPosesRejected);
         }
 
-        anyCameraConnected = () -> !(cameraIsDisconnected[0] && cameraIsDisconnected[1]);
+        anyCameraConnected = (cameraConnected[0] || cameraConnected[1]);
 
         // Log summary data
         Logger.recordOutput(
