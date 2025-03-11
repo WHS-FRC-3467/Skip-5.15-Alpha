@@ -408,17 +408,20 @@ public class RobotContainer {
                     m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE),
                     Commands.waitUntil(
-                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)),
+                        m_intakeLaserCAN.triggered.negate()
+                            .and(m_clawRollerLaserCAN.triggered)),
                     m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
             .onFalse(
                 Commands.sequence(
                     m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
-                    m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE)));
+                    m_superStruct.getTransitionCommand(Arm.State.STOW,
+                        Elevator.State.STOW)));
 
         m_driver.leftTrigger().and(isCoralMode).and(m_clawRollerLaserCAN.triggered)
             .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE));
+                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+            .onFalse(
+                m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
