@@ -110,12 +110,18 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.getState() == Elevator.State.LEVEL_1;
     }
 
-    private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(0.01, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(
             () -> homedDebouncer.calculate(
-                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
+                (this.state == State.HOMING && Math.abs(io.getSupplyCurrent()) > 3)));
+
+    public Command getHomeCommand()
+    {
+        return this.setStateCommand(State.HOMING).andThen(Commands.waitUntil(homedTrigger))
+            .andThen(this.zeroSensorCommand()).andThen(this.setStateCommand(State.STOW));
+    }
 
     public Command zeroSensorCommand()
     {

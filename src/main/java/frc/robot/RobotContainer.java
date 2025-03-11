@@ -462,17 +462,10 @@ public class RobotContainer {
                 () -> -m_driver.getLeftY() * 0.5,
                 () -> -m_driver.getLeftX() * 0.5,
                 () -> -m_driver.getRightX() * 0.5));
+
         // Driver POV Down: Zero the Elevator (HOMING)
-        m_driver.povDown().whileTrue(
-            Commands.sequence(
-                // Always move Arm to STOW position before moving Elevator
-                m_profiledArm.setStateCommand(Arm.State.STOW),
-                // Move Elevator to homing position
-                Commands.waitUntil(() -> m_profiledArm.atPosition(0.1)),
-                m_profiledElevator.setStateCommand(Elevator.State.HOMING),
-                Commands.waitUntil(m_profiledElevator.getHomedTrigger()),
-                m_profiledElevator.zeroSensorCommand(),
-                m_profiledElevator.setStateCommand(Elevator.State.STOW)));
+        m_driver.povDown().onTrue(m_profiledArm.setStateCommand(Arm.State.STOW)
+            .andThen(m_profiledElevator.getHomeCommand()));
 
         m_driver.povUp().onTrue(
             m_profiledElevator.setStateCommand(Elevator.State.STOW));
