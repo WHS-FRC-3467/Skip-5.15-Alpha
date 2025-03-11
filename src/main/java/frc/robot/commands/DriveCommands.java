@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -301,9 +302,9 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                0.4,
+                0.5,
                 0.0,
-                0.15,
+                0.25,
                 20,
                 8);
         alignController.setGoal(0);
@@ -314,7 +315,9 @@ public class DriveCommands {
                 currentDriveMode = DriveMode.dmApproach;
                 // Name constants
                 double currentTranslationX = drive.getPose().getTranslation().getX();
-                double approachTranslationX = approachSupplier.getX() + offsetFromBarge;
+                // Choose barge side (red or blue) based on robot pose
+                boolean redSide = (currentTranslationX > FieldConstants.fieldLength / 2.0) ? true : false;
+                double approachTranslationX = (redSide) ? approachSupplier.getX() + offsetFromBarge : approachSupplier.getX() - offsetFromBarge;
                 double distanceToGoal = currentTranslationX - approachTranslationX;
 
 
@@ -328,8 +331,8 @@ public class DriveCommands {
 
                 // Calculate total linear velocity - magnitude (x) and direction
                 Translation2d linearVelocity =
-                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                        ySupplier.getAsDouble()).rotateBy(Rotation2d.kCCW_90deg)
+                    getLinearVelocityFromJoysticks(MathUtil.applyDeadband(xSupplier.getAsDouble(), DEADBAND),
+                    (redSide) ? ySupplier.getAsDouble() : -ySupplier.getAsDouble()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
                 SmartDashboard.putData(alignController); // TODO: Calibrate PID
@@ -338,7 +341,7 @@ public class DriveCommands {
                 // Calculate angular speed
                 double omega =
                     angleController.calculate(
-                        drive.getRotation().getRadians(), Rotation2d.k180deg
+                        drive.getRotation().getRadians(), ((redSide) ? Rotation2d.k180deg : Rotation2d.kZero)
                             .getRadians());
 
                 // Convert to field relative speeds & send command

@@ -244,7 +244,7 @@ public class RobotContainer {
             m_drive,
             () -> -m_driver.getLeftY() * speedMultiplier,
             () -> -m_driver.getLeftX() * speedMultiplier,
-            bargePos,
+            FieldConstants.fieldCenter,
             FieldConstants.Barge.kOffsetFromBarge);
     }
 
