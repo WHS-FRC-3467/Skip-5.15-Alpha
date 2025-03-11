@@ -420,7 +420,9 @@ public class RobotContainer {
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
             (m_clawRoller.getState() == ClawRoller.State.ALGAE_INTAKE)
                 ? m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
-                : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE));
+                : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE)
+                    .andThen(Commands.waitUntil(m_clawRoller.getStalled()))
+                    .andThen((m_driver.rumbleForTime(1, 1))));
 
         m_driver.back().onTrue(Commands.runOnce(() -> {
             m_profiledClimber.climbRequested = true;
