@@ -59,7 +59,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
     // Controllers
-    private final WindupXboxController m_driver = new WindupXboxController(0);
+    private final WindupXboxController m_driver = new WindupXboxController(0).withDeadband(0.15);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -238,14 +238,13 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickApproachBarge(Translation2d bargePos)
+    private Command joystickStrafe(Translation2d bargePos)
     {
-        return DriveCommands.joystickApproachBarge(
+        return DriveCommands.joystickStrafe(
             m_drive,
             () -> -m_driver.getLeftY() * speedMultiplier,
             () -> -m_driver.getLeftX() * speedMultiplier,
-            FieldConstants.fieldCenter,
-            FieldConstants.Barge.kOffsetFromBarge);
+            FieldConstants.fieldCenter);
     }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
@@ -285,7 +284,7 @@ public class RobotContainer {
         // Driver Left Bumper and Algae mode: Approach Barge
         m_driver.leftBumper().and(isCoralMode.negate())
             .whileTrue(
-                joystickApproachBarge(FieldConstants.Barge.middleCage));
+                joystickStrafe(FieldConstants.Barge.middleCage));
 
         // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
