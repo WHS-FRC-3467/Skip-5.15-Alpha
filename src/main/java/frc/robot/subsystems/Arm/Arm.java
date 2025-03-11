@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
+        new LoggedTunableNumber("Arm/PositionTuningSP", 133.0);
 
     // .14 rot is the max extension
 

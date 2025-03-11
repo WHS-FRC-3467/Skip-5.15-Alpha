@@ -25,7 +25,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     static LoggedTunableNumber homingTuning =
         new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
     static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
+        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.1);
 
     @RequiredArgsConstructor
     @Getter

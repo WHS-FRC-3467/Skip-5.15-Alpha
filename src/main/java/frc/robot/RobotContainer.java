@@ -395,7 +395,16 @@ public class RobotContainer {
                     .andThen(m_driver.rumbleForTime(1, 1))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered))
-                    .andThen(Commands
+                    .andThen(Commands.race(
+                        //Jiggle the arm and elevator repeatedly while waiting for coral to be in right position
+                        Commands.repeatingSequence(
+                            m_profiledArm.setStateCommand(Arm.State.TUNING),
+                            m_profiledElevator.setStateCommand(Elevator.State.TUNING),
+                            Commands.waitSeconds(0.15),
+                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
+                            m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
+                            Commands.waitSeconds(0.15)),
+                    Commands
                         .waitUntil(m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
@@ -548,8 +557,17 @@ public class RobotContainer {
             "IntakeCoral",
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                 .andThen(
+                    Commands.race(
+                        //Jiggle the arm and elevator repeatedly while waiting for coral to be in right position
+                        Commands.repeatingSequence(
+                            m_profiledArm.setStateCommand(Arm.State.TUNING),
+                            m_profiledElevator.setStateCommand(Elevator.State.TUNING),
+                            Commands.waitSeconds(0.2),
+                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
+                            m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
+                            Commands.waitSeconds(0.2)),
                     Commands.waitUntil(
-                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
+                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered))))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
 
