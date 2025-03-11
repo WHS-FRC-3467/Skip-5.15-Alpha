@@ -299,9 +299,17 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)
                     .andThen(m_driver.rumbleForTime(1, 1)));
 
-        // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
+        // Driver A Button held and Algae mode and Algae Not In Claw: Send Arm and Elevator to
+        // Ground Algae Intake
+        // m_driver
+        // .a().and(isCoralMode.negate()).and(m_clawRoller.getStalled().negate())
+        // .onTrue(
+        // m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
+        // Elevator.State.PROCESSOR_SCORE));
+
+        // Driver A Button held and Algae mode and Algae In Claw: Send Arm and Elevator to Stow
         m_driver
-            .a().and(isCoralMode.negate())
+            .a().and(isCoralMode.negate()) // .and(m_clawRoller.getStalled())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
 

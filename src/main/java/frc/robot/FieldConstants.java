@@ -45,7 +45,7 @@ public class FieldConstants {
         public static final double shallowHeight = Units.inchesToMeters(30.125);
 
         // For Barge scoring
-        public static final double kOffsetFromBarge = Units.inchesToMeters(37.0);
+        public static final double kOffsetFromBarge = Units.inchesToMeters(28.0) + .141;
 
     }
 

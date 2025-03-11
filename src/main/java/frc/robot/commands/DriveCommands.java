@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
-    private static final double DEADBAND = 0.1;
+    private static final double DEADBAND = 0.15;
     private static final double ANGLE_KP = 5.0;
     private static final double ANGLE_KD = 0.4;
     private static final double ANGLE_MAX_VELOCITY = 8.0;
@@ -301,9 +301,9 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.4,
                 0.0,
-                0.1,
+                0.15,
                 20,
                 8);
         alignController.setGoal(0);
@@ -314,7 +314,7 @@ public class DriveCommands {
                 currentDriveMode = DriveMode.dmApproach;
                 // Name constants
                 double currentTranslationX = drive.getPose().getTranslation().getX();
-                double approachTranslationX = approachSupplier.getX() - offsetFromBarge;
+                double approachTranslationX = approachSupplier.getX() + offsetFromBarge;
                 double distanceToGoal = currentTranslationX - approachTranslationX;
 
 
@@ -338,20 +338,21 @@ public class DriveCommands {
                 // Calculate angular speed
                 double omega =
                     angleController.calculate(
-                        drive.getRotation().getRadians(), Rotation2d.kZero
+                        drive.getRotation().getRadians(), Rotation2d.k180deg
                             .getRadians());
 
                 // Convert to field relative speeds & send command
                 ChassisSpeeds speeds =
-                new ChassisSpeeds(
-                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                    ySupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec(),
-                    omega);
+                    new ChassisSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        MathUtil.applyDeadband(ySupplier.getAsDouble(), DEADBAND)
+                            * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega);
                 // ChassisSpeeds speeds =
-                //     new ChassisSpeeds(
-                //         linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                //         linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                //         omega);
+                // new ChassisSpeeds(
+                // linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                // linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                // omega);
                 drive.runVelocity(
                     ChassisSpeeds.fromFieldRelativeSpeeds(
                         speeds,

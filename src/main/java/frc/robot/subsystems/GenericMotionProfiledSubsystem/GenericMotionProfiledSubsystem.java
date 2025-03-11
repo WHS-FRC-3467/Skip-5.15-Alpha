@@ -197,6 +197,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
             Logger.recordOutput(m_name + "/AtPosition?", io.atPosition(m_proType, 0.0));
             Logger.recordOutput(m_name + "/Appl Volt", inputs.appliedVoltage[0]);
             Logger.recordOutput(m_name + "/Supply Current", inputs.supplyCurrentAmps[0]);
+            Logger.recordOutput(m_name + "/Torque Current", inputs.torqueCurrentAmps[0]);
         }
     }
 }
