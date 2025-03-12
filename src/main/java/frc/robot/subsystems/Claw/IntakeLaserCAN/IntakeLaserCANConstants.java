@@ -14,7 +14,7 @@ public class IntakeLaserCANConstants {
         kSubSysConstants.kName = "IntakeLaserCAN";
         kSubSysConstants.laserCANDeviceId = Ports.RAMP_LASERCAN;
         kSubSysConstants.rangingMode = RangingMode.SHORT;
-        kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 4, 16);
+        kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 2, 2);
         kSubSysConstants.timingBudget = TimingBudget.TIMING_BUDGET_20MS;
     }
 }

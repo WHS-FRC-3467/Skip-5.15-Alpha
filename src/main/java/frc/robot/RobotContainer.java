@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -328,7 +329,8 @@ public class RobotContainer {
         m_driver
             .y().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.0,
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
+                    Units.degreesToRotations(10),
                     0.8));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
@@ -401,12 +403,12 @@ public class RobotContainer {
         // m_intakeLaserCAN.triggered
         // .and(m_clawRollerLaserCAN.triggered).negate()));
 
-        m_driver.leftTrigger().and(isCoralMode).and(m_clawRollerLaserCAN.triggered.negate())
+        m_driver.leftTrigger().and(isCoralMode)
             .whileTrue(
                 Commands.sequence(
                     m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
                     m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE),
+                        Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
                     Commands.waitUntil(
                         m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)),
@@ -417,11 +419,12 @@ public class RobotContainer {
                     m_superStruct.getTransitionCommand(Arm.State.STOW,
                         Elevator.State.STOW)));
 
-        m_driver.leftTrigger().and(isCoralMode).and(m_clawRollerLaserCAN.triggered)
-            .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
-            .onFalse(
-                m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+
+        // m_driver.leftTrigger().and(isCoralMode).and(m_clawRollerLaserCAN.triggered)
+        // .whileTrue(
+        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+        // .onFalse(
+        // m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(

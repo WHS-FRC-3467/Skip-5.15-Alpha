@@ -18,6 +18,8 @@ public class ClawRoller
 
     static LoggedTunableNumber intakeSpeed =
         new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.06);
+    static LoggedTunableNumber holdPosition =
+        new LoggedTunableNumber("ClawRoller/holdPosition", 0.06);
 
     @RequiredArgsConstructor
     @Getter
@@ -27,8 +29,7 @@ public class ClawRoller
         EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
-        SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
-        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
+        HOLDCORAL(new ProfileType.MM_POSITION(holdPosition)),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
