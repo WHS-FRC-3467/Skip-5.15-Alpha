@@ -1,10 +1,10 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,16 +16,20 @@ public class ClawRoller
 
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
+    static LoggedTunableNumber intakeSpeed =
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.06);
+    static LoggedTunableNumber holdPosition =
+        new LoggedTunableNumber("ClawRoller/holdPosition", 0.06);
+
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
-        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, () -> 0.06)),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, intakeSpeed)),
         EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 3.0)),
-        SHUFFLE(new ProfileType.VELOCITY(() -> -1)),
-        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
+        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
+        HOLDCORAL(new ProfileType.MM_POSITION(holdPosition)),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
