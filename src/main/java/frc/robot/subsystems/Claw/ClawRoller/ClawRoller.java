@@ -14,18 +14,25 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+    public final Trigger algaeStalledTrigger =
+        new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+
+    public final Trigger coralStalledTrigger =
+        new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 5);
 
     static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.12);
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.2);
+    static LoggedTunableNumber shuffleSpeed =
+        new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
     static LoggedTunableNumber holdPosition =
         new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
+        OFF(new ProfileType.DISABLED_BRAKE()),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, intakeSpeed)),
+        SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -80.0, shuffleSpeed)),
         EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),

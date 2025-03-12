@@ -366,7 +366,7 @@ public class RobotContainer {
                     .andThen(
                         Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
                             m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                            m_clawRoller.stalled)));
+                            m_clawRoller.algaeStalledTrigger)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -403,28 +403,43 @@ public class RobotContainer {
         // m_intakeLaserCAN.triggered
         // .and(m_clawRollerLaserCAN.triggered).negate()));
 
+        // m_driver.leftTrigger().and(isCoralMode)
+        // .whileTrue(
+        // Commands.sequence(
+        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+        // m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+        // Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+        // Commands.waitUntil(
+        // m_intakeLaserCAN.triggered.negate()
+        // .and(m_clawRollerLaserCAN.triggered)),
+        // m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+        // .onFalse(
+        // Commands.sequence(
+        // m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
+        // m_superStruct.getTransitionCommand(Arm.State.STOW,
+        // Elevator.State.STOW)));
+
+
+        // SHUFFLE BACK TO HARDSTOP
         m_driver.leftTrigger().and(isCoralMode)
             .whileTrue(
                 Commands.sequence(
                     m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
-                    m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    m_superStruct.getTransitionCommand(Arm.State.LOWER_CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
                     Commands.waitUntil(
                         m_intakeLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)),
-                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
+                    m_clawRoller.setStateCommand(ClawRoller.State.SHUFFLE),
+                    Commands.waitUntil(
+                        m_clawRoller.coralStalledTrigger
+                            .or(m_intakeLaserCAN.triggered)),
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
             .onFalse(
                 Commands.sequence(
-                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
                     m_superStruct.getTransitionCommand(Arm.State.STOW,
                         Elevator.State.STOW)));
-
-
-        // m_driver.leftTrigger().and(isCoralMode).and(m_clawRollerLaserCAN.triggered)
-        // .whileTrue(
-        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
-        // .onFalse(
-        // m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(

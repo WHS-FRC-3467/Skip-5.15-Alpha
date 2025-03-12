@@ -20,15 +20,17 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
 
+    static LoggedTunableNumber lower_intake_angle =
+        new LoggedTunableNumber("Arm/LowerIntakeTuningSP", 145.0);
+
     // .14 rot is the max extension
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
         STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
-        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
+        LOWER_CORAL_INTAKE(new ProfileType.MM_POSITION(lower_intake_angle)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13))),
         LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
