@@ -98,7 +98,8 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
@@ -108,27 +109,6 @@ public class RobotContainer {
                         m_drive,
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
-
-                // break;
-
-                // m_drive =
-                // new Drive(
-                // new GyroIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // (robotPose) -> {
-                // });
-
-                // m_profiledArm = new Arm(new ArmIO() {}, true);
-                // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
-                // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
-                // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
-
-                // m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 break;
 
@@ -296,7 +276,8 @@ public class RobotContainer {
         m_driver
             .a().and(isCoralMode.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
+                    Elevator.State.PROCESSOR_SCORE));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -361,11 +342,9 @@ public class RobotContainer {
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         m_driver.rightTrigger().and(isCoralMode.negate())
-            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))
-            .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
-                .andThen(Commands.waitSeconds(1))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+            .whileTrue(Commands.waitSeconds(0.2)
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
+            .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
