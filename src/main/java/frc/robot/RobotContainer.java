@@ -294,16 +294,9 @@ public class RobotContainer {
 
         // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
         m_driver
-            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled)
+            .a().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
-
-        // Driver A Button and Alage mode but no Algae: Send Arm and Elevator to ground intake
-        m_driver
-            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
-            .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_GROUND));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
