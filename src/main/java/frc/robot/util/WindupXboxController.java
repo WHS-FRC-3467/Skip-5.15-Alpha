@@ -83,11 +83,11 @@ public class WindupXboxController extends CommandXboxController {
      * @return The axis value.
      */
 
-    @Override
-    public double getRightX()
-    {
-        return MathUtil.applyDeadband(getRawAxis(Axis.kRightX.value), m_deadband);
-    }
+    //@Override
+    //public double getRightX()
+    //{
+    //    return MathUtil.applyDeadband(getRawAxis(Axis.kRightX.value), m_deadband);
+    //}
 
     /**
      * Get the Y axis value of left side of the controller. Back is positive.

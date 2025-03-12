@@ -238,7 +238,7 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickStrafe(Translation2d bargePos)
+    private Command joystickStrafe()
     {
         return DriveCommands.joystickStrafe(
             m_drive,
@@ -284,7 +284,7 @@ public class RobotContainer {
         // Driver Left Bumper and Algae mode: Approach Barge
         m_driver.leftBumper().and(isCoralMode.negate())
             .whileTrue(
-                joystickStrafe(FieldConstants.Barge.middleCage));
+                joystickStrafe());
 
         // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
