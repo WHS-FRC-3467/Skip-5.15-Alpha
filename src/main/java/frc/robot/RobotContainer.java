@@ -395,18 +395,10 @@ public class RobotContainer {
                     .andThen(m_driver.rumbleForTime(1, 1))
                     .andThen(Commands
                         .waitUntil(m_intakeLaserCAN.triggered))
-                    .andThen(Commands.race(
-                        //Jiggle the arm and elevator repeatedly while waiting for coral to be in right position
-                        Commands.repeatingSequence(
-                            m_profiledArm.setStateCommand(Arm.State.TUNING),
-                            m_profiledElevator.setStateCommand(Elevator.State.TUNING),
-                            Commands.waitSeconds(0.15),
-                            m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
-                            m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
-                            Commands.waitSeconds(0.15)),
-                    Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
-                            .and(m_clawRollerLaserCAN.triggered)))
+                    .andThen(
+                        Commands
+                            .waitUntil(m_intakeLaserCAN.triggered.negate()
+                                .and(m_clawRollerLaserCAN.triggered)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .andThen(
                         m_superStruct
@@ -558,7 +550,8 @@ public class RobotContainer {
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                 .andThen(
                     Commands.race(
-                        //Jiggle the arm and elevator repeatedly while waiting for coral to be in right position
+                        // Jiggle the arm and elevator repeatedly while waiting for coral to be in
+                        // right position
                         Commands.repeatingSequence(
                             m_profiledArm.setStateCommand(Arm.State.TUNING),
                             m_profiledElevator.setStateCommand(Elevator.State.TUNING),
@@ -566,8 +559,9 @@ public class RobotContainer {
                             m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
                             m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE),
                             Commands.waitSeconds(0.2)),
-                    Commands.waitUntil(
-                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered))))
+                        Commands.waitUntil(
+                            m_intakeLaserCAN.triggered.negate()
+                                .and(m_clawRollerLaserCAN.triggered))))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
 
