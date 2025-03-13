@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
+import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
@@ -28,21 +30,48 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
     @RequiredArgsConstructor
+    public enum Setpoints {
+        STOW(0.0, 0.0),
+        CORAL_INTAKE(0.0, 0.0),
+        LEVEL_1(1.0, 1.0),
+        LEVEL_2(1.217, 1.217),
+        LEVEL_3(2.7, 2.7),
+        LEVEL_4(4.95, 4.95),
+        CLIMB(0.05, 0.05),
+        ALGAE_LOW(1.903, 1.903),
+        ALGAE_HIGH(3.406, 3.406),
+        ALGAE_GROUND(0.05, 0.05),
+        ALGAE_SCORE(0.05, 0.05),
+        BARGE(5.3, 5.3);
+
+        private final double gortSetpoint;
+        private final double bajaSetpoint;
+        
+        public double getSetpoint() {
+            if (Constants.getRobot() == RobotType.GORT) {
+                return gortSetpoint;
+            } else {
+                return bajaSetpoint;
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> 0.0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> 1)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> 4.95)),
-        CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
-        BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
+        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint())),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint())),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint())),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint())),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint())),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint())),
+        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint())),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint())),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint())),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint())),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint())),
+        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint())),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
