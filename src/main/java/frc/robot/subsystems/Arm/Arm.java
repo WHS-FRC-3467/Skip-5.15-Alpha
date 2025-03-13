@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     static LoggedTunableNumber lower_intake_angle =
-        new LoggedTunableNumber("Arm/LowerIntakeTuningSP", 145.0);
+        new LoggedTunableNumber("Arm/LowerIntakeTuningSP", 140.0);
 
     // .14 rot is the max extension
 
@@ -27,7 +27,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public enum State implements TargetState {
         STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LOWER_CORAL_INTAKE(new ProfileType.MM_POSITION(lower_intake_angle)),
+        LOWER_CORAL_INTAKE(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(lower_intake_angle.getAsDouble()))),
         LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13))),
         LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),

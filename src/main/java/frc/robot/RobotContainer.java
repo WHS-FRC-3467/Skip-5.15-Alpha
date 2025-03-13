@@ -362,13 +362,27 @@ public class RobotContainer {
                             m_clawRoller.algaeStalledTrigger)));
 
         // SHUFFLE BACK TO HARDSTOP
-        m_driver.leftTrigger().and(isCoralMode).whileTrue(m_superStruct
-            .getTransitionCommand(Arm.State.LOWER_CORAL_INTAKE, Elevator.State.CORAL_INTAKE)
-            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
-            .andThen(Commands.waitUntil(m_clawRollerLaserCAN.triggered))
-            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SHUFFLE))
-            .andThen(Commands.waitUntil(m_clawRoller.coralStalledTrigger))
-            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+        m_driver.leftTrigger().and(isCoralMode)
+            .whileTrue(
+                Commands.sequence(
+                    m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                    m_superStruct.getTransitionCommand(Arm.State.LOWER_CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+                    Commands.waitUntil(m_intakeLaserCAN.triggered.and(m_intakeLaserCAN.triggered)),
+                    m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
+                    // Commands.waitUntil(m_clawRollerLaserCAN.triggered),\][]
+                    // m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
+                    Commands.waitUntil(m_intakeLaserCAN.triggered.negate()),
+
+                    // Commands.waitUntil(
+                    // m_clawRoller.coralStalledTrigger
+                    // .or(m_intakeLaserCAN.triggered)),
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
+            .onFalse(
+                Commands.sequence(
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW,
+                        Elevator.State.STOW)));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate())

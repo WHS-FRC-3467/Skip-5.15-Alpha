@@ -24,6 +24,8 @@ public class ClawRoller
         new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.2);
     static LoggedTunableNumber shuffleSpeed =
         new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
+    static LoggedTunableNumber slowSpeed =
+        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", 0.06);
     static LoggedTunableNumber holdPosition =
         new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
 
@@ -32,6 +34,7 @@ public class ClawRoller
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, intakeSpeed)),
+        SLOW_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, slowSpeed)),
         SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -80.0, shuffleSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         HOLDCORAL(new ProfileType.POSITION(holdPosition)),
