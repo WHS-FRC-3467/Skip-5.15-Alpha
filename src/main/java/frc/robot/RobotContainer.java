@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.RobotType;
@@ -310,11 +311,13 @@ public class RobotContainer {
             .x().and(isCoralMode.negate())
             .onTrue(
                 Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                        Elevator.State.ALGAE_LOW),
+                    new ConditionalCommand(
+                        Commands.none(), // There is already an algae in system, don't intake
+                        m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to
+                                                                                     // intake algae
+                        m_clawRoller.stalled)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
@@ -327,11 +330,13 @@ public class RobotContainer {
             .b().and(isCoralMode.negate())
             .onTrue(
                 Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH, Elevator.State.ALGAE_HIGH),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                        Elevator.State.ALGAE_HIGH),
+                    new ConditionalCommand(
+                        Commands.none(), // There is already an algae in system, don't intake
+                        m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to
+                                                                                     // intake algae
+                        m_clawRoller.stalled)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
