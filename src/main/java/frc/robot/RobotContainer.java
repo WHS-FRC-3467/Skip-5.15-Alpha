@@ -6,7 +6,6 @@ package frc.robot;
 
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
-import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.RobotType;
@@ -42,11 +40,12 @@ import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.LED.LEDSubsystem;
+import frc.robot.subsystems.LED.LEDSubsystemIO;
+import frc.robot.subsystems.LED.LEDSubsystemIOCANdle;
+import frc.robot.subsystems.LED.LEDSubsystemIOWPILib;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
-import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.WindupXboxController;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -109,6 +108,15 @@ public class RobotContainer {
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
+                // Instantiate LED Subsystem on BAJA only
+                if (Constants.getRobot() == RobotType.BAJA) {
+                    m_LED = new LEDSubsystem(new LEDSubsystemIOCANdle(),
+                        m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
+                        m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+                } else {
+                    m_LED = null;
+                }
+
                 // break;
 
                 // m_drive =
@@ -156,6 +164,10 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drive::getPose),
                         new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drive::getPose));
 
+                m_LED = new LEDSubsystem(new LEDSubsystemIOWPILib(),
+                    m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
+                    m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+
                 break;
 
             default:
@@ -176,26 +188,15 @@ public class RobotContainer {
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+
+                m_LED = new LEDSubsystem(new LEDSubsystemIO() {},
+                    m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
+                    m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
                 break;
         }
 
         // Superstructure coordinates Arm and Elevator motions
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
-
-        // Instantiate LED Subsystem on BAJA only
-        if (Constants.getRobot() == RobotType.BAJA) {
-            m_LED = new LEDSubsystem(
-                m_clawRoller,
-                m_profiledArm,
-                m_profiledElevator,
-                m_profiledClimber,
-                m_vision,
-                m_clawRollerLaserCAN,
-                m_intakeLaserCAN,
-                isCoralMode);
-        } else {
-            m_LED = null;
-        }
 
         // Logic Triggers
         registerNamedCommands();
