@@ -33,9 +33,7 @@ public class ClawRoller
         OFF(new ProfileType.DISABLED_BRAKE()),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, intakeSpeed)),
         SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -80.0, shuffleSpeed)),
-        EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
         HOLDCORAL(new ProfileType.POSITION(holdPosition)),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
