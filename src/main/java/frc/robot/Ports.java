@@ -7,8 +7,6 @@ public class Ports {
      * LIST OF CHANNEL AND CAN IDS
      */
 
-    /* SUBSYSTEM CAN DEVICE IDS */
-
     public static final CanDeviceId MITOCANDRIA = new CanDeviceId(15, "rio");
     public static final CanDeviceId CLAW_LASERCAN = new CanDeviceId(16, "rio");
     public static final CanDeviceId CLAW_ROLLER = new CanDeviceId(17, "rio");
