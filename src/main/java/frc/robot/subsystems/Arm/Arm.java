@@ -17,8 +17,11 @@ import lombok.Setter;
 @Getter
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
+    static LoggedTunableNumber positionTuning =
+        new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
+
     static LoggedTunableNumber lower_intake_angle =
-        new LoggedTunableNumber("Arm/LowerIntakeTuningSP", 140.0);
+        new LoggedTunableNumber("Arm/LowerIntakeTuningSP", 145.0);
 
     // .14 rot is the max extension
 
@@ -26,9 +29,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LOWER_CORAL_INTAKE(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(lower_intake_angle.getAsDouble()))),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(136.5))),
         LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13))),
         LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
@@ -39,6 +40,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
         BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(140.0))),
+        TUNING(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(positionTuning.getAsDouble()))),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());

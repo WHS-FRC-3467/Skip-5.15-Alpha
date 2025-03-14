@@ -366,7 +366,7 @@ public class RobotContainer {
             .whileTrue(
                 Commands.sequence(
                     m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
-                    m_superStruct.getTransitionCommand(Arm.State.LOWER_CORAL_INTAKE,
+                    m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
                     Commands.waitUntil(m_intakeLaserCAN.triggered.and(m_intakeLaserCAN.triggered)),
                     m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
