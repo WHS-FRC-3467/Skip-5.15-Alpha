@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
+import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
@@ -23,22 +25,47 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     // .14 rot is the max extension
 
     @RequiredArgsConstructor
+    public enum Setpoints {
+        STOW(Units.degreesToRotations(125.18), Units.degreesToRotations(125.18)),
+        CORAL_INTAKE(Units.degreesToRotations(137.7), Units.degreesToRotations(137.7)),
+        LEVEL_1(Units.degreesToRotations(94.13), Units.degreesToRotations(94.13)),
+        LEVEL_2(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),
+        LEVEL_3(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),
+        LEVEL_4(Units.degreesToRotations(101.33), Units.degreesToRotations(101.33)),
+        CLIMB(Units.degreesToRotations(50.4), Units.degreesToRotations(50.4)),
+        ALGAE_LOW(.2377, .2377),
+        ALGAE_HIGH(.2446, .2446),
+        ALGAE_GROUND(Units.degreesToRotations(70.0), Units.degreesToRotations(70.0)),
+        ALGAE_SCORE(Units.degreesToRotations(120.0), Units.degreesToRotations(120.0)),
+        BARGE(Units.degreesToRotations(140.0), Units.degreesToRotations(140.0));
+
+        private final double gortSetpoint;
+        private final double bajaSetpoint;
+        
+        public double getSetpoint() {
+            if (Constants.getRobot() == RobotType.GORT) {
+                return gortSetpoint;
+            } else {
+                return bajaSetpoint;
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
-        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(115.13))),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(100.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
-        BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(140.0))),
+        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint())),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint())),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint())),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint())),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint())),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint())),
+        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint())),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint())),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint())),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint())),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint())),
+        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint())),
         TUNING(new ProfileType.MM_POSITION(
             () -> Units.degreesToRotations(positionTuning.getAsDouble()))),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
