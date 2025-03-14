@@ -21,11 +21,11 @@ public class ClawRoller
         new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 5);
 
     static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 0.2);
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 10);
     static LoggedTunableNumber shuffleSpeed =
         new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
     static LoggedTunableNumber slowSpeed =
-        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", 0.06);
+        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", 3);
     static LoggedTunableNumber holdPosition =
         new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
 

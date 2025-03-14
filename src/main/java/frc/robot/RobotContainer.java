@@ -361,22 +361,16 @@ public class RobotContainer {
                             m_clawRoller.setStateCommand(ClawRoller.State.OFF),
                             m_clawRoller.algaeStalledTrigger)));
 
-        // SHUFFLE BACK TO HARDSTOP
         m_driver.leftTrigger().and(isCoralMode)
             .whileTrue(
                 Commands.sequence(
                     m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+
                     m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
-                    Commands.waitUntil(m_intakeLaserCAN.triggered.and(m_intakeLaserCAN.triggered)),
+                    Commands.waitUntil(m_clawRollerLaserCAN.triggered),
                     m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
-                    // Commands.waitUntil(m_clawRollerLaserCAN.triggered),\][]
-                    // m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
                     Commands.waitUntil(m_intakeLaserCAN.triggered.negate()),
-
-                    // Commands.waitUntil(
-                    // m_clawRoller.coralStalledTrigger
-                    // .or(m_intakeLaserCAN.triggered)),
                     m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
             .onFalse(
                 Commands.sequence(
