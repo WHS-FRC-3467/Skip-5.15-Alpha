@@ -9,13 +9,11 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
@@ -233,14 +231,14 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
-    {
-        return DriveCommands.joystickDriveAtAngle(
-            m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
-            angle);
-    }
+    // private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
+    // {
+    // return DriveCommands.joystickDriveAtAngle(
+    // m_drive,
+    // () -> -m_driver.getLeftY() * speedMultiplier,
+    // () -> -m_driver.getLeftX() * speedMultiplier,
+    // angle);
+    // }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
     {
