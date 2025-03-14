@@ -1,19 +1,13 @@
 package frc.robot.subsystems.Climber;
 
-import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
-import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,14 +16,9 @@ import lombok.Setter;
 @Getter
 public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
-    static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Climber/PositionTuningSP", 0.0);
-
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
-        // CLIMB is inwards
         HOME(new ProfileType.MM_POSITION(() -> 0)),
         PREP(new ProfileType.MM_POSITION(() -> -185)),
         CLIMB(new ProfileType.MM_POSITION(() -> 15)),
@@ -43,10 +32,6 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @Setter
     private State state = State.HOME;
 
-    @Getter
-    public final Alert climbedAlert = new Alert("CLIMB COMPLETE", Alert.AlertType.kInfo);
-
-    /** Constructor */
     public Climber(ClimberIO io, boolean isSim)
     {
         super(State.HOME.profileType, ClimberConstants.kSubSysConstants, io, isSim);
@@ -77,14 +62,6 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
             () -> climbedDebouncer.calculate(
                 this.state == State.CLIMB
                     && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
-
-    public Command climbedAlertCommand()
-    {
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> climbedAlert.set(true)),
-            Commands.waitSeconds(1),
-            new InstantCommand(() -> climbedAlert.set(false)));
-    }
 
     public boolean atPosition(double tolerance)
     {

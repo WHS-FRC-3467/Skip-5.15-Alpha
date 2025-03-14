@@ -26,8 +26,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     static LoggedTunableNumber homingTuning =
         new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
-    static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
     @RequiredArgsConstructor
     public enum Setpoints {
@@ -46,8 +44,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
         private final double gortSetpoint;
         private final double bajaSetpoint;
-        
-        public double getSetpoint() {
+
+        public double getSetpoint()
+        {
             if (Constants.getRobot() == RobotType.GORT) {
                 return gortSetpoint;
             } else {
@@ -72,7 +71,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint())),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint())),
         BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint())),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
@@ -91,7 +89,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
         new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
-    /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
     {
         super(State.STOW.profileType, ElevatorConstants.kSubSysConstants, io, isSim);

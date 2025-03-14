@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
@@ -34,7 +33,6 @@ public class ClawRoller
     @Getter
     private State state = State.OFF;
 
-    /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
         super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);

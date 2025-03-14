@@ -26,7 +26,6 @@ import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
 import java.util.ArrayList;
 import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Generic motion IO implementation for any motion mechanism using a TalonFX motor controller, an
