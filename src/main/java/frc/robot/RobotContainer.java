@@ -113,6 +113,15 @@ public class RobotContainer {
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
+                // Instantiate LED Subsystem on BAJA only
+                if (Constants.getRobot() == RobotType.BAJA) {
+                    m_LED = new LEDSubsystem(new LEDSubsystemIOCANdle(),
+                        m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
+                        m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+                } else {
+                    m_LED = null;
+                }
+
                 break;
 
             case SIM:
@@ -272,7 +281,7 @@ public class RobotContainer {
             .a().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_SCORE));
+                    Elevator.State.PROCESSOR_SCORE));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -282,7 +291,7 @@ public class RobotContainer {
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
-            .x().and(isCoralMode.negate())
+            .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
                 Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
@@ -299,7 +308,7 @@ public class RobotContainer {
 
         // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver
-            .b().and(isCoralMode.negate())
+            .b().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
                 Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,

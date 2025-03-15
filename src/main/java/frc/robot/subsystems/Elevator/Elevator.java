@@ -61,19 +61,19 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> 0.0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> 1)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> 5.00)), // COMP IS 4.95 MAKE SURE TO CHNAGE
-        CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 0.5)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 2.1)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
-        PROCESSOR_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
-        BARGE(new ProfileType.MM_POSITION(() -> 5.60)),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
+        STOW(new ProfileType.MM_POSITION(() -> 0, 0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0, 0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> 1, 0)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217, 0)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7, 0)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> 5.00, 0)), // COMP IS 4.95 MAKE SURE TO CHNAGE
+        CLIMB(new ProfileType.MM_POSITION(() -> 0.05, 0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 0.5, 0)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 2.1, 0)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05, 0)),
+        PROCESSOR_SCORE(new ProfileType.MM_POSITION(() -> 0.05, 0)),
+        BARGE(new ProfileType.MM_POSITION(() -> 5.60, 0)),
+        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble(), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
