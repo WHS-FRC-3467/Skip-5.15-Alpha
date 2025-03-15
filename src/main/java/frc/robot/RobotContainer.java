@@ -113,36 +113,6 @@ public class RobotContainer {
                         new VisionIOPhotonVision(camera0Name, robotToCamera0),
                         new VisionIOPhotonVision(camera1Name, robotToCamera1));
 
-                // Instantiate LED Subsystem on BAJA only
-                if (Constants.getRobot() == RobotType.BAJA) {
-                    m_LED = new LEDSubsystem(new LEDSubsystemIOCANdle(),
-                        m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                        m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
-                } else {
-                    m_LED = null;
-                }
-
-                // break;
-
-                // m_drive =
-                // new Drive(
-                // new GyroIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // new ModuleIO() {},
-                // (robotPose) -> {
-                // });
-
-                // m_profiledArm = new Arm(new ArmIO() {}, true);
-                // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
-                // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
-                // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
-
-                // m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
-
                 break;
 
             case SIM:
@@ -369,16 +339,16 @@ public class RobotContainer {
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         m_driver.rightTrigger().and(isCoralMode.negate())
-            .onTrue(
-                m_superStruct
-                    .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_SCORE)
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SCORE)))
-            .onFalse(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)
-                    .andThen(
-                        Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
-                            m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                            m_clawRoller.stalled)));
+            .whileTrue(Commands.waitSeconds(0.2)
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
+            .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
+
+        m_driver.rightTrigger().and(isCoralMode.negate())
+            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))
+            .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
+                .andThen(Commands.waitSeconds(1))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral

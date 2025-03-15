@@ -61,19 +61,19 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint(), 0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint(), 0)),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble(), 0)),
+        STOW(new ProfileType.MM_POSITION(() -> 0.0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> 1)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> 5.00)), // COMP IS 4.95 MAKE SURE TO CHNAGE
+        CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 0.5)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 2.1)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
+        PROCESSOR_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
+        BARGE(new ProfileType.MM_POSITION(() -> 5.60)),
+        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
@@ -126,7 +126,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             case ALGAE_LOW:
             case ALGAE_HIGH:
             case ALGAE_GROUND:
-            case ALGAE_SCORE:
+            case PROCESSOR_SCORE:
             case BARGE:
                 return true;
 
@@ -140,7 +140,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.getState() == Elevator.State.LEVEL_1;
     }
 
-    private Debouncer homedDebouncer = new Debouncer(0.01, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(
