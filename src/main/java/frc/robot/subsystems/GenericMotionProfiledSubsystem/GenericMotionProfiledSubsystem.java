@@ -16,13 +16,13 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
     private LoggedTunableNumber kP, kI, kD, kG, kS, kV, kA, kCruiseVelocity, kAcceleration, kJerk;
 
     public sealed interface ProfileType {
-        record POSITION(DoubleSupplier position) implements ProfileType {
+        record POSITION(DoubleSupplier position, int slot) implements ProfileType {
         }
-        record VELOCITY(DoubleSupplier velocity) implements ProfileType {
+        record VELOCITY(DoubleSupplier velocity, int slot) implements ProfileType {
         }
-        record MM_POSITION(DoubleSupplier position) implements ProfileType {
+        record MM_POSITION(DoubleSupplier position, int slot) implements ProfileType {
         }
-        record MM_VELOCITY(DoubleSupplier velocity) implements ProfileType {
+        record MM_VELOCITY(DoubleSupplier velocity, int slot) implements ProfileType {
         }
         record OPEN_VOLTAGE(DoubleSupplier voltage) implements ProfileType {
         }
@@ -144,19 +144,19 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         if (m_proType instanceof ProfileType.POSITION) {
             /* Run Closed Loop to position in rotations */
             ProfileType.POSITION proType = (ProfileType.POSITION) m_proType;
-            io.runToPosition(proType.position.getAsDouble());
+            io.runToPosition(proType.position.getAsDouble(), proType.slot);
         } else if (m_proType instanceof ProfileType.VELOCITY) {
             /* Run Closed Loop to velocity in rotations/second */
             ProfileType.VELOCITY proType = (ProfileType.VELOCITY) m_proType;
-            io.runToVelocity(proType.velocity.getAsDouble());
+            io.runToVelocity(proType.velocity.getAsDouble(), proType.slot);
         } else if (m_proType instanceof ProfileType.MM_POSITION) {
             /* Run Motion Magic to the specified position setpoint (in rotations) */
             ProfileType.MM_POSITION proType = (ProfileType.MM_POSITION) m_proType;
-            io.runMotionMagicPosition(proType.position.getAsDouble());
+            io.runMotionMagicPosition(proType.position.getAsDouble(), proType.slot);
         } else if (m_proType instanceof ProfileType.MM_VELOCITY) {
             /* Run Motion Magic to the specified velocity setpoint (in rotations/second) */
             ProfileType.MM_VELOCITY proType = (ProfileType.MM_VELOCITY) m_proType;
-            io.runMotionMagicVelocity(proType.velocity.getAsDouble());
+            io.runMotionMagicVelocity(proType.velocity.getAsDouble(), proType.slot);
         } else if (m_proType instanceof ProfileType.OPEN_VOLTAGE) {
             /* Run Open Loop using specified voltage in volts */
             ProfileType.OPEN_VOLTAGE proType = (ProfileType.OPEN_VOLTAGE) m_proType;
