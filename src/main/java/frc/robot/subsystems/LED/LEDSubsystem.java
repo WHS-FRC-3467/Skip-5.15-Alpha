@@ -1,12 +1,6 @@
 package frc.robot.subsystems.LED;
 
 import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.Arm.Arm;
-import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
-import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
-import frc.robot.subsystems.Climber.Climber;
-import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.LED.LEDSubsystemIO.AllianceColor;
 import frc.robot.subsystems.LED.LEDSubsystemIO.GPMode;
 import frc.robot.subsystems.LED.LEDSubsystemIO.LEDState;
@@ -25,13 +19,7 @@ import frc.robot.commands.DriveCommands.DriveMode;
 public class LEDSubsystem extends SubsystemBase {
 
     // Subsystems to query
-    ClawRoller m_ClawRoller;
-    Arm m_Arm;
-    Elevator m_Elevator;
-    Climber m_Climber;
     Vision m_Vision;
-    ClawRollerLaserCAN m_clawLaserCAN;
-    IntakeLaserCAN m_intakeLaserCAN;
     Trigger m_isCoralMode;
 
     // LoggedTunableNumbers for testing LED states
@@ -50,24 +38,12 @@ public class LEDSubsystem extends SubsystemBase {
      */
     public LEDSubsystem(
         LEDSubsystemIO io,
-        ClawRoller clawRoller,
-        Arm arm,
-        Elevator elevator,
-        Climber climber,
         Vision vision,
-        ClawRollerLaserCAN clawLaserCAN,
-        IntakeLaserCAN intakeLaserCAN,
         Trigger isCoralMode)
     {
 
         m_io = io;
-        m_ClawRoller = clawRoller;
-        m_Arm = arm;
-        m_Elevator = elevator;
-        m_Climber = climber;
         m_Vision = vision;
-        m_clawLaserCAN = clawLaserCAN;
-        m_intakeLaserCAN = intakeLaserCAN;
         m_isCoralMode = isCoralMode;
 
         // Tunable numbers for testing
@@ -179,42 +155,13 @@ public class LEDSubsystem extends SubsystemBase {
             runMatchTimerPattern();
 
             // Intaking Coral?
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
-                if (m_intakeLaserCAN.isTriggered()) {
-                    // Coral has entered and is being positioned
-                    newState = LEDState.FEEDING;
-                } else {
-                    // Waiting for Coral
-                    newState = LEDState.INTAKING;
-                }
 
-                // Climbing?
-            } else if (m_Climber.getState() == Climber.State.PREP ||
-                m_Climber.getState() == Climber.State.CLIMB) {
-                // Climb complete?
-                if (m_Climber.atPosition(0.1)) {
-                    newState = LEDState.CLIMBED;
-                } else {
-                    newState = LEDState.CLIMBING;
-                }
-
-                // Moving Superstructure?
-            } else if (m_Elevator.isElevated()) {
-                if (!m_Elevator.atPosition(0.0) || !m_Arm.atPosition(0.0)) {
-                    // An Elevated position has been commanded, but it's not there yet
-                    newState = LEDState.SUPER_MOVE;
-                }
-
-                // Aligning?
-            } else if (DriveCommands.getDriveMode() == DriveMode.dmApproach) {
+            // Climbing?
+            if (DriveCommands.getDriveMode() == DriveMode.dmApproach) {
                 // The robot is auto-aligning
                 newState = LEDState.ALIGNING;
 
                 // Holding Coral?
-            } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
-                // Claw is holding Coral
-                newState = LEDState.HAVE_CORAL;
-
             } else {
                 // Default state: Just Enabled
                 newState = LEDState.ENABLED;

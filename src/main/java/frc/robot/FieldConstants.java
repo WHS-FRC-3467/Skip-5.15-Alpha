@@ -132,7 +132,7 @@ public class FieldConstants {
 
                     double adjustX = Units.inchesToMeters(30.738); // Depth of branch from reef face
                     double adjustY = Units.inchesToMeters(6.469); // Offset from reef face
-                    double adjustMiddleY = 0; // Centered on the face
+                    double adjustMiddleY = Units.inchesToMeters(0.0); // Centered on the face
 
                     fillRight.put(
                         level,
@@ -168,6 +168,8 @@ public class FieldConstants {
                                 0,
                                 Units.degreesToRadians(level.pitch),
                                 poseDirection.getRotation().getRadians())));
+
+
 
                     fillMiddle.put(
                         level,
