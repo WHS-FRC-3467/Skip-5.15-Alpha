@@ -52,6 +52,13 @@ public final class ClawRollerConstants {
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 100;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 10;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kP = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kI = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kD = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kG = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kS = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kV = 0;
+        kSubSysConstants.kMotorConfig.Slot1.kA = 0;
 
         /* SIM system profile constants */
         kSubSysConstants.kSimMotorConfig.Slot0.kP = 500;

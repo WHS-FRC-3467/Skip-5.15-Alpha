@@ -39,19 +39,19 @@ public interface GenericMotionProfiledSubsystemIO {
     {}
 
     /** Run Closed Loop to position in rotations */
-    public default void runToPosition(double position)
+    public default void runToPosition(double position, int slot)
     {}
 
     /** Run Closed Loop to velocity in rotations/second */
-    public default void runToVelocity(double velocity)
+    public default void runToVelocity(double velocity, int slot)
     {}
 
     /** Run Motion Magic to the specified setpoint */
-    public default void runMotionMagicPosition(double setpoint)
+    public default void runMotionMagicPosition(double setpoint, int slot)
     {}
 
     /** Run Motion Magic to the specified velocity */
-    public default void runMotionMagicVelocity(double velocity)
+    public default void runMotionMagicVelocity(double velocity, int slot)
     {}
 
     /* Stop in Coast mode */
