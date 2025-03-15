@@ -118,6 +118,7 @@ public class FieldConstants {
             for (int face = 0; face < centerFaces.length; face++) {
                 Map<ReefHeight, Pose3d> fillRight = new HashMap<>();
                 Map<ReefHeight, Pose3d> fillLeft = new HashMap<>();
+                Map<ReefHeight, Pose3d> fillMiddle = new HashMap<>();
                 for (var level : ReefHeight.values()) {
                     Pose2d poseDirection = new Pose2d();
                     if (face < 6) {
@@ -131,7 +132,7 @@ public class FieldConstants {
 
                     double adjustX = Units.inchesToMeters(30.738); // Depth of branch from reef face
                     double adjustY = Units.inchesToMeters(6.469); // Offset from reef face
-                                                                  // centerline to branch
+                    double adjustMiddleY = 0; // Centered on the face
 
                     fillRight.put(
                         level,
@@ -167,7 +168,26 @@ public class FieldConstants {
                                 0,
                                 Units.degreesToRadians(level.pitch),
                                 poseDirection.getRotation().getRadians())));
+
+                    fillMiddle.put(
+                        level,
+                        new Pose3d(
+                            new Translation3d(
+                                poseDirection
+                                    .transformBy(
+                                        new Transform2d(adjustX, adjustMiddleY, new Rotation2d()))
+                                    .getX(),
+                                poseDirection
+                                    .transformBy(
+                                        new Transform2d(adjustX, adjustMiddleY, new Rotation2d()))
+                                    .getY(),
+                                level.height),
+                            new Rotation3d(0,
+                                Units.degreesToRadians(level.pitch),
+                                poseDirection.getRotation().getRadians())));
                 }
+
+                branchPositions.add(fillMiddle);
                 branchPositions.add(fillRight);
                 branchPositions.add(fillLeft);
             }
@@ -209,7 +229,8 @@ public class FieldConstants {
 
     public enum ReefSide {
         LEFT,
-        RIGHT
+        RIGHT,
+        MIDDLE
     }
 
     public static Pose2d getNearestReefBranch(Pose2d currentPose, ReefSide side)

@@ -284,6 +284,12 @@ public class RobotContainer {
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
+        m_driver.leftBumper().and(m_driver.rightBumper())
+            .whileTrue(
+                joystickApproach(
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.MIDDLE)));
+
+
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
             .whileTrue(
@@ -313,11 +319,13 @@ public class RobotContainer {
             .x().and(isCoralMode.negate())
             .onTrue(
                 Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                        Elevator.State.ALGAE_LOW),
+                    new ConditionalCommand(
+                        Commands.none(), // There is already an algae in system, don't intake
+                        m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to
+                                                                                     // intake algae
+                        m_clawRoller.stalled)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
@@ -330,11 +338,13 @@ public class RobotContainer {
             .b().and(isCoralMode.negate())
             .onTrue(
                 Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH, Elevator.State.ALGAE_HIGH),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                        Elevator.State.ALGAE_HIGH),
+                    new ConditionalCommand(
+                        Commands.none(), // There is already an algae in system, don't intake
+                        m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to
+                                                                                     // intake algae
+                        m_clawRoller.stalled)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
