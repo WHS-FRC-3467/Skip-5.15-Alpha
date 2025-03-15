@@ -16,7 +16,7 @@ public class RampLaserCAN extends GenericLaserCANSubsystem<RampLaserCAN.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements DistanceState {
-        DEFAULT(Distance.ofBaseUnits(0.29, Meter));
+        DEFAULT(Distance.ofBaseUnits(0.1, Meter));
 
         @Getter
         private final Distance distance;

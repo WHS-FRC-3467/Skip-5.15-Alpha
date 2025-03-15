@@ -31,6 +31,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public enum Setpoints {
         STOW(Units.degreesToRotations(125.18), Units.degreesToRotations(125.18)),
         CORAL_INTAKE(Units.degreesToRotations(137.7), Units.degreesToRotations(137.7)),
+        CORAL_CLEARAMCE(Units.degreesToRotations(133.5), Units.degreesToRotations(133.5)),
         LEVEL_1(Units.degreesToRotations(94.13), Units.degreesToRotations(94.13)),
         LEVEL_2(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),
         LEVEL_3(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),
@@ -59,7 +60,10 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     public enum State implements TargetState {
         STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint(), 0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(positionTuning.getAsDouble()), 0)),
+        CORAL_CLEARAMCE(
+            new ProfileType.MM_POSITION(() -> Setpoints.CORAL_CLEARAMCE.getSetpoint(), 0)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
         LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
         LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),

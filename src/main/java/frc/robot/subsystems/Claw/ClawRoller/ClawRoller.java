@@ -18,14 +18,17 @@ public class ClawRoller
         new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
     public final Trigger coralStalledTrigger =
-        new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 5);
+        new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 10);
+
+    public final Trigger coralStoppedTrigger =
+        new Trigger(() -> Math.abs(super.inputs.velocityRps) < 0.2);
 
     static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", 10);
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .2);
     static LoggedTunableNumber shuffleSpeed =
         new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
     static LoggedTunableNumber slowSpeed =
-        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", 3);
+        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", .06);
     static LoggedTunableNumber holdPosition =
         new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
 
@@ -33,9 +36,13 @@ public class ClawRoller
     @Getter
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
-        INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
-        SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
-        SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -80.0, shuffleSpeed)),
+        // INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
+        // SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 200,
+            intakeSpeed)),
+        SLOW_INTAKE(
+            new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
+        SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -200.0, shuffleSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
