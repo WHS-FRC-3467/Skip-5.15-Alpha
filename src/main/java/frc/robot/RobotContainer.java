@@ -8,6 +8,7 @@ import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -100,7 +101,8 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
@@ -312,12 +314,12 @@ public class RobotContainer {
         m_driver
             .x().and(isCoralMode.negate())
             .onTrue(
-                Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                        Elevator.State.ALGAE_LOW),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                    Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
@@ -329,12 +331,12 @@ public class RobotContainer {
         m_driver
             .b().and(isCoralMode.negate())
             .onTrue(
-                Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH, Elevator.State.ALGAE_HIGH),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                        Elevator.State.ALGAE_HIGH),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                    Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
