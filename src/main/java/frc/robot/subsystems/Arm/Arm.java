@@ -41,8 +41,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
         private final double gortSetpoint;
         private final double bajaSetpoint;
-        
-        public double getSetpoint() {
+
+        public double getSetpoint()
+        {
             if (Constants.getRobot() == RobotType.GORT) {
                 return gortSetpoint;
             } else {
@@ -54,20 +55,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint())),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint())),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint())),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint())),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint())),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint())),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint())),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint())),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint())),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint())),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint())),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint())),
+        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint(), 0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint(), 0)),
+        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
         TUNING(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(positionTuning.getAsDouble()))),
+            () -> Units.degreesToRotations(positionTuning.getAsDouble()), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
