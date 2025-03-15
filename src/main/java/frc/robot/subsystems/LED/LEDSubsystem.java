@@ -78,8 +78,12 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        LEDState newState;
-        GPMode newGPMode;
+        // Only loop through periodic LED checking every 0.2 seconds
+        double thisTimeStamp = m_pseudoTimer.get();
+        if (thisTimeStamp - lastTimeStamp >= 0.2) {
+            lastTimeStamp = thisTimeStamp;
+            LEDState newState;
+            GPMode newGPMode;
 
         // Determine and Set Alliance color
         if (m_DSAlliance == AllianceColor.UNDETERMINED) {
@@ -178,8 +182,15 @@ public class LEDSubsystem extends SubsystemBase {
             // Run MatchTimer
             runMatchTimerPattern();
 
+            // Vision Out? For 0.500 seconds, quickly flash the LEDs red
+            if ((visionOutCounter > 0) && (visionOutCounter < 26)) {
+                if (!m_Vision.anyCameraConnected) {
+                    visionOutCounter++;
+                    newState = LEDState.VISION_OUT;
+                }
+            }
             // Intaking Coral?
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
+            else if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
                 if (m_intakeLaserCAN.isTriggered()) {
                     // Coral has entered and is being positioned
                     newState = LEDState.FEEDING;
@@ -286,20 +297,22 @@ public class LEDSubsystem extends SubsystemBase {
             case 4:
                 return LEDState.AUTONOMOUS;
             case 5:
-                return LEDState.INTAKING;
+                return LEDState.VISION_OUT;
             case 6:
-                return LEDState.FEEDING;
+                return LEDState.INTAKING;
             case 7:
-                return LEDState.CLIMBING;
+                return LEDState.FEEDING;
             case 8:
-                return LEDState.CLIMBED;
+                return LEDState.CLIMBING;
             case 9:
-                return LEDState.SUPER_MOVE;
+                return LEDState.CLIMBED;
             case 10:
-                return LEDState.ALIGNING;
+                return LEDState.SUPER_MOVE;
             case 11:
-                return LEDState.HAVE_CORAL;
+                return LEDState.ALIGNING;
             case 12:
+                return LEDState.HAVE_CORAL;
+            case 13:
                 return LEDState.ENABLED;
         }
     }

@@ -80,7 +80,7 @@ public class RobotContainer {
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
-
+    private Trigger validLaserCANs;
 
     private double speedMultiplier = 0.9;
 
