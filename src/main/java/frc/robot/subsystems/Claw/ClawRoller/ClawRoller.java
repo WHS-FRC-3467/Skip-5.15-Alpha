@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 69);
 
     @RequiredArgsConstructor
     @Getter
@@ -25,7 +25,8 @@ public class ClawRoller
         SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
         SHUFFLE(new ProfileType.VELOCITY(() -> -1, 0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
-        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
+        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
+        ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
     }
