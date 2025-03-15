@@ -172,6 +172,7 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
         // - DISABLED_BOTH_OK -> Both sides Green
         // - AUTONOMOUS -> Flames
         // State:
+        // - VISION_OUT -> Orange Flash Fast
         // - INTAKING -> Red Flash Slow
         // - FEEDING -> Blue
         // - CLIMBING -> Red Flash Fast
@@ -207,6 +208,10 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
                 m_FullLeft.setAnimation(a_LeftFlame);
                 m_FullRight.setAnimation(a_RightFlame);
                 m_MatchTime.setAnimation(a_InAutonomous);
+                break;
+
+            case VISION_OUT:
+                m_State.setAnimation(a_FastFlashOrange);
                 break;
 
             case INTAKING:
@@ -366,6 +371,10 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
             m_FullLeft.startIndex);
 
     // Robot State Animations
+    // Vision Out
+    Animation a_FastFlashOrange =
+        new StrobeAnimation(getR(Color.kOrange), getG(Color.kOrange), getB(Color.kOrange),
+            0, 0.8, m_State.segmentSize, m_State.startIndex);
     // Intaking
     Animation a_FastFlashRed =
         new StrobeAnimation(getR(Color.kRed), getG(Color.kRed), getB(Color.kRed),
