@@ -279,6 +279,11 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
                     Elevator.State.PROCESSOR_SCORE));
 
+        m_driver
+            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled)
+            .onTrue(
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
+
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
             .x().and(isCoralMode)
@@ -345,6 +350,13 @@ public class RobotContainer {
             .whileTrue(Commands.waitSeconds(0.2)
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
             .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
+
+        m_driver.rightTrigger().and(isCoralMode.negate())
+            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))
+            .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
+                .andThen(Commands.waitSeconds(1))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
