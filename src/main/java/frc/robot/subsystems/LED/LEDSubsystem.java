@@ -51,7 +51,6 @@ public class LEDSubsystem extends SubsystemBase {
     public LEDSubsystem(
         LEDSubsystemIO io,
         ClawRoller clawRoller,
-        Arm arm,
         Elevator elevator,
         Climber climber,
         Vision vision,
