@@ -33,11 +33,11 @@ public class ClawRoller
     @Getter
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
-        INTAKE(new ProfileType.VELOCITY(intakeSpeed)),
-        SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed)),
+        INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
+        SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
         SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -80.0, shuffleSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        HOLDCORAL(new ProfileType.POSITION(holdPosition)),
+        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
