@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static frc.robot.subsystems.Vision.VisionConstants.*;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -201,6 +202,9 @@ public class RobotContainer {
         // Superstructure coordinates Arm and Elevator motions
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
+        // Trigger for whether laser cans are reporting valid data
+        validLaserCANs = m_clawRollerLaserCAN.validMeasurement.and(m_intakeLaserCAN.validMeasurement);
+
         // Logic Triggers
         registerNamedCommands();
 
@@ -273,19 +277,19 @@ public class RobotContainer {
         m_drive.setDefaultCommand(joystickDrive());
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
-        m_driver.rightBumper().and(isCoralMode)
+        m_driver.rightBumper().and(isCoralMode).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
-        m_driver.leftBumper().and(isCoralMode)
+        m_driver.leftBumper().and(isCoralMode).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(isCoralMode.negate())
+        m_driver.rightBumper().and(isCoralMode.negate()).and(() -> m_vision.anyCameraConnected)
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
@@ -397,7 +401,7 @@ public class RobotContainer {
         // .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
 
         m_driver
-            .leftTrigger().and(isCoralMode)
+            .leftTrigger().and(isCoralMode).and(validLaserCANs)
             .whileTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                     .andThen(
@@ -427,6 +431,20 @@ public class RobotContainer {
                         .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
                     m_intakeLaserCAN.triggered
                         .and(m_clawRollerLaserCAN.triggered).negate()));
+
+        // Driver Left Trigger + Coral Mode + LaserCANs not working: Manual Coral Intake
+        m_driver
+            .leftTrigger().and(isCoralMode).and(validLaserCANs.negate())
+            .whileTrue(
+                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                    .andThen(
+                        m_superStruct
+                            .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                                Elevator.State.CORAL_INTAKE)))
+            .onFalse(
+                m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)
+                .andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Left Trigger + Right Bumper: Algae Intake
         m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(

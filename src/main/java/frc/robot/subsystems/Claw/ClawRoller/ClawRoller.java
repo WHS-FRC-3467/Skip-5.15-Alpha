@@ -1,9 +1,11 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
+import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,6 +16,13 @@ public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+
+    static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
+    static LoggedTunableNumber algaeIntakeSP =
+       
+        new LoggedTunableNumber("ClawRoller/AlgaeIntakeSP", -15.0);
+
+    public static boolean isCurrentDipped;
 
     @RequiredArgsConstructor
     @Getter
@@ -48,4 +57,15 @@ public class ClawRoller
     {
         return io.atPosition(state.profileType, tolerance);
     }
+
+    public BooleanSupplier isCurrentSpiked(double spikedCurrentThreshold)
+    {
+        return () -> spikedCurrentThreshold > io.getSupplyCurrent();
+    }
+
+    public BooleanSupplier isCurrentDipped(double dippedCurrentThreshold)
+    {
+        return () -> dippedCurrentThreshold < io.getSupplyCurrent();
+    }
+
 }

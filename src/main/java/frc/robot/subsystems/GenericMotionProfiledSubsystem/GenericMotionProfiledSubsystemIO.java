@@ -122,4 +122,5 @@ public interface GenericMotionProfiledSubsystemIO {
     {
         return false;
     }
+
 }

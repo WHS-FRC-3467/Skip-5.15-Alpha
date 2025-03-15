@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -21,6 +22,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Phoenix6Util;
 import frc.robot.util.sim.PhysicsSim;
@@ -92,6 +94,7 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final CoastOut coastOut = new CoastOut();
     private final StaticBrake staticBrake = new StaticBrake();
+    LoggedTunableNumber simCanCoderConnected = new LoggedTunableNumber("Arm" + "/SimCancoderConnected", 1);
 
     /*
      * Constructor

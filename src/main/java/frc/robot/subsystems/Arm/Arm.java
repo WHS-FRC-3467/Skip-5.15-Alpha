@@ -1,6 +1,9 @@
 package frc.robot.subsystems.Arm;
 
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
@@ -19,6 +24,8 @@ import lombok.Setter;
 @Getter
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
+    static LoggedTunableNumber homingTuning =
+        new LoggedTunableNumber("Arm/HomingVoltageSP", -0.2);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
 
@@ -55,18 +62,21 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint(), 0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint(), 0)),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
+        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> Units.degreesToRotations(homingTuning.getAsDouble()))),
+        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
+        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13))),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(101.33))),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0))),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0))),
+        BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(140.0))),
         TUNING(new ProfileType.MM_POSITION(
             () -> Units.degreesToRotations(positionTuning.getAsDouble()), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
@@ -91,6 +101,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         super(State.STOW.profileType, ArmConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Arm Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Arm Brake Command", setBrakeStateCommand());
+        SmartDashboard.putData("Arm HOMING Command", zeroSensorCommand());
     }
 
     /** Constructor */
@@ -112,6 +123,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    private Debouncer homedDebouncer = new Debouncer(.25, DebounceType.kRising);
+
+    public Trigger homedTrigger =
+        new Trigger(
+            () -> homedDebouncer.calculate(
+                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
+
+    public Command zeroSensorCommand() {
+        return Commands.sequence( 
+            this.setStateCommand(Arm.State.HOMING),
+            Commands.waitUntil(this.getHomedTrigger()),
+            new InstantCommand(() -> io.zeroSensors()));
     }
 
     public Command staticCharacterization(double outputRampRate)
