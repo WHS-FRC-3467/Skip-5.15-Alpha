@@ -239,6 +239,15 @@ public class RobotContainer {
             approachPose);
     }
 
+    private Command joystickStrafe(Supplier<Pose2d> approachPose)
+    {
+        return DriveCommands.joystickStrafe(
+            m_drive,
+            () -> -m_driver.getLeftX() * speedMultiplier,
+            approachPose);
+    }
+
+
     public Command setCoralAlgaeModeCommand()
     {
         return Commands.runOnce(
@@ -265,10 +274,15 @@ public class RobotContainer {
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
-        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
+        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+
+        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.leftBumper().and(isCoralMode.negate())
+            .whileTrue(
+                joystickStrafe(() -> m_drive.getPose().nearest(FieldConstants.Barge.align)));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver

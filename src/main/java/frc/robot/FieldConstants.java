@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,11 @@ public class FieldConstants {
     }
 
     public static class Barge {
+        public static final List<Pose2d> align = Arrays.asList(
+            new Pose2d(Units.inchesToMeters(306.428), Units.inchesToMeters(330.703),
+                Rotation2d.kZero),
+            new Pose2d(Units.inchesToMeters(306.428), Units.inchesToMeters(330.703),
+                Rotation2d.kZero));
         public static final Translation2d farCage =
             new Translation2d(Units.inchesToMeters(345.428), Units.inchesToMeters(286.779));
         public static final Translation2d middleCage =
