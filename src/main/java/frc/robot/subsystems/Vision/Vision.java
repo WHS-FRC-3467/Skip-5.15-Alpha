@@ -25,11 +25,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Getter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -187,6 +187,7 @@ public class Vision extends SubsystemBase {
         }
 
         anyCameraConnected = (cameraConnected[0] || cameraConnected[1]);
+        SmartDashboard.putBoolean("Vision/Fallback Active", !anyCameraConnected);
 
         // Log summary data
         Logger.recordOutput(

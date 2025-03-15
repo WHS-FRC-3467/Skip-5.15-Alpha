@@ -1,9 +1,7 @@
 package frc.robot.subsystems.GenericLaserCANSubsystem;
 
-import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.units.measure.Distance;
-import lombok.Getter;
 
 public interface GenericLaserCANSubsystemIO {
     @AutoLog

@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANConstants;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem.DistanceState;
 import lombok.Getter;
@@ -40,4 +42,9 @@ public class ClawRollerLaserCAN extends GenericLaserCANSubsystem<ClawRollerLaser
         super(ClawRollerLaserCANConstants.kSubSysConstants.kName, io);
     }
 
+    @Override
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putBoolean(IntakeLaserCANConstants.kSubSysConstants.kName + "/Fallback Active", validMeasurement.negate().getAsBoolean());
+    }
 }

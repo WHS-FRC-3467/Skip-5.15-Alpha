@@ -55,6 +55,11 @@ public class LEDSubsystem extends SubsystemBase {
     Alert ledConfigError = new Alert("LED Configuration Error!", Alert.AlertType.kWarning);
 
     int visionOutCounter = 0;
+
+    // Keeping track of match time in periodic
+    double lastTimeStamp;
+    double thisTimeStamp;
+
     /*
      * Robot LED States
      */
@@ -141,37 +146,42 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        LEDState newState;
-        GPMode newGPMode;
+        // Only loop through periodic LED checking every 0.2 seconds
+        double thisTimeStamp = m_pseudoTimer.get();
+        if (thisTimeStamp - lastTimeStamp >= 0.2) {
+            lastTimeStamp = thisTimeStamp;
+            LEDState newState;
+            GPMode newGPMode;
 
-        if (kTesting) {
-            // Testing Mode - change values using Tunable Numbers
-            newState = testLEDState((int) kState.get());
-            newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
+            if (kTesting) {
+                // Testing Mode - change values using Tunable Numbers
+                newState = testLEDState((int) kState.get());
+                newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
 
-            if (newState == LEDState.START) {
-                runMatchTimerPattern();
+                if (newState == LEDState.START) {
+                    runMatchTimerPattern();
+                } else {
+                    timerDisabled();
+                }
+
             } else {
-                timerDisabled();
+                // Real Robot
+                // Determine Game Piece Mode
+                if (m_isCoralMode.getAsBoolean()) {
+                    newGPMode = GPMode.CORAL;
+                } else {
+                    newGPMode = GPMode.ALGAE;
+                }
+                // Get latest robot state
+                newState = getRobotState();
             }
 
-        } else {
-            // Real Robot
-            // Determine Game Piece Mode
-            if (m_isCoralMode.getAsBoolean()) {
-                newGPMode = GPMode.CORAL;
-            } else {
-                newGPMode = GPMode.ALGAE;
+            // Check for changes & process them
+            if ((newGPMode != m_currentGPMode) || (newState != m_currentState)) {
+                LEDStateMachine(newGPMode, newState);
+                m_currentGPMode = newGPMode;
+                m_currentState = newState;
             }
-            // Get latest robot state
-            newState = getRobotState();
-        }
-
-        // Check for changes & process them
-        if ((newGPMode != m_currentGPMode) || (newState != m_currentState)) {
-            LEDStateMachine(newGPMode, newState);
-            m_currentGPMode = newGPMode;
-            m_currentState = newState;
         }
     }
 
@@ -188,6 +198,7 @@ public class LEDSubsystem extends SubsystemBase {
         // Mode:
         // - GPMode -> Tips: White or "algae" color
         // State:
+        // - VISION_OUT -> Orange Flash Fast
         // - INTAKING -> Red Flash Fast
         // - FEEDING -> Blue
         // - CLIMBING -> Red Flash Slow
@@ -379,6 +390,10 @@ public class LEDSubsystem extends SubsystemBase {
                     m_FullRight.setAnimation(a_RightFlame);
                     m_MatchTime.setAnimation(a_InAutonomous);
                     break;
+                
+                case VISION_OUT:
+                    m_State.setAnimation(a_FastFlashOrange);
+                    break;
 
                 case INTAKING:
                     m_State.setAnimation(a_SlowFlashRed);
@@ -408,10 +423,6 @@ public class LEDSubsystem extends SubsystemBase {
 
                 case HAVE_CORAL:
                     m_State.setColor(green);
-                    break;
-
-                case VISION_OUT:
-                    m_State.setAnimation(a_FastFlashRed);
                     break;
 
                 case ENABLED:
@@ -499,6 +510,7 @@ public class LEDSubsystem extends SubsystemBase {
     Color magenta = new Color(255, 0, 255);
     Color algae = new Color(52, 235, 113);
     Color purple = new Color(125, 30, 165);
+    Color orange = new Color(255, 172, 28);
 
     /*
      * LED Segments
@@ -581,6 +593,9 @@ public class LEDSubsystem extends SubsystemBase {
             m_FullLeft.startIndex);
 
     // Robot State Animations
+    // Vision Out
+    Animation a_FastFlashOrange = new StrobeAnimation(orange.r, orange.g, orange.b, 0, 0.8,
+        m_State.segmentSize, m_State.startIndex);
     // Intaking
     Animation a_FastFlashRed = new StrobeAnimation(red.r, red.g, red.b, 0, 0.8,
         m_State.segmentSize, m_State.startIndex);
@@ -673,20 +688,22 @@ public class LEDSubsystem extends SubsystemBase {
             case 5:
                 return LEDState.AUTONOMOUS;
             case 6:
-                return LEDState.INTAKING;
+                return LEDState.VISION_OUT;
             case 7:
-                return LEDState.FEEDING;
+                return LEDState.INTAKING;
             case 8:
-                return LEDState.CLIMBING;
+                return LEDState.FEEDING;
             case 9:
-                return LEDState.CLIMBED;
+                return LEDState.CLIMBING;
             case 10:
-                return LEDState.SUPER_MOVE;
+                return LEDState.CLIMBED;
             case 11:
-                return LEDState.ALIGNING;
+                return LEDState.SUPER_MOVE;
             case 12:
-                return LEDState.HAVE_CORAL;
+                return LEDState.ALIGNING;
             case 13:
+                return LEDState.HAVE_CORAL;
+            case 14:
                 return LEDState.ENABLED;
         }
     }

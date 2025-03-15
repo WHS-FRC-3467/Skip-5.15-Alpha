@@ -8,9 +8,7 @@ import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import lombok.Getter;
 import static edu.wpi.first.units.Units.*;
-import java.util.function.BooleanSupplier;
 
 /**
  * Generic motion IO implementation for any motion mechanism using a TalonFX motor controller, an
