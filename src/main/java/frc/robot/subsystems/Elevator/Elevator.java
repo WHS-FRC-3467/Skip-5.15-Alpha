@@ -32,7 +32,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     @RequiredArgsConstructor
     public enum Setpoints {
-        STOW(0.0, 0.0),
+        STOW(0.0, 0.05),
         CORAL_INTAKE(0.0, 0.0),
         LEVEL_1(1.0, 1.0),
         LEVEL_2(1.217, 1.217),

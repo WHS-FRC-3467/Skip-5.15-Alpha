@@ -124,7 +124,7 @@ public class RobotContainer {
                         m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
                         m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
                 } else {
-                    m_overheadLaserCAN = new OverheadLaserCAN(new OverheadLaserCANIO() {});
+                    m_overheadLaserCAN = null;
                     m_LED = null;
                 }
 
@@ -431,7 +431,7 @@ public class RobotContainer {
             m_driver
                 .leftTrigger().and(isCoralMode)
                 .whileTrue(
-                    m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                    m_clawRoller.setStateCommand(ClawRoller.State.GORT_INTAKE)
                         .andThen(
                             m_superStruct
                                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
