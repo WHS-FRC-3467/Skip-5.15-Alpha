@@ -192,7 +192,7 @@ public class RobotContainer {
                         new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
-                m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to false
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});

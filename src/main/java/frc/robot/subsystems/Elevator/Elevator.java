@@ -16,6 +16,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.sim.mechanisms.ArmElevComboReplay;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
+
+    ArmElevComboReplay m_Replay = null;
 
     static LoggedTunableNumber homingTuning =
         new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
@@ -94,6 +97,18 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         super(State.STOW.profileType, ElevatorConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
+
+        m_Replay = ArmElevComboReplay.getInstance();
+
+    }
+
+    @Override
+    public void periodic()
+    {
+        super.periodic();
+        // Save elevator length for replay
+        // TODO: GET THIS TO UPDATE
+        m_Replay.run(io.getPosition());
     }
 
     public Command setStateCommand(State state)
