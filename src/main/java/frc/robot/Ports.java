@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.CAN;
 import frc.robot.util.drivers.CanDeviceId;
 
 public class Ports {
