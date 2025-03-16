@@ -333,7 +333,7 @@ public class RobotContainer {
         m_driver
             .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
-                Commands.parallel(
+                Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
                         Elevator.State.ALGAE_LOW),
                     m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
