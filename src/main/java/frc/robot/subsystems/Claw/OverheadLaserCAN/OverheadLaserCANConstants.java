@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Claw.ClawRollerLaserCAN;
+package frc.robot.subsystems.Claw.OverheadLaserCAN;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
@@ -6,15 +6,15 @@ import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import frc.robot.Ports;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystemConstants;
 
-public class ClawRollerLaserCANConstants {
+public class OverheadLaserCANConstants {
     public static final GenericLaserCANSubsystemConstants kSubSysConstants =
         new GenericLaserCANSubsystemConstants();
 
     static {
-        kSubSysConstants.kName = "ClawRollerLaserCAN";
-        kSubSysConstants.laserCANDeviceId = Ports.CLAW_LASERCAN;
+        kSubSysConstants.kName = "OverheadLaserCAN";
+        kSubSysConstants.laserCANDeviceId = Ports.OVERHEAD_LASERCAN;
         kSubSysConstants.rangingMode = RangingMode.SHORT;
-        kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 16, 4);
+        kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 16, 16);
         kSubSysConstants.timingBudget = TimingBudget.TIMING_BUDGET_20MS;
     }
 }

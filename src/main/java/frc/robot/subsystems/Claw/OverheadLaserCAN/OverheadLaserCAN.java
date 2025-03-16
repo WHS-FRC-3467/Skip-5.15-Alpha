@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Claw.IntakeLaserCAN;
+package frc.robot.subsystems.Claw.OverheadLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.units.measure.Distance;
@@ -9,14 +9,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-public class IntakeLaserCAN extends GenericLaserCANSubsystem<IntakeLaserCAN.State> {
+public class OverheadLaserCAN extends GenericLaserCANSubsystem<OverheadLaserCAN.State> {
 
     public Trigger triggered = new Trigger(() -> super.isTriggered());
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements DistanceState {
-        DEFAULT(Distance.ofBaseUnits(0.1, Meter));
+        DEFAULT(Distance.ofBaseUnits(0.29, Meter));
 
         @Getter
         private final Distance distance;
@@ -26,9 +26,9 @@ public class IntakeLaserCAN extends GenericLaserCANSubsystem<IntakeLaserCAN.Stat
     @Setter
     private State state = State.DEFAULT;
 
-    public IntakeLaserCAN(IntakeLaserCANIO io)
+    public OverheadLaserCAN(OverheadLaserCANIO io)
     {
-        super(IntakeLaserCANConstants.kSubSysConstants.kName, io);
+        super(OverheadLaserCANConstants.kSubSysConstants.kName, io);
     }
 
 }

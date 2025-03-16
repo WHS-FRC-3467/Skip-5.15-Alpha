@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,17 +14,38 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 69);
+    public final Trigger algaeStalledTrigger =
+        new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 69);
+
+    public final Trigger coralStalledTrigger =
+        new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 10);
+
+    public final Trigger coralStoppedTrigger =
+        new Trigger(() -> Math.abs(super.inputs.velocityRps) < 0.2);
+
+
+    static LoggedTunableNumber intakeSpeed =
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .125);
+    static LoggedTunableNumber shuffleSpeed =
+        new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
+    static LoggedTunableNumber slowSpeed =
+        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", .06);
+    static LoggedTunableNumber holdPosition =
+        new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
-        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, () -> 0.06)),
-        EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
+        OFF(new ProfileType.DISABLED_BRAKE()),
+        // INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
+        // SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 200,
+            intakeSpeed)),
+        GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
+            () -> 0.06)),
+        SLOW_INTAKE(
+            new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
-        SHUFFLE(new ProfileType.VELOCITY(() -> -1, 0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
         ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
