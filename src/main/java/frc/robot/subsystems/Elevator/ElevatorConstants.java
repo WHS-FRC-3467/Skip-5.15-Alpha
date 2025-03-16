@@ -82,8 +82,8 @@ public final class ElevatorConstants {
         kSubSysConstants.kMotorConfig.Slot0.kS = 0;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 400;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 40;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 9.5;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 70;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
         kSubSysConstants.kMotorConfig.Slot1.kP = 0;
         kSubSysConstants.kMotorConfig.Slot1.kI = 0;
