@@ -10,14 +10,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
@@ -190,35 +187,28 @@ public class RobotContainer {
         // Superstructure coordinates Arm and Elevator motions
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
-        // Logic Triggers
+        // Pathplanner commands
         registerNamedCommands();
 
-        // Set up auto routines
+        // Add all PathPlanner autos to dashboard
         m_autoChooser =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-        // Set up SysId routines
+        // Drivebase characterizations
         m_autoChooser.addOption(
             "Drive Wheel Radius Characterization",
             DriveCommands.wheelRadiusCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Forward)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Reverse)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
 
         // Detect if controllers are missing / Stop multiple warnings
-        DriverStation.silenceJoystickConnectionWarning(true);
+        if (Robot.isReal()) {
+            DriverStation.silenceJoystickConnectionWarning(false);
+        } else {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
+
     }
 
     private Command joystickDrive()
@@ -230,14 +220,14 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
-    {
-        return DriveCommands.joystickDriveAtAngle(
-            m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
-            angle);
-    }
+    // private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
+    // {
+    // return DriveCommands.joystickDriveAtAngle(
+    // m_drive,
+    // () -> -m_driver.getLeftY() * speedMultiplier,
+    // () -> -m_driver.getLeftX() * speedMultiplier,
+    // angle);
+    // }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
     {
@@ -284,7 +274,7 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
 
-        // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
+        // Driver A Button and Algae mode: Send Arm and Elevator to Processor
         m_driver
             .a().and(isCoralMode.negate())
             .onTrue(
@@ -354,11 +344,6 @@ public class RobotContainer {
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 // .andThen(Commands.waitSeconds(1))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
-
-        m_driver.rightTrigger().and(isCoralMode.negate())
-            .whileTrue(Commands.waitSeconds(0.2)
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
-            .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
 
         m_driver.rightTrigger().and(isCoralMode.negate())
             .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))

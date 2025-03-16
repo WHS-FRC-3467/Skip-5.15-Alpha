@@ -34,7 +34,6 @@ public class ClawRoller
     @Getter
     private State state = State.OFF;
 
-    /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
         super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
