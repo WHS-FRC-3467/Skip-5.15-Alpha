@@ -346,11 +346,6 @@ public class RobotContainer {
                 // .andThen(Commands.waitSeconds(1))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
-        // m_driver.rightTrigger().and(isCoralMode.negate())
-        // .whileTrue(Commands.waitSeconds(0.2)
-        // .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
-        // .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
-
         m_driver.rightTrigger().and(isCoralMode.negate())
             .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))
             .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
