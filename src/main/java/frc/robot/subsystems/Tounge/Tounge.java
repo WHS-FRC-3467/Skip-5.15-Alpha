@@ -58,4 +58,7 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
         () -> homedDebouncer.calculate(
             (this.state == State.HOMING && Math.abs(io.getSupplyCurrent()) > 3)));
 
+    public Trigger coralContactTrigger = new Trigger(
+        () -> atPosition(Units.degreesToRotations(5)) && Math.abs(io.getSupplyCurrent()) > 3);
+
 }
