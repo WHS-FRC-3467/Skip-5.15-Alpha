@@ -8,6 +8,7 @@ import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -106,6 +107,8 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
@@ -310,7 +313,7 @@ public class RobotContainer {
             .a().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_SCORE));
+                    Elevator.State.PROCESSOR_SCORE));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -320,7 +323,7 @@ public class RobotContainer {
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
-            .x().and(isCoralMode.negate())
+            .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
                 Commands.parallel(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,

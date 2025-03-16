@@ -33,17 +33,18 @@
             "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/0/angle",
             "/AdvantageKit/Drive/Module0",
             "/AdvantageKit/Drive/Module0/TurnAbsolutePosition",
-            "/AdvantageKit/RealOutputs/ClawRollerLaserCAN",
-            "/AdvantageKit/RealOutputs/IntakeLaserCAN",
-            "/AdvantageKit/RealOutputs/ClawRoller",
-            "/AdvantageKit/ClawRoller",
-            "/AdvantageKit/ClawRoller/TorqueCurrentAmps",
-            "/AdvantageKit/RealOutputs/OverheadLaserCAN",
-            "/AdvantageKit/OverheadLaserCAN"
+            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds",
+            "/AdvantageKit/Arm",
+            "/AdvantageKit/Vision",
+            "/AdvantageKit/Vision/Camera0/PoseObservations",
+            "/AdvantageKit/Vision/Camera0/LatestTargetObservation",
+            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured",
+            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Setpoints",
+            "/AdvantageKit/RealOutputs/SwerveStates"
           ]
         },
         "tabs": {
-          "selected": 6,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -55,7 +56,7 @@
             },
             {
               "type": 2,
-              "title": "Odometry",
+              "title": "Vision",
               "controller": {
                 "sources": [
                   {
@@ -64,6 +65,44 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {}
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera0/TagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera1/TagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera0/RobotPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera1/RobotPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
@@ -493,47 +532,6 @@
               "controlsHeight": 200
             },
             {
-              "type": 2,
-              "title": "Vision",
-              "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {}
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera0/RobotPoses",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera1/RobotPoses",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff"
-                    }
-                  }
-                ],
-                "game": "2025 Field (Welded)",
-                "bumpers": "auto",
-                "origin": "blue",
-                "orientation": 0,
-                "size": 30
-              },
-              "controllerUUID": "xl0ntu844w1f01ckrfk5gqqhmp1hgowe",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
               "type": 9,
               "title": "Swerve",
               "controller": {
@@ -546,6 +544,35 @@
                     "options": {
                       "color": "#ff0000"
                     }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Setpoints",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
                   }
                 ],
                 "maxSpeed": 4.49,
@@ -555,7 +582,7 @@
               },
               "controllerUUID": "fyejs4223oy3h1li1hptdqif15q4uxaw",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 249
             },
             {
               "type": 3,

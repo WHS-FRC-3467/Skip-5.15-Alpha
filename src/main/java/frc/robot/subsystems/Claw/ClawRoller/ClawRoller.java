@@ -15,7 +15,7 @@ public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
     public final Trigger algaeStalledTrigger =
-        new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+        new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 69);
 
     public final Trigger coralStalledTrigger =
         new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 10);
@@ -47,7 +47,8 @@ public class ClawRoller
             new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
-        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
+        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
+        ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
     }
