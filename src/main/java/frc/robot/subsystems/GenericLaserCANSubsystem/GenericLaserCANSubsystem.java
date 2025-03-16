@@ -32,11 +32,11 @@ public abstract class GenericLaserCANSubsystem<G extends GenericLaserCANSubsyste
     public void periodic()
     {
         io.updateInputs(inputs);
-        // Logger.processInputs(name, inputs); // TODO: Get this to stop crashing the replay
+        Logger.processInputs(name, inputs);
 
-        // triggered = inputs.distance.lte(getState().getDistance());
+        triggered = inputs.distance.lte(getState().getDistance());
 
-        // displayInfo();
+        displayInfo();
     }
 
     private void displayInfo()
