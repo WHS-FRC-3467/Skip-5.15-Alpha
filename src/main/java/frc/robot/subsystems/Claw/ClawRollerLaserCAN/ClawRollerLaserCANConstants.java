@@ -14,7 +14,7 @@ public class ClawRollerLaserCANConstants {
         kSubSysConstants.kName = "ClawRollerLaserCAN";
         kSubSysConstants.laserCANDeviceId = Ports.CLAW_LASERCAN;
         kSubSysConstants.rangingMode = RangingMode.SHORT;
-        kSubSysConstants.regionOfInterest = new RegionOfInterest(6, 6, 8, 8);
+        kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 16, 4);
         kSubSysConstants.timingBudget = TimingBudget.TIMING_BUDGET_20MS;
     }
 }

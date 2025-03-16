@@ -24,7 +24,7 @@ public class ClawRoller
         new Trigger(() -> Math.abs(super.inputs.velocityRps) < 0.2);
 
     static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .2);
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .125);
     static LoggedTunableNumber shuffleSpeed =
         new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
     static LoggedTunableNumber slowSpeed =
@@ -42,7 +42,6 @@ public class ClawRoller
             intakeSpeed)),
         SLOW_INTAKE(
             new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
-        SHUFFLE(new ProfileType.OPEN_CURRENT(() -> -200.0, shuffleSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
