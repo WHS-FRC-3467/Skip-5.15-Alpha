@@ -19,6 +19,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     public enum Setpoints {
         STOW(Units.degreesToRotations(125.18), Units.degreesToRotations(125.18)),
         CORAL_INTAKE(Units.degreesToRotations(137.7), Units.degreesToRotations(137.7)),
+        CORAL_CLEARAMCE(Units.degreesToRotations(133.5), Units.degreesToRotations(133.5)),
         LEVEL_1(Units.degreesToRotations(94.13), Units.degreesToRotations(94.13)),
         LEVEL_2(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),
         LEVEL_3(Units.degreesToRotations(94.48), Units.degreesToRotations(94.48)),

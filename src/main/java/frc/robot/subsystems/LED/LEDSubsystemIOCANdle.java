@@ -65,7 +65,7 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
     LEDSegment m_LeftTip = new LEDSegment(LEFTTIP_START, TIP_SIZE, 4);
     // This is for what the robot is doing while robot is Enabled
     // This is the bottom of each strip combined into one segment
-    LEDSegment m_State = new LEDSegment(STATE_START, (STATE_END - STATE_START) - 1, 5);
+    LEDSegment m_State = new LEDSegment(STATE_START, (STATE_END - STATE_START) + 1, 5);
 
     public LEDSubsystemIOCANdle()
     {
