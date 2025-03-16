@@ -514,8 +514,7 @@ public class RobotContainer {
         m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                .andThen(m_driver.rumbleForTime(1, 1)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
     }
 
