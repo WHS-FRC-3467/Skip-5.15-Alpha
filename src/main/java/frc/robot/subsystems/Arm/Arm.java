@@ -1,16 +1,12 @@
 package frc.robot.subsystems.Arm;
 
-import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
-import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -59,21 +55,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(
-            () -> Units.degreesToRotations(137.0), 0)),
-        CORAL_CLEARAMCE(
-            new ProfileType.MM_POSITION(() -> Setpoints.CORAL_CLEARAMCE.getSetpoint(), 0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint(), 0)),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
+        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
+        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18), 0)),
+        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7), 0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13), 0)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48), 0)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(104.48), 0)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(101.33), 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(82.4), 0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(103.3), 0)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(103.3), 0)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0), 0)),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0), 0)),
+        BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(130.0), 0)),
         TUNING(new ProfileType.MM_POSITION(
             () -> Units.degreesToRotations(positionTuning.getAsDouble()), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
@@ -86,12 +81,6 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @Getter
     @Setter
     private State state = State.STOW;
-
-    private final boolean debug = true;
-
-    /* For adjusting the Arm's static characterization velocity threshold */
-    private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
-        new LoggedTunableNumber("Arm/StaticCharacterizationVelocityThresh", 0.1);
 
     public Arm(ArmIO io, boolean isSim)
     {
@@ -121,34 +110,4 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         return io.atPosition(state.profileType, tolerance);
     }
 
-    public Command staticCharacterization(double outputRampRate)
-    {
-        final StaticCharacterizationState characterizationState = new StaticCharacterizationState();
-        Timer timer = new Timer();
-        return Commands.startRun(
-            () -> {
-                this.state = State.CHARACTERIZATION;
-                timer.restart(); // Starts the timer that tracks the time of the characterization
-            },
-            () -> {
-                characterizationState.characterizationOutput = outputRampRate * timer.get();
-                io.runCurrent(characterizationState.characterizationOutput, 1);
-                Logger.recordOutput(
-                    "Arm/StaticCharacterizationOutput",
-                    characterizationState.characterizationOutput);
-            })
-            .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh
-                .get())
-            .finallyDo(
-                () -> {
-                    timer.stop();
-                    Logger.recordOutput("Arm/CharacterizationOutput",
-                        characterizationState.characterizationOutput);
-                    this.state = State.STOW;
-                });
-    }
-
-    private static class StaticCharacterizationState {
-        public double characterizationOutput = 0.0;
-    }
 }
