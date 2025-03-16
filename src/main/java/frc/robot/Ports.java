@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.CAN;
 import frc.robot.util.drivers.CanDeviceId;
 
 public class Ports {
@@ -26,5 +27,7 @@ public class Ports {
     public static final CanDeviceId CLIMBER = new CanDeviceId(24, "Drivetrain");
 
     public static final CanDeviceId PDH = new CanDeviceId(25, "rio");
+
+    public static final CanDeviceId TOUNGE = new CanDeviceId(30, "rio");
 
 }

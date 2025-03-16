@@ -46,6 +46,10 @@ import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.LED.LEDSubsystemIO;
 import frc.robot.subsystems.LED.LEDSubsystemIOCANdle;
 import frc.robot.subsystems.LED.LEDSubsystemIOWPILib;
+import frc.robot.subsystems.Tounge.Tounge;
+import frc.robot.subsystems.Tounge.ToungeIO;
+import frc.robot.subsystems.Tounge.ToungeIOSim;
+import frc.robot.subsystems.Tounge.ToungeIOTalonFX;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.util.WindupXboxController;
@@ -71,6 +75,7 @@ public class RobotContainer {
     private final Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
+    private final Tounge m_tounge;
     private final ClawRollerLaserCAN m_clawRollerLaserCAN;
     public final IntakeLaserCAN m_intakeLaserCAN;
     private final Superstructure m_superStruct;
@@ -104,6 +109,7 @@ public class RobotContainer {
                 // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
+                m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
 
@@ -139,6 +145,7 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
                 m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
+                m_tounge = new Tounge(new ToungeIOSim(), true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOSim());
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOSim());
 
@@ -168,6 +175,7 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
+                m_tounge = new Tounge(new ToungeIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
                 m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
