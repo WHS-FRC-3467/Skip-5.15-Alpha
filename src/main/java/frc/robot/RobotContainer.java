@@ -199,7 +199,8 @@ public class RobotContainer {
                         new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
-                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to false
+                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to
+                                                                              // false
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_tounge = new Tounge(new ToungeIO() {}, true);
@@ -391,17 +392,21 @@ public class RobotContainer {
                 .whileTrue(
                     Commands.sequence(
                         m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                        m_tounge.setStateCommand(Tounge.State.RAISED),
                         m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                             Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
                         Commands.waitUntil(m_clawRollerLaserCAN.triggered),
                         m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
-                        Commands
-                            .waitUntil(m_rampLaserCAN.triggered.and(m_clawRollerLaserCAN.triggered)
-                                .and(m_overheadLaserCAN.triggered.negate())),
+                        Commands.waitUntil(
+                            m_clawRollerLaserCAN.triggered
+                                .and(m_clawRoller.coralStalledTrigger)
+                                .and(m_clawRoller.coralStoppedTrigger)),
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
                 .onFalse(
                     Commands.sequence(
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                        m_tounge.setStateCommand(Tounge.State.STOW),
+                        m_driver.rumbleForTime(1, 1),
                         m_superStruct.getTransitionCommand(Arm.State.STOW,
                             Elevator.State.STOW)));
 
