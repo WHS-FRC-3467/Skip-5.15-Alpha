@@ -42,7 +42,7 @@ public class LEDSubsystem extends SubsystemBase {
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     LEDSubsystemIO m_io;
 
-    double visionOutCounter = 0.0;
+    int visionOutCounter = 0;
     double lastTimeStamp = 0.0;
     double thisTimeStamp;
 
@@ -188,7 +188,7 @@ public class LEDSubsystem extends SubsystemBase {
             runMatchTimerPattern();
 
             // Vision Out? For 2 seconds, quickly flash the LEDs red
-            if ((visionOutCounter > 0) && (visionOutCounter < 10)) {
+            if (visionOutCounter < 10) {
                 if (!m_Vision.anyCameraConnected) {
                     visionOutCounter++;
                     newState = LEDState.VISION_OUT;
