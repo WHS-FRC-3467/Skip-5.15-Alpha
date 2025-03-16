@@ -71,7 +71,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05, 0)),
         PROCESSOR_SCORE(new ProfileType.MM_POSITION(() -> 0.05, 0)),
         BARGE(new ProfileType.MM_POSITION(() -> 5.60, 0)),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble(), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
