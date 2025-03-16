@@ -282,8 +282,7 @@ public class RobotContainer {
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.leftBumper().and(isCoralMode.negate())
             .whileTrue(
-                joystickStrafe(() -> m_drive.getPose().nearest(FieldConstants.Barge.align)));
-
+                joystickStrafe(() -> new Pose2d(0, 0, Rotation2d.kCCW_90deg)));
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
             .a().and(isCoralMode)
