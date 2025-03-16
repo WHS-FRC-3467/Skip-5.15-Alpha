@@ -109,8 +109,6 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
-                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
                 m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIOReal());
@@ -323,7 +321,7 @@ public class RobotContainer {
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
-            .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
+            .x().and(isCoralMode.negate()).and(m_clawRoller.algaeStalledTrigger.negate())
             .onTrue(
                 Commands.parallel(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
@@ -380,7 +378,7 @@ public class RobotContainer {
         m_driver.rightTrigger().and(isCoralMode.negate())
             .onTrue(
                 m_superStruct
-                    .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_SCORE)
+                    .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_GROUND)
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SCORE)))
             .onFalse(
                 m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)
