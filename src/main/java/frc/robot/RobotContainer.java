@@ -331,7 +331,7 @@ public class RobotContainer {
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
-            .x().and(isCoralMode.negate()).and(m_clawRoller.algaeStalledTrigger.negate())
+            .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
                 Commands.parallel(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
@@ -401,10 +401,10 @@ public class RobotContainer {
         // .getTransitionCommand(Arm.State.CORAL_INTAKE,
         // Elevator.State.CORAL_INTAKE))
         // .andThen(
-        // Commands.waitUntil(m_intakeLaserCAN.triggered
+        // Commands.waitUntil(m_rampLaserCAN.triggered
         // .and(m_clawRollerLaserCAN.triggered.negate())))
         // .andThen(
-        // Commands.waitUntil(m_intakeLaserCAN.triggered.negate()
+        // Commands.waitUntil(m_rampLaserCAN.triggered.negate()
         // .and(m_clawRollerLaserCAN.triggered)))
         // .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
 
@@ -418,9 +418,9 @@ public class RobotContainer {
                                 Elevator.State.CORAL_INTAKE))
                     .andThen(m_driver.rumbleForTime(1, 1))
                     .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered))
+                        .waitUntil(m_rampLaserCAN.triggered))
                     .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
+                        .waitUntil(m_rampLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered)))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .andThen(
@@ -434,10 +434,10 @@ public class RobotContainer {
                             .getTransitionCommand(Arm.State.STOW,
                                 Elevator.State.STOW)),
                     Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
+                        .waitUntil(m_rampLaserCAN.triggered.negate()
                             .and(m_clawRollerLaserCAN.triggered))
                         .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
-                    m_intakeLaserCAN.triggered
+                    m_rampLaserCAN.triggered
                         .and(m_clawRollerLaserCAN.triggered).negate()));
 
         m_driver.back().onTrue(Commands.runOnce(() -> {
