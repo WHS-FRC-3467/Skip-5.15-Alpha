@@ -166,7 +166,6 @@ public class Robot extends LoggedRobot {
                         m_pathsToShow.addAll(path.getPathPoses());
                     }
                 } catch (IOException | ParseException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 // Check to see which alliance we are on Red Alliance

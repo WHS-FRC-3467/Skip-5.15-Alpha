@@ -249,7 +249,7 @@ public class DriveCommands {
                             approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
-                SmartDashboard.putData(alignController); // TODO: Calibrate PID
+                SmartDashboard.putData(alignController);
                 Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
 
                 // Calculate angular speed
