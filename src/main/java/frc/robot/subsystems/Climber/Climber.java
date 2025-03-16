@@ -2,6 +2,7 @@ package frc.robot.subsystems.Climber;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,10 +20,12 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        HOME(new ProfileType.MM_POSITION(() -> 0)),
-        PREP(new ProfileType.MM_POSITION(() -> -185)),
-        CLIMB(new ProfileType.MM_POSITION(() -> 15)),
-        ClIMB_MORE(new ProfileType.MM_POSITION(() -> 20)),
+        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
+        // CLIMB is inwards
+        HOME(new ProfileType.MM_POSITION(() -> 0, 0)),
+        PREP(new ProfileType.MM_POSITION(() -> -185, 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 15, 0)),
+        ClIMB_MORE(new ProfileType.MM_POSITION(() -> 20, 0)),
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> 3));
 
         private final ProfileType profileType;

@@ -46,19 +46,23 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint())),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint())),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint())),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint())),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint())),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint())),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint())),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint())),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint())),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint())),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint())),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint())),
-        // CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
+        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
+        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18), 0)),
+        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7), 0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.13), 0)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48), 0)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(104.48), 0)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(101.33), 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(82.4), 0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(103.3), 0)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(103.3), 0)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(70.0), 0)),
+        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(120.0), 0)),
+        BARGE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(130.0), 0)),
+        TUNING(new ProfileType.MM_POSITION(
+            () -> Units.degreesToRotations(positionTuning.getAsDouble()), 0)),
+        CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
 

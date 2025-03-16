@@ -83,13 +83,13 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
         new VoltageOut(0.0).withEnableFOC(true).withUpdateFreqHz(0.0);
     private final TorqueCurrentFOC currentControl = new TorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final PositionTorqueCurrentFOC positionControl =
-        new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+        new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final VelocityTorqueCurrentFOC velocityControl =
-        new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+        new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final MotionMagicTorqueCurrentFOC motionMagicPositionControl =
-        new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+        new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final MotionMagicVelocityTorqueCurrentFOC motionMagicVelocityControl =
-        new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0).withSlot(0);
+        new MotionMagicVelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
     private final CoastOut coastOut = new CoastOut();
     private final StaticBrake staticBrake = new StaticBrake();
 
@@ -353,35 +353,35 @@ public class GenericMotionProfiledSubsystemIOImpl implements GenericMotionProfil
 
     /** Run Closed Loop to setpoint in rotations */
     @Override
-    public void runToPosition(double position)
+    public void runToPosition(double position, int slot)
     {
-        mMainMotor.setControl(positionControl.withPosition(position));
+        mMainMotor.setControl(positionControl.withPosition(position).withSlot(slot));
         mOpSetpoint = position;
     }
 
     /** Run Closed Loop to velocity in rotations/second */
     @Override
-    public void runToVelocity(double velocity)
+    public void runToVelocity(double velocity, int slot)
     {
-        mMainMotor.setControl(velocityControl.withVelocity(velocity));
+        mMainMotor.setControl(velocityControl.withVelocity(velocity).withSlot(slot));
         mOpSetpoint = velocity;
     }
 
     /** Run Motion Magic to the specified setpoint */
     @Override
-    public void runMotionMagicPosition(double setpoint)
+    public void runMotionMagicPosition(double setpoint, int slot)
     {
         mMainMotor.setControl(
-            motionMagicPositionControl.withPosition(setpoint));
+            motionMagicPositionControl.withPosition(setpoint).withSlot(slot));
         mOpSetpoint = setpoint;
     }
 
     /** Run Motion Magic Velocity to the specified velocity */
     @Override
-    public void runMotionMagicVelocity(double velocity)
+    public void runMotionMagicVelocity(double velocity, int slot)
     {
         mMainMotor.setControl(
-            motionMagicVelocityControl.withVelocity(velocity));
+            motionMagicVelocityControl.withVelocity(velocity).withSlot(slot));
     }
 
     /* Stop in Coast mode */
