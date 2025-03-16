@@ -23,6 +23,7 @@ public class ClawRoller
     public final Trigger coralStoppedTrigger =
         new Trigger(() -> Math.abs(super.inputs.velocityRps) < 0.2);
 
+
     static LoggedTunableNumber intakeSpeed =
         new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .125);
     static LoggedTunableNumber shuffleSpeed =
@@ -40,6 +41,8 @@ public class ClawRoller
         // SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 200,
             intakeSpeed)),
+        GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
+            () -> 0.06)),
         SLOW_INTAKE(
             new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
