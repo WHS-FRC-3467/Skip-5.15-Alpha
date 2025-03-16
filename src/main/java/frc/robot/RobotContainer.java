@@ -321,7 +321,7 @@ public class RobotContainer {
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
                         Elevator.State.STOW),
                     m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
-                    Commands.waitUntil(m_clawRoller.reverse_stalled.debounce(0.4)),
+                    Commands.waitUntil(m_clawRoller.stalled),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
@@ -338,7 +338,7 @@ public class RobotContainer {
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
                         Elevator.State.ALGAE_LOW),
                     m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
-                    Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
+                    Commands.waitUntil(m_clawRoller.stalled),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
@@ -355,7 +355,7 @@ public class RobotContainer {
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
                         Elevator.State.ALGAE_HIGH),
                     m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
-                    Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
+                    Commands.waitUntil(m_clawRoller.stalled),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
