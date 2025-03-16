@@ -292,10 +292,14 @@ public class RobotContainer {
 
         // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
         m_driver
-            .a().and(isCoralMode.negate())
+            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.PROCESSOR_SCORE));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
+                        Elevator.State.STOW),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                    Commands.waitUntil(m_clawRoller.reverse_stalled.debounce(0.4)),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -310,7 +314,7 @@ public class RobotContainer {
                 Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
                         Elevator.State.ALGAE_LOW),
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
                     Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
@@ -327,7 +331,7 @@ public class RobotContainer {
                 Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
                         Elevator.State.ALGAE_HIGH),
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
                     Commands.waitUntil(m_clawRoller.stalled.debounce(0.4)),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
@@ -362,12 +366,9 @@ public class RobotContainer {
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         m_driver.rightTrigger().and(isCoralMode.negate())
-            .whileTrue(Commands.waitSeconds(0.2)
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE)))
-            .onFalse(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW));
-
-        m_driver.rightTrigger().and(isCoralMode.negate())
-            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_SCORE))
+            .onTrue(Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                () -> m_clawRoller.getState() == ClawRoller.State.ALGAE_REVERSE))
             .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
                 .andThen(Commands.waitSeconds(1))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
@@ -422,14 +423,6 @@ public class RobotContainer {
                         .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
                     m_intakeLaserCAN.triggered
                         .and(m_clawRollerLaserCAN.triggered).negate()));
-
-        // Driver Left Trigger + Right Bumper: Algae Intake
-        m_driver.leftTrigger().and(isCoralMode.negate()).onTrue(
-            (m_clawRoller.getState() == ClawRoller.State.ALGAE_INTAKE)
-                ? m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
-                : m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE)
-                    .andThen(Commands.waitUntil(m_clawRoller.getStalled()))
-                    .andThen((m_driver.rumbleForTime(1, 1))));
 
         m_driver.back().onTrue(Commands.runOnce(() -> {
             m_profiledClimber.climbRequested = true;
