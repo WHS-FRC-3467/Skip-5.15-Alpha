@@ -201,6 +201,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit()
     {
+        m_robotContainer.zeroTounge().schedule();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -226,6 +227,7 @@ public class Robot extends LoggedRobot {
             m_autonomousCommand.cancel();
         }
         Elastic.selectTab(1);
+        m_robotContainer.zeroTounge().schedule();
     }
 
     /** This function is called periodically during operator control. */

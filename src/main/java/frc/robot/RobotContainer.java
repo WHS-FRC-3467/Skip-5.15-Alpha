@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.LED.LEDSubsystemIO;
@@ -107,8 +109,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
@@ -396,16 +397,17 @@ public class RobotContainer {
                         m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
                         Commands.waitUntil(
                             m_clawRollerLaserCAN.triggered
-                                .and(m_clawRoller.coralStalledTrigger)
-                                .and(m_clawRoller.coralStoppedTrigger)),
+                                .and(m_tounge.coralContactTrigger)),
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
                 .onFalse(
                     Commands.sequence(
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                        m_tounge.setStateCommand(Tounge.State.STOW),
-                        m_driver.rumbleForTime(1, 1),
                         m_superStruct.getTransitionCommand(Arm.State.STOW,
-                            Elevator.State.STOW)));
+                            Elevator.State.STOW),
+                        m_tounge.setStateCommand(Tounge.State.DOWN),
+                        Commands.waitUntil(m_tounge.hasLoweredTrigger),
+                        m_tounge.setStateCommand(Tounge.State.STOW),
+                        m_driver.rumbleForTime(1, 1)));
 
         } else {
             m_driver
@@ -422,7 +424,7 @@ public class RobotContainer {
                         .andThen(Commands
                             .waitUntil(m_rampLaserCAN.triggered.negate()
                                 .and(m_clawRollerLaserCAN.triggered)))
-                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                         .andThen(
                             m_superStruct
                                 .getTransitionCommand(Arm.State.STOW,
@@ -436,7 +438,7 @@ public class RobotContainer {
                         Commands
                             .waitUntil(m_rampLaserCAN.triggered.negate()
                                 .and(m_clawRollerLaserCAN.triggered))
-                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
+                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
                         m_rampLaserCAN.triggered
                             .and(m_clawRollerLaserCAN.triggered).negate()));
         }
@@ -570,7 +572,7 @@ public class RobotContainer {
                 .andThen(
                     Commands.waitUntil(
                         m_rampLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
 
         NamedCommands.registerCommand(
@@ -583,7 +585,7 @@ public class RobotContainer {
         }));
 
         NamedCommands.registerCommand("HoldCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+            m_clawRoller.setStateCommand(ClawRoller.State.OFF));
 
         NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
     }
@@ -596,5 +598,10 @@ public class RobotContainer {
     public Command getAutonomousCommand()
     {
         return m_autoChooser.get();
+    }
+
+    public Command zeroTounge()
+    {
+        return m_tounge.zeroSensorCommand();
     }
 }

@@ -25,28 +25,19 @@ public class ClawRoller
 
 
     static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .125);
-    static LoggedTunableNumber shuffleSpeed =
-        new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
-    static LoggedTunableNumber slowSpeed =
-        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", .06);
-    static LoggedTunableNumber holdPosition =
-        new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
+        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .4);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
-        // INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
-        // SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
-        INTAKE(new ProfileType.OPEN_CURRENT(() -> 200,
-            intakeSpeed)),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
+            () -> .5)),
+        SLOW_INTAKE(new ProfileType.OPEN_CURRENT(() -> 20,
+            () -> .2)),
         GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
             () -> 0.06)),
-        SLOW_INTAKE(
-            new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
         ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
         ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 

@@ -33,7 +33,7 @@ public final class ToungeConstants {
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-            InvertedValue.Clockwise_Positive;
+            InvertedValue.CounterClockwise_Positive;
 
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
