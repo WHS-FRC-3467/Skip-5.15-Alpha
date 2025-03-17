@@ -192,7 +192,8 @@ public class RobotContainer {
                         new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
-                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to false
+                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to
+                                                                              // false
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
@@ -526,7 +527,7 @@ public class RobotContainer {
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.001,
+                        0.1,
                         0.8)));
 
         NamedCommands.registerCommand(
@@ -534,7 +535,7 @@ public class RobotContainer {
             Commands.waitUntil(m_clawRollerLaserCAN.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                        0.001,
+                        0.1,
                         0.8)));
 
         // Go to the Home Position
@@ -572,10 +573,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("Coast", m_drive.run(() -> {
         }));
 
+        /* What is the purpose of this command? - MJW */
         NamedCommands.registerCommand("HoldCoral",
             m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
 
-        NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
+        /* Verify why we created this register command - MJW */
+        // NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
     }
 
     /**
