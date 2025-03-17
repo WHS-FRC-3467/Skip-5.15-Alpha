@@ -397,24 +397,6 @@ public class RobotContainer {
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
-        // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
-        // arm, Get Ready to Intake Coral
-        // m_driver
-        // .leftTrigger().and(isCoralMode)
-        // .whileTrue(
-        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW
-        // .andThen(
-        // m_superStruct
-        // .getTransitionCommand(Arm.State.CORAL_INTAKE,
-        // Elevator.State.CORAL_INTAKE))
-        // .andThen(
-        // Commands.waitUntil(m_rampLaserCAN.triggered
-        // .and(m_clawRollerLaserCAN.triggered.negate())))
-        // .andThen(
-        // Commands.waitUntil(m_rampLaserCAN.triggered.negate()
-        // .and(m_clawRollerLaserCAN.triggered)))
-        // .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
-
         if (Constants.getRobot() == RobotType.BAJA) {
             m_driver.leftTrigger().and(isCoralMode)
                 .whileTrue(
@@ -423,8 +405,6 @@ public class RobotContainer {
                         m_tounge.setStateCommand(Tounge.State.RAISED),
                         m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                             Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
-                        // Commands.waitUntil(m_clawRollerLaserCAN.triggered),
-                        // m_clawRoller.setStateCommand(ClawRoller.State.SLOW_INTAKE),
                         Commands.waitUntil(
                             m_clawRollerLaserCAN.triggered
                                 .and(m_tounge.coralContactTrigger)),
