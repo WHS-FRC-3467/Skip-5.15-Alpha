@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-J"
+            "pathName": "Cage-E"
           }
         },
         {
@@ -32,19 +32,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "J-TopSource"
+            "pathName": "E-SourceTop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-K"
+            "pathName": "SourceTop-D"
           }
         },
         {
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -57,19 +63,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "K-TopSource"
+            "pathName": "D-SourceTop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-L"
+            "pathName": "SourceTop-C"
           }
         },
         {
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -82,32 +94,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L-TopSource"
+            "pathName": "C-TopSource"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-A"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Score"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Home"
+            "pathName": "TopSource-B"
           }
         }
       ]

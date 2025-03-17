@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "Left Side",
+    "Middle Auto",
     "PID Tuning",
     "Right Side"
   ],
