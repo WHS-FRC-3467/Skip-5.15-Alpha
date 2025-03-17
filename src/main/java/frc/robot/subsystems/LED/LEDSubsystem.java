@@ -211,7 +211,7 @@ public class LEDSubsystem extends SubsystemBase {
                 newState = LEDState.ALIGNING;
 
                 // Holding Coral?
-            } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
+            } else if (m_ClawRoller.getState() == ClawRoller.State.OFF) {
                 // Claw is holding Coral
                 newState = LEDState.HAVE_CORAL;
 
