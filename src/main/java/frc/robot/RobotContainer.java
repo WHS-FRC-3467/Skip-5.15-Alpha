@@ -412,8 +412,12 @@ public class RobotContainer {
                 .onFalse(
                     Commands.sequence(
                         m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                        m_superStruct.getTransitionCommand(Arm.State.STOW,
-                            Elevator.State.STOW)));
+                        m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW),
+                        m_tounge.setStateCommand(Tounge.State.DOWN),
+                        Commands.waitUntil(m_tounge.hasLoweredTrigger),
+                        m_tounge.setStateCommand(Tounge.State.STOW),
+                        m_driver.rumbleForTime(1, 1)));
+
         } else {
             m_driver
                 .leftTrigger().and(isCoralMode)
