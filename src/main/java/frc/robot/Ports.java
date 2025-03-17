@@ -26,4 +26,6 @@ public class Ports {
 
     public static final CanDeviceId PDH = new CanDeviceId(25, "rio");
 
+    public static final CanDeviceId TOUNGE = new CanDeviceId(30, "rio");
+
 }
