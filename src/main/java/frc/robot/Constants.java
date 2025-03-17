@@ -13,7 +13,7 @@ public class Constants {
     // Use LoggedTunableNumbers
     public static final boolean tuningMode = true;
 
-    private static RobotType robotType = RobotType.GORT;
+    private static RobotType robotType = RobotType.BAJA;
 
     public static RobotType getRobot()
     {
@@ -25,7 +25,7 @@ public class Constants {
      * running on a roboRIO. Change the value of "simMode" to switch between "sim" (physics sim) and
      * "replay" (log replay from a file).
      */
-    public static final Mode simMode = Mode.REPLAY;
+    public static final Mode simMode = Mode.SIM;
 
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 

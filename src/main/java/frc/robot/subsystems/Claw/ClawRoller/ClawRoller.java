@@ -14,24 +14,9 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger algaeStalledTrigger =
-        new Trigger(() -> super.inputs.torqueCurrentAmps[0] >= 69);
-
-    public final Trigger coralStalledTrigger =
-        new Trigger(() -> super.inputs.supplyCurrentAmps[0] > 10);
-
-    public final Trigger coralStoppedTrigger =
-        new Trigger(() -> Math.abs(super.inputs.velocityRps) < 0.2);
-
-
-    static LoggedTunableNumber intakeSpeed =
-        new LoggedTunableNumber("ClawRoller/IntakeDutyCycle", .125);
-    static LoggedTunableNumber shuffleSpeed =
-        new LoggedTunableNumber("ClawRoller/ShuffleDutyCycle", 0.2);
-    static LoggedTunableNumber slowSpeed =
-        new LoggedTunableNumber("ClawRoller/SlowDutyCycle", .06);
-    static LoggedTunableNumber holdPosition =
-        new LoggedTunableNumber("ClawRoller/holdPosition", 0.00);
+    public final Trigger stalled =
+        new Trigger(
+            () -> (super.inputs.velocityRps <= 0.02 && super.inputs.supplyCurrentAmps[0] >= 1));
 
     @RequiredArgsConstructor
     @Getter
@@ -40,15 +25,15 @@ public class ClawRoller
         // INTAKE(new ProfileType.VELOCITY(intakeSpeed, 0)),
         // SLOW_INTAKE(new ProfileType.VELOCITY(slowSpeed, 0)),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 200,
-            intakeSpeed)),
+            () -> .125)),
         GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
             () -> 0.06)),
         SLOW_INTAKE(
-            new ProfileType.OPEN_CURRENT(() -> (160 * (1 / intakeSpeed.getAsDouble())), slowSpeed)),
+            new ProfileType.OPEN_CURRENT(() -> 1280, () -> .06)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
-        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
-        ALGAE_SCORE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
+        ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
+        ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
     }
