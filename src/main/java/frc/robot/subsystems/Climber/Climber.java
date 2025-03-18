@@ -76,7 +76,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
 
     private Trigger homedTrigger =
         new Trigger(() -> homedDebouncer
-            .calculate(Math.abs(io.getSupplyCurrent()) > 2)
+            .calculate(Math.abs(super.inputs.torqueCurrentAmps[0]) > 8)
             && stateDebouncer.calculate(this.state == State.HOMING));
 
     private Command getHomeCommand()
