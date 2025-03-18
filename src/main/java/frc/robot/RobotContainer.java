@@ -418,6 +418,7 @@ public class RobotContainer {
                         m_tounge.setStateCommand(Tounge.State.STOW),
                         m_driver.rumbleForTime(1, 1)));
 
+
         } else {
             m_driver
                 .leftTrigger().and(isCoralMode)
@@ -518,62 +519,65 @@ public class RobotContainer {
         NamedCommands.registerCommand(
             "L1",
             Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1, 0.1,
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1, 0.01,
                     0.8)));
         // Go to the L2 Position
         NamedCommands.registerCommand(
             "L2Prep",
             Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_2, 0.1,
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_2, 0.01,
                     0.8)));
         // Go to the L3 Position
         NamedCommands.registerCommand(
             "L3Prep",
             Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_3, 0.1,
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_3, 0.01,
                     0.8)));
         // Go to the L4 Position
         NamedCommands.registerCommand(
             "L4",
-            Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                .andThen(
-                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.1,
-                        0.8)));
+            m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
+                0.01,
+                0.8));
 
         NamedCommands.registerCommand(
             "L4Prep",
-            Commands.waitUntil(m_clawRollerLaserCAN.triggered)
-                .andThen(
-                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                        0.1,
-                        0.8)));
+            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
+                0.01,
+                0.8));
 
         // Go to the Home Position
         NamedCommands.registerCommand(
             "Home",
-            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW, 0.1, 0.8));
+            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW, 0.01, 0.8));
 
         // Wait for intake laserCAN to be triggered
         NamedCommands.registerCommand("SuperstructureIntake",
             m_superStruct
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, 0.1, 0.8)
+                    Elevator.State.CORAL_INTAKE, 0.01, 0.8)
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)));
 
         NamedCommands.registerCommand(
             "WaitForCoral",
             Commands.waitUntil(m_rampLaserCAN.triggered));
 
+
         // Intake Coral
         NamedCommands.registerCommand(
             "IntakeCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                .andThen(
-                    Commands.waitUntil(
-                        m_rampLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
-
+            Commands.sequence(
+                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                m_tounge.setStateCommand(Tounge.State.RAISED),
+                m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+                Commands.waitUntil(
+                    m_clawRollerLaserCAN.triggered
+                        .and(m_tounge.coralContactTrigger)),
+                m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                m_tounge.setStateCommand(Tounge.State.DOWN),
+                Commands.waitUntil(m_tounge.hasLoweredTrigger),
+                m_tounge.setStateCommand(Tounge.State.STOW)));;
 
         NamedCommands.registerCommand(
             "Score",

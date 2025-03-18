@@ -32,7 +32,7 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         // STOW(new ProfileType.OPEN_VOLTAGE(() -> -2)),
         STOW(new ProfileType.OPEN_VOLTAGE(() -> 0)),
-        RAISED(new ProfileType.OPEN_VOLTAGE(() -> 1)),
+        RAISED(new ProfileType.OPEN_VOLTAGE(() -> 2)),
         DOWN(new ProfileType.OPEN_VOLTAGE(() -> -12));
 
         private final ProfileType profileType;
@@ -73,10 +73,10 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
     // () -> atPosition(Units.degreesToRotations(5)) && Math.abs(io.getSupplyCurrent()) > 3);
 
     public Trigger coralContactTrigger = new Trigger(
-        () -> MathUtil.isNear(.29, io.getPosition(), Units.degreesToRotations(20)));
+        () -> MathUtil.isNear(.29, io.getPosition(), 0.1));
 
     public Trigger hasLoweredTrigger = new Trigger(
-        () -> MathUtil.isNear(0, io.getPosition(), Units.degreesToRotations(10)));
+        () -> MathUtil.isNear(0, io.getPosition(), 0.1));
 
     public Command homeCommand()
     {
