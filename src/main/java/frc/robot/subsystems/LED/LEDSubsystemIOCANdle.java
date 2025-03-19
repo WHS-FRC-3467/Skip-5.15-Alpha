@@ -27,7 +27,7 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
 
     Alert ledConfigError = new Alert("CANdle Configuration Error!", Alert.AlertType.kWarning);
 
-    LEDState m_currentState = LEDState.DISABLED;
+    LEDState m_currentState = LEDState.NOT_SET;
     GPMode m_currentGPMode = GPMode.CORAL;
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     Color m_allianceColor = Color.kBlack;
@@ -65,7 +65,7 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
     LEDSegment m_LeftTip = new LEDSegment(LEFTTIP_START, TIP_SIZE, 4);
     // This is for what the robot is doing while robot is Enabled
     // This is the bottom of each strip combined into one segment
-    LEDSegment m_State = new LEDSegment(STATE_START, (STATE_END - STATE_START) - 1, 5);
+    LEDSegment m_State = new LEDSegment(STATE_START, (STATE_END - STATE_START) + 1, 5);
 
     public LEDSubsystemIOCANdle()
     {
@@ -78,7 +78,7 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
         candleConfiguration.disableWhenLOS = false;
         candleConfiguration.stripType = LEDStripType.RGB;
         candleConfiguration.brightnessScalar = 0.5;
-        candleConfiguration.vBatOutputMode = VBatOutputMode.On;
+        candleConfiguration.vBatOutputMode = VBatOutputMode.Modulated;
         candleConfiguration.v5Enabled = false;
         ErrorCode ec = m_candle.configAllSettings(candleConfiguration, 100);
         if (ec != ErrorCode.OK) {
@@ -109,10 +109,10 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
     {
         switch (alliance) {
             case RED:
-                m_allianceColor = Color.kFirstRed;
+                m_allianceColor = Color.kRed;
                 break;
             case BLUE:
-                m_allianceColor = Color.kFirstBlue;
+                m_allianceColor = Color.kBlue;
                 break;
             case UNDETERMINED:
             default:
@@ -181,6 +181,11 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
         // - ALIGNING -> Cyan
         // - HAVE_CORAL -> Green
         // - ENABLED -> Yellow
+
+        // Don't do anything unless state has changed
+        if (m_currentState == newState) {
+            return;
+        }
 
         // Process and make changes for changed LEDState
         switch (newState) {
@@ -331,18 +336,21 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
         {
             m_candle.clearAnimation(animationSlot);
             m_candle.setLEDs(getR(color), getG(color), getB(color), 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.95);
         }
 
         private void setAnimation(Animation animation)
         {
             m_candle.clearAnimation(animationSlot);
             m_candle.animate(animation, animationSlot);
+            m_candle.modulateVBatOutput(0.95);
         }
 
         public void setOff()
         {
             m_candle.clearAnimation(animationSlot);
             m_candle.setLEDs(0, 0, 0, 0, startIndex, segmentSize);
+            m_candle.modulateVBatOutput(0.0);
         }
     }
 

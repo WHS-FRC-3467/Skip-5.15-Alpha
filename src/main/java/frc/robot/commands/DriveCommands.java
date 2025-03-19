@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.DriveCommands.DriveMode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -53,7 +54,8 @@ public class DriveCommands {
     public enum DriveMode {
         dmJoystick,
         dmAngle,
-        dmApproach
+        dmApproach,
+        dmStrafe
     }
 
     private static DriveMode currentDriveMode = DriveMode.dmJoystick;
@@ -247,6 +249,110 @@ public class DriveCommands {
                             approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
+                SmartDashboard.putData(alignController);
+                Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
+
+                // Calculate angular speed
+                double omega =
+                    angleController.calculate(
+                        drive.getRotation().getRadians(), approachSupplier.get().getRotation()
+                            .rotateBy(Rotation2d.k180deg).getRadians());
+
+                // Convert to field relative speeds & send command
+                ChassisSpeeds speeds =
+                    new ChassisSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega);
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        drive.getRotation()));
+            },
+            drive)
+
+            // Reset PID controller when command starts
+            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+    }
+
+    /**
+     * Robot relative drive command using joystick for linear control towards the approach target,
+     * PID for aligning with the target laterally, and PID for angular control. Used for approaching
+     * a known target, usually from a short distance. The approachSupplier must supply a Pose2d with
+     * a rotation facing away from the target
+     */
+    public static Command joystickStrafe(
+        Drive drive,
+        DoubleSupplier xSupplier,
+        Supplier<Pose2d> approachSupplier)
+    {
+
+        // Create PID controller
+        TuneableProfiledPID angleController =
+            new TuneableProfiledPID(
+                "angleController",
+                ANGLE_KP,
+                0.0,
+                ANGLE_KD,
+                ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_ACCELERATION);
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+        TuneableProfiledPID alignController =
+            new TuneableProfiledPID(
+                "alignController",
+                1,
+                0.0,
+                0,
+                20,
+                8);
+        alignController.setGoal(0);
+
+        // Construct command
+        return Commands.run(
+            () -> {
+                currentDriveMode = DriveMode.dmApproach;
+                // Name constants
+                Translation2d currentTranslation = drive.getPose().getTranslation();
+                Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                double distanceToApproach = currentTranslation.getDistance(approachTranslation);
+
+                Rotation2d alignmentDirection = approachSupplier.get().getRotation();
+
+                // s = cos(d - 0.5 π) (a - A) + sin(d - 0.5 π) (b - B)
+                double s = alignmentDirection.minus(Rotation2d.fromRadians(Math.PI * 0.5)).getCos()
+                    * (currentTranslation.getX() - approachTranslation.getX())
+                    + alignmentDirection.minus(Rotation2d.fromRadians(Math.PI * 0.5)).getSin()
+                        * (currentTranslation.getY() - approachTranslation.getY());
+
+                // Find lateral distance from goal
+                // (A + cos(d - 0.5 π) s, B + sin(d - 0.5 π) s)
+                Translation2d goalTranslation = new Translation2d(approachTranslation.getX()
+                    + alignmentDirection.minus(Rotation2d.fromRadians(Math.PI * 0.5)).getCos() * s,
+                    approachTranslation.getY()
+                        + alignmentDirection.minus(Rotation2d.fromRadians(Math.PI * 0.5)).getSin()
+                            * s);
+
+                Logger.recordOutput("AlignDebug/test", goalTranslation);
+
+                Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
+                double distanceToGoal =
+                    Math.hypot(robotToGoal.getX(), robotToGoal.getY());
+
+                // Calculate lateral linear velocity
+                Translation2d offsetVector =
+                    new Translation2d(alignController.calculate(distanceToGoal), 0)
+                        .rotateBy(robotToGoal.getAngle());
+
+                Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+
+                // Calculate total linear velocity
+                Translation2d linearVelocity =
+                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                        0).rotateBy(
+                            approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
+                            .plus(offsetVector);
+
                 SmartDashboard.putData(alignController); // TODO: Calibrate PID
                 Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
 
@@ -338,6 +444,8 @@ public class DriveCommands {
                         System.out.println("\tkV: " + formatter.format(kV));
                     }));
     }
+
+
 
     /** Measures the robot's wheel radius by spinning in a circle. */
     public static Command wheelRadiusCharacterization(Drive drive)

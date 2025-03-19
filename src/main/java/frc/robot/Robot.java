@@ -166,7 +166,6 @@ public class Robot extends LoggedRobot {
                         m_pathsToShow.addAll(path.getPathPoses());
                     }
                 } catch (IOException | ParseException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 // Check to see which alliance we are on Red Alliance
@@ -202,6 +201,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit()
     {
+        m_robotContainer.zeroTounge().schedule();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -227,6 +227,7 @@ public class Robot extends LoggedRobot {
             m_autonomousCommand.cancel();
         }
         Elastic.selectTab(1);
+        m_robotContainer.zeroTounge().schedule();
     }
 
     /** This function is called periodically during operator control. */

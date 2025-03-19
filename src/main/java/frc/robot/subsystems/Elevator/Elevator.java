@@ -16,6 +16,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.sim.mechanisms.ArmElevComboReplay;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,25 +25,25 @@ import lombok.Setter;
 @Getter
 public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
+    ArmElevComboReplay m_Replay = null;
+
     static LoggedTunableNumber homingTuning =
         new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
-    static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
     @RequiredArgsConstructor
     public enum Setpoints {
-        STOW(0.0, 0.0),
+        STOW(0.05, 0.05),
         CORAL_INTAKE(0.0, 0.0),
         LEVEL_1(1.0, 1.0),
         LEVEL_2(1.217, 1.217),
         LEVEL_3(2.7, 2.7),
         LEVEL_4(4.95, 4.95),
         CLIMB(0.05, 0.05),
-        ALGAE_LOW(1.903, 1.903),
-        ALGAE_HIGH(3.406, 3.406),
+        ALGAE_LOW(0.5, 0.5),
+        ALGAE_HIGH(2.1, 2.1),
         ALGAE_GROUND(0.05, 0.05),
-        ALGAE_SCORE(0.05, 0.05),
-        BARGE(5.3, 5.3);
+        PROCESSOR_SCORE(0.05, 0.05),
+        BARGE(5.6, 5.6);
 
         private final double gortSetpoint;
         private final double bajaSetpoint;
@@ -71,9 +72,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_SCORE.getSetpoint(), 0)),
+        PROCESSOR_SCORE(
+            new ProfileType.MM_POSITION(() -> Setpoints.PROCESSOR_SCORE.getSetpoint(), 0)),
         BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
-        TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble(), 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
@@ -92,12 +93,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
         new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
-    /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
     {
         super(State.STOW.profileType, ElevatorConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
+
+        m_Replay = ArmElevComboReplay.getInstance();
+
+    }
+
+    @Override
+    public void periodic()
+    {
+        super.periodic();
+        // Save elevator length for replay
+        // TODO: GET THIS TO UPDATE
+        m_Replay.run(io.getPosition());
     }
 
     public Command setStateCommand(State state)
@@ -126,7 +138,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             case ALGAE_LOW:
             case ALGAE_HIGH:
             case ALGAE_GROUND:
-            case ALGAE_SCORE:
+            case PROCESSOR_SCORE:
             case BARGE:
                 return true;
 
@@ -140,7 +152,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         return this.getState() == Elevator.State.LEVEL_1;
     }
 
-    private Debouncer homedDebouncer = new Debouncer(0.01, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
     public Trigger homedTrigger =
         new Trigger(

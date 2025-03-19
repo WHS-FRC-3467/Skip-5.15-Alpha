@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
+import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCAN;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.LED.LEDSubsystemIO.AllianceColor;
@@ -31,13 +31,13 @@ public class LEDSubsystem extends SubsystemBase {
     Climber m_Climber;
     Vision m_Vision;
     ClawRollerLaserCAN m_clawLaserCAN;
-    IntakeLaserCAN m_intakeLaserCAN;
+    RampLaserCAN m_intakeLaserCAN;
     Trigger m_isCoralMode;
 
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = false;
+    boolean kTesting = true;
 
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     LEDSubsystemIO m_io;
@@ -60,7 +60,7 @@ public class LEDSubsystem extends SubsystemBase {
         Climber climber,
         Vision vision,
         ClawRollerLaserCAN clawLaserCAN,
-        IntakeLaserCAN intakeLaserCAN,
+        RampLaserCAN intakeLaserCAN,
         Trigger isCoralMode)
     {
 
@@ -230,7 +230,7 @@ public class LEDSubsystem extends SubsystemBase {
                 newState = LEDState.ALIGNING;
 
                 // Holding Coral?
-            } else if (m_ClawRoller.getState() == ClawRoller.State.HOLDCORAL) {
+            } else if (m_ClawRoller.getState() == ClawRoller.State.OFF) {
                 // Claw is holding Coral
                 newState = LEDState.HAVE_CORAL;
 

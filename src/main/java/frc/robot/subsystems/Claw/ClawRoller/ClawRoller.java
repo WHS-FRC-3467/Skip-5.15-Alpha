@@ -15,7 +15,9 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
-    public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
+    public final Trigger stalled =
+        new Trigger(
+            () -> (super.inputs.velocityRps <= 0.02 && super.inputs.supplyCurrentAmps[0] >= 1));
 
     static LoggedTunableNumber holdCoralSP = new LoggedTunableNumber("ClawRoller/HoldCoralSP", 0.0);
     static LoggedTunableNumber algaeIntakeSP =
@@ -27,14 +29,17 @@ public class ClawRoller
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
-        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80.0, () -> 0.06)),
-        EJECT(new ProfileType.OPEN_VOLTAGE(() -> 10.0)),
+        OFF(new ProfileType.DISABLED_BRAKE()),
+        INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
+            () -> .5)),
+        GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
+            () -> 0.06)),
+        SLOW_INTAKE(
+            new ProfileType.OPEN_CURRENT(() -> 20, () -> 0.1)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 1.5)),
-        SHUFFLE(new ProfileType.VELOCITY(() -> -1, 0)),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
-        ALGAE_INTAKE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
+        ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
+        ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
         private final ProfileType profileType;
     }
@@ -42,7 +47,6 @@ public class ClawRoller
     @Getter
     private State state = State.OFF;
 
-    /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
         super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
