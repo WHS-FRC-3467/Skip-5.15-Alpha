@@ -515,53 +515,37 @@ public class RobotContainer {
      */
     private void registerNamedCommands()
     {
-        // Go to the L1 Position
-        NamedCommands.registerCommand(
-            "L1",
-            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1, 0.01,
-                    0.8)));
-        // Go to the L2 Position
-        NamedCommands.registerCommand(
-            "L2Prep",
-            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_2, 0.01,
-                    0.8)));
-        // Go to the L3 Position
-        NamedCommands.registerCommand(
-            "L3Prep",
-            Commands.waitUntil(m_clawRollerLaserCAN.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_3, 0.01,
-                    0.8)));
         // Go to the L4 Position
         NamedCommands.registerCommand(
             "L4",
             m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                0.01,
+                Units.degreesToRotations(10),
+                0.8));
+
+        NamedCommands.registerCommand(
+            "L2Prep",
+            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_2,
+                Units.degreesToRotations(10),
                 0.8));
 
         NamedCommands.registerCommand(
             "L4Prep",
             m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                0.01,
+                Units.degreesToRotations(10),
                 0.8));
 
         // Go to the Home Position
         NamedCommands.registerCommand(
             "Home",
-            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW, 0.01, 0.8));
+            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW,
+                Units.degreesToRotations(10), 0.8));
 
         // Wait for intake laserCAN to be triggered
         NamedCommands.registerCommand("SuperstructureIntake",
             m_superStruct
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, 0.01, 0.8)
+                    Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), 0.8)
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)));
-
-        NamedCommands.registerCommand(
-            "WaitForCoral",
-            Commands.waitUntil(m_rampLaserCAN.triggered));
-
 
         // Intake Coral
         NamedCommands.registerCommand(
@@ -584,16 +568,6 @@ public class RobotContainer {
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                 .andThen(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
-
-        NamedCommands.registerCommand("Coast", m_drive.run(() -> {
-        }));
-
-        /* What is the purpose of this command? - MJW */
-        NamedCommands.registerCommand("HoldCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.OFF));
-
-        /* Verify why we created this register command - MJW */
-        // NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
     }
 
     /**

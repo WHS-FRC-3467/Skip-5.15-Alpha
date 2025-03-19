@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4864754098360655,
-        "y": 0.7703381147540983
+        "x": 1.3260000000000003,
+        "y": 1.5289999999999997
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.842808504152337,
-        "y": 1.1391770756578912
+        "x": 1.552534921035279,
+        "y": 1.6347446431340142
       },
       "isLocked": false,
-      "linkedName": "SourceTop"
+      "linkedName": "IntakeEnd"
     },
     {
       "anchor": {
-        "x": 3.668237704918033,
-        "y": 2.9461065573770493
+        "x": 3.63675,
+        "y": 2.913499999999999
       },
       "prevControl": {
-        "x": 3.4535996845496166,
-        "y": 2.751002432749574
+        "x": 3.4094639900815693,
+        "y": 2.809379542378267
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,30 +33,28 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "IntakeCoral",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeCoral"
+        }
+      }
+    },
+    {
       "name": "L4",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.35,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "IntakeCoral"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L4Prep"
-                    }
-                  }
-                ]
+                "name": "L4Prep"
               }
             }
           ]
@@ -65,7 +63,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.3,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -79,8 +77,8 @@
   "reversed": false,
   "folder": "Right Side",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 53.47114463301483
+    "velocity": 3.0,
+    "rotation": 46.3019526725789
   },
   "useDefaultConstraints": true
 }

@@ -94,13 +94,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C-TopSource"
+            "pathName": "C-SourceTop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-B"
+            "pathName": "SourceTop-B"
           }
         },
         {
