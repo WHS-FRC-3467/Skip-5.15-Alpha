@@ -20,7 +20,7 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
     AddressableLED m_led;
     AddressableLEDBuffer m_ledBuffer;
 
-    LEDState m_currentState = LEDState.DISABLED;
+    LEDState m_currentState = LEDState.NOT_SET;
     GPMode m_currentGPMode = GPMode.CORAL;
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     Color m_allianceColor = Color.kBlack;
@@ -205,6 +205,11 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
         // - ALIGNING -> Cyan Flash Medium
         // - HAVE_CORAL -> Green
         // - ENABLED -> Yellow
+
+        // Don't do anything unless state has changed
+        if (m_currentState == newState) {
+            return;
+        }
 
         // Process and make changes for changed LEDState
         switch (newState) {

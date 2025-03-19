@@ -107,7 +107,7 @@ public abstract class GenericMotionProfiledSubsystem<G extends GenericMotionProf
         // If Profile Type has changed, reset the encoder(s)
         ProfileType newProfType = getState().getProfileType();
         if (m_proType.getClass() != newProfType.getClass()) {
-            io.zeroSensors();
+            // io.zeroSensors();
         }
         if (m_proType != newProfType) {
             m_proType = newProfType;
