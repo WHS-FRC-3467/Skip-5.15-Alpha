@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,10 +33,14 @@ import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIO;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOReal;
 import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCANIOSim;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCAN;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIO;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOReal;
-import frc.robot.subsystems.Claw.IntakeLaserCAN.IntakeLaserCANIOSim;
+import frc.robot.subsystems.Claw.OverheadLaserCAN.OverheadLaserCAN;
+import frc.robot.subsystems.Claw.OverheadLaserCAN.OverheadLaserCANIO;
+import frc.robot.subsystems.Claw.OverheadLaserCAN.OverheadLaserCANIOReal;
+import frc.robot.subsystems.Claw.OverheadLaserCAN.OverheadLaserCANIOSim;
+import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCAN;
+import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCANIO;
+import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCANIOReal;
+import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCANIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
@@ -46,6 +50,10 @@ import frc.robot.subsystems.LED.LEDSubsystem;
 import frc.robot.subsystems.LED.LEDSubsystemIO;
 import frc.robot.subsystems.LED.LEDSubsystemIOCANdle;
 import frc.robot.subsystems.LED.LEDSubsystemIOWPILib;
+import frc.robot.subsystems.Tounge.Tounge;
+import frc.robot.subsystems.Tounge.ToungeIO;
+import frc.robot.subsystems.Tounge.ToungeIOSim;
+import frc.robot.subsystems.Tounge.ToungeIOTalonFX;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.util.WindupXboxController;
@@ -71,8 +79,10 @@ public class RobotContainer {
     private final Elevator m_profiledElevator;
     private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
+    private final Tounge m_tounge;
     private final ClawRollerLaserCAN m_clawRollerLaserCAN;
-    public final IntakeLaserCAN m_intakeLaserCAN;
+    private final RampLaserCAN m_rampLaserCAN;
+    private final OverheadLaserCAN m_overheadLaserCAN;
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
@@ -103,8 +113,9 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
+                m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
-                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOReal());
+                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIOReal());
 
                 m_vision =
                     new Vision(
@@ -114,10 +125,12 @@ public class RobotContainer {
 
                 // Instantiate LED Subsystem on BAJA only
                 if (Constants.getRobot() == RobotType.BAJA) {
+                    m_overheadLaserCAN = new OverheadLaserCAN(new OverheadLaserCANIOReal());
                     m_LED = new LEDSubsystem(new LEDSubsystemIOCANdle(),
                         m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                        m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+                        m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
                 } else {
+                    m_overheadLaserCAN = null;
                     m_LED = null;
                 }
 
@@ -138,7 +151,7 @@ public class RobotContainer {
                 // m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                // m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
+                // m_rampLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
 
                 // m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
@@ -159,8 +172,10 @@ public class RobotContainer {
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
                 m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
+                m_tounge = new Tounge(new ToungeIOSim(), true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOSim());
-                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIOSim());
+                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIOSim());
+                m_overheadLaserCAN = new OverheadLaserCAN(new OverheadLaserCANIOSim());
 
                 m_vision =
                     new Vision(
@@ -170,7 +185,7 @@ public class RobotContainer {
 
                 m_LED = new LEDSubsystem(new LEDSubsystemIOWPILib(),
                     m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                    m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+                    m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
 
                 break;
 
@@ -185,17 +200,20 @@ public class RobotContainer {
                         new ModuleIO() {});
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
-                m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
+                m_profiledElevator = new Elevator(new ElevatorIOSim(), true); // May thange back to
+                                                                              // false
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
+                m_tounge = new Tounge(new ToungeIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                m_intakeLaserCAN = new IntakeLaserCAN(new IntakeLaserCANIO() {});
+                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIO() {});
+                m_overheadLaserCAN = new OverheadLaserCAN(new OverheadLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 m_LED = new LEDSubsystem(new LEDSubsystemIO() {},
                     m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                    m_vision, m_clawRollerLaserCAN, m_intakeLaserCAN, isCoralMode);
+                    m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
                 break;
         }
 
@@ -203,37 +221,30 @@ public class RobotContainer {
         m_superStruct = new Superstructure(m_profiledArm, m_profiledElevator);
 
         // Trigger for whether laser cans are reporting valid data
-        validLaserCANs = m_clawRollerLaserCAN.validMeasurement.and(m_intakeLaserCAN.validMeasurement);
+        validLaserCANs = m_clawRollerLaserCAN.validMeasurement.and(m_rampLaserCAN.validMeasurement);
 
-        // Logic Triggers
+        // Pathplanner commands
         registerNamedCommands();
 
-        // Set up auto routines
+        // Add all PathPlanner autos to dashboard
         m_autoChooser =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-        // Set up SysId routines
+        // Drivebase characterizations
         m_autoChooser.addOption(
             "Drive Wheel Radius Characterization",
             DriveCommands.wheelRadiusCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Forward)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Reverse)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
 
         // Detect if controllers are missing / Stop multiple warnings
-        DriverStation.silenceJoystickConnectionWarning(true);
+        if (Robot.isReal()) {
+            DriverStation.silenceJoystickConnectionWarning(false);
+        } else {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
+
     }
 
     private Command joystickDrive()
@@ -245,14 +256,14 @@ public class RobotContainer {
             () -> -m_driver.getRightX());
     }
 
-    private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
-    {
-        return DriveCommands.joystickDriveAtAngle(
-            m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
-            angle);
-    }
+    // private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
+    // {
+    // return DriveCommands.joystickDriveAtAngle(
+    // m_drive,
+    // () -> -m_driver.getLeftY() * speedMultiplier,
+    // () -> -m_driver.getLeftX() * speedMultiplier,
+    // angle);
+    // }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose)
     {
@@ -261,6 +272,15 @@ public class RobotContainer {
             () -> -m_driver.getLeftY() * speedMultiplier,
             approachPose);
     }
+
+    private Command joystickStrafe(Supplier<Pose2d> approachPose)
+    {
+        return DriveCommands.joystickStrafe(
+            m_drive,
+            () -> m_driver.getLeftX() * speedMultiplier,
+            approachPose);
+    }
+
 
     public Command setCoralAlgaeModeCommand()
     {
@@ -288,10 +308,15 @@ public class RobotContainer {
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
 
-        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(isCoralMode.negate()).and(() -> m_vision.anyCameraConnected)
+        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.rightBumper().and(isCoralMode.negate())
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+
+        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.leftBumper().and(isCoralMode.negate())
+            .whileTrue(
+                joystickStrafe(() -> m_drive.getPose().nearest(FieldConstants.Barge.align)));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver
@@ -299,12 +324,16 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
 
-        // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
+        // Driver A Button and Algae mode: Send Arm and Elevator to Processor
         m_driver
-            .a().and(isCoralMode.negate())
+            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_SCORE));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
+                        Elevator.State.STOW),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -314,14 +343,14 @@ public class RobotContainer {
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver
-            .x().and(isCoralMode.negate())
+            .x().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
-                Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW, Elevator.State.ALGAE_LOW),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                        Elevator.State.ALGAE_LOW),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver
@@ -331,20 +360,21 @@ public class RobotContainer {
 
         // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver
-            .b().and(isCoralMode.negate())
+            .b().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
             .onTrue(
-                Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH, Elevator.State.ALGAE_HIGH),
-                new ConditionalCommand(
-                    Commands.none(), // There is already an algae in system, don't intake
-                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE), // Need to intake algae
-                    m_clawRoller.stalled)));
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                        Elevator.State.ALGAE_HIGH),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver
             .y().and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.0,
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
+                    Units.degreesToRotations(10),
                     0.8));
 
         // Driver Y Button held and Right Bumper having been pressed to ALGAE mode: Send Arm and
@@ -355,82 +385,77 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
-        m_driver.rightTrigger().and(isCoralMode).and(() -> !m_profiledElevator.isL1())
+        m_driver.rightTrigger().and(isCoralMode)
             .whileTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE))
             .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
-        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
-            .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1))
-            .onFalse(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate())
+        // Score Algae
+        m_driver.rightTrigger().and(isCoralMode.negate())
+            .onTrue(Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                () -> m_clawRoller.getState() == ClawRoller.State.ALGAE_REVERSE))
+            .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
+                .andThen(Commands.waitSeconds(1))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                // .andThen(Commands.waitSeconds(1))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
-        m_driver.rightTrigger().and(isCoralMode.negate())
-            .onTrue(
-                m_superStruct
-                    .getTransitionCommand(Arm.State.ALGAE_SCORE, Elevator.State.ALGAE_SCORE)
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.SCORE)))
-            .onFalse(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)
-                    .andThen(
-                        Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_INTAKE),
-                            m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                            m_clawRoller.stalled)));
+        if (Constants.getRobot() == RobotType.BAJA) {
+            m_driver.leftTrigger().and(isCoralMode).and(validLaserCANs)
+                .whileTrue(
+                    Commands.sequence(
+                        m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                        m_tounge.setStateCommand(Tounge.State.RAISED),
+                        m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                            Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+                        Commands.waitUntil(
+                            m_clawRollerLaserCAN.triggered
+                                .and(m_tounge.coralContactTrigger)),
+                        m_clawRoller.setStateCommand(ClawRoller.State.OFF)))
+                .onFalse(
+                    Commands.sequence(
+                        m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                        m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW),
+                        m_tounge.setStateCommand(Tounge.State.DOWN),
+                        Commands.waitUntil(m_tounge.hasLoweredTrigger),
+                        m_tounge.setStateCommand(Tounge.State.STOW),
+                        m_driver.rumbleForTime(1, 1)));
 
-        // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
-        // arm, Get Ready to Intake Coral
-        // m_driver
-        // .leftTrigger().and(isCoralMode)
-        // .whileTrue(
-        // m_clawRoller.setStateCommand(ClawRoller.State.INTAKESLOW)
-        // .andThen(
-        // m_superStruct
-        // .getTransitionCommand(Arm.State.CORAL_INTAKE,
-        // Elevator.State.CORAL_INTAKE))
-        // .andThen(
-        // Commands.waitUntil(m_intakeLaserCAN.triggered
-        // .and(m_clawRollerLaserCAN.triggered.negate())))
-        // .andThen(
-        // Commands.waitUntil(m_intakeLaserCAN.triggered.negate()
-        // .and(m_clawRollerLaserCAN.triggered)))
-        // .andThen(m_clawRoller.holdCoralCommand(m_clawRollerLaserCAN.triggered)));
-
-        m_driver
-            .leftTrigger().and(isCoralMode).and(validLaserCANs)
-            .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                    .andThen(
-                        m_superStruct
-                            .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                                Elevator.State.CORAL_INTAKE))
-                    .andThen(m_driver.rumbleForTime(1, 1))
-                    .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered))
-                    .andThen(Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
-                            .and(m_clawRollerLaserCAN.triggered)))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
-                    .andThen(
-                        m_superStruct
-                            .getTransitionCommand(Arm.State.STOW,
-                                Elevator.State.STOW)))
-            .onFalse(
-                Commands.either(
-                    m_clawRoller.setStateCommand(ClawRoller.State.OFF)
-                        .andThen(m_superStruct
-                            .getTransitionCommand(Arm.State.STOW,
-                                Elevator.State.STOW)),
-                    Commands
-                        .waitUntil(m_intakeLaserCAN.triggered.negate()
-                            .and(m_clawRollerLaserCAN.triggered))
-                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
-                    m_intakeLaserCAN.triggered
-                        .and(m_clawRollerLaserCAN.triggered).negate()));
+        } else {
+            m_driver
+                .leftTrigger().and(isCoralMode).and(validLaserCANs)
+                .whileTrue(
+                    m_clawRoller.setStateCommand(ClawRoller.State.GORT_INTAKE)
+                        .andThen(
+                            m_superStruct
+                                .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                                    Elevator.State.CORAL_INTAKE))
+                        .andThen(m_driver.rumbleForTime(1, 1))
+                        .andThen(Commands
+                            .waitUntil(m_rampLaserCAN.triggered))
+                        .andThen(Commands
+                            .waitUntil(m_rampLaserCAN.triggered.negate()
+                                .and(m_clawRollerLaserCAN.triggered)))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                        .andThen(
+                            m_superStruct
+                                .getTransitionCommand(Arm.State.STOW,
+                                    Elevator.State.STOW)))
+                .onFalse(
+                    Commands.either(
+                        m_clawRoller.setStateCommand(ClawRoller.State.OFF)
+                            .andThen(m_superStruct
+                                .getTransitionCommand(Arm.State.STOW,
+                                    Elevator.State.STOW)),
+                        Commands
+                            .waitUntil(m_rampLaserCAN.triggered.negate()
+                                .and(m_clawRollerLaserCAN.triggered))
+                            .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
+                        m_rampLaserCAN.triggered
+                            .and(m_clawRollerLaserCAN.triggered).negate()));
+        }
 
         // Driver Left Trigger + Coral Mode + LaserCANs not working: Manual Coral Intake
         m_driver
@@ -473,7 +498,7 @@ public class RobotContainer {
 
 
         m_driver.povLeft().onTrue(
-            m_clawRoller.setStateCommand(State.EJECT))
+            m_clawRoller.setStateCommand(State.SCORE))
             .onFalse(m_clawRoller.setStateCommand(State.OFF));
 
         // Driver POV Right: End Climbing Sequence if needed
@@ -507,8 +532,7 @@ public class RobotContainer {
         m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                .andThen(m_driver.rumbleForTime(1, 1)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
     }
 
@@ -566,7 +590,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
             "WaitForCoral",
-            Commands.waitUntil(m_intakeLaserCAN.triggered));
+            Commands.waitUntil(m_rampLaserCAN.triggered));
 
         // Intake Coral
         NamedCommands.registerCommand(
@@ -574,8 +598,8 @@ public class RobotContainer {
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                 .andThen(
                     Commands.waitUntil(
-                        m_intakeLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                        m_rampLaserCAN.triggered.negate().and(m_clawRollerLaserCAN.triggered)))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
 
         NamedCommands.registerCommand(
@@ -588,7 +612,7 @@ public class RobotContainer {
         }));
 
         NamedCommands.registerCommand("HoldCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+            m_clawRoller.setStateCommand(ClawRoller.State.OFF));
 
         NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
     }
@@ -601,5 +625,10 @@ public class RobotContainer {
     public Command getAutonomousCommand()
     {
         return m_autoChooser.get();
+    }
+
+    public Command zeroTounge()
+    {
+        return m_tounge.zeroSensorCommand();
     }
 }
