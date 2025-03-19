@@ -40,22 +40,19 @@ public class Superstructure {
         double armTolerance, double elevTolerance)
     {
         return Commands.sequence(
+
+
             // Always move Arm to STOW position before moving Elevator
             m_Arm.setStateCommand(Arm.State.STOW),
             Commands.waitUntil(() -> m_Arm.atPosition(armTolerance)),
+
             // Move Elevator to new position
-            Commands.waitUntil(() -> m_Arm.atPosition(armTolerance)),
-
             m_Elevator.setStateCommand(elevatorState),
-
             Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)),
+
             // Reposition Arm to new position
-            Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)),
-
             m_Arm.setStateCommand(armState),
-
             Commands.waitUntil(() -> m_Arm.atPosition(armTolerance)));
-
     }
 
     /**

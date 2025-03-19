@@ -24,7 +24,8 @@ public interface LEDSubsystemIO {
         SUPER_MOVE,
         ALIGNING,
         HAVE_CORAL,
-        ENABLED
+        ENABLED,
+        NOT_SET
     }
 
     // Game Piece Mode
