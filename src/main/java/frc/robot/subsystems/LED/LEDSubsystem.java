@@ -31,7 +31,6 @@ public class LEDSubsystem extends SubsystemBase {
     Climber m_Climber;
     Vision m_Vision;
     ClawRollerLaserCAN m_clawLaserCAN;
-    RampLaserCAN m_intakeLaserCAN;
     Trigger m_isCoralMode;
 
     // LoggedTunableNumbers for testing LED states
@@ -178,13 +177,8 @@ public class LEDSubsystem extends SubsystemBase {
 
             // Intaking Coral?
             if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
-                if (m_intakeLaserCAN.isTriggered()) {
-                    // Coral has entered and is being positioned
-                    newState = LEDState.FEEDING;
-                } else {
-                    // Waiting for Coral
-                    newState = LEDState.INTAKING;
-                }
+                // Waiting for Coral
+                newState = LEDState.INTAKING;
 
                 // Climbing?
             } else if (m_Climber.getState() == Climber.State.PREP ||

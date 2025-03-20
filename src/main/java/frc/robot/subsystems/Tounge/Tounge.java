@@ -32,7 +32,7 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         // STOW(new ProfileType.OPEN_VOLTAGE(() -> -2)),
         STOW(new ProfileType.OPEN_VOLTAGE(() -> 0)),
-        RAISED(new ProfileType.OPEN_VOLTAGE(() -> 2)),
+        RAISED(new ProfileType.OPEN_VOLTAGE(() -> 1)),
         DOWN(new ProfileType.OPEN_VOLTAGE(() -> -12));
 
         private final ProfileType profileType;
