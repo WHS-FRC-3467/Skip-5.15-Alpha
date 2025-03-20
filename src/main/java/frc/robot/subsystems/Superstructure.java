@@ -59,7 +59,7 @@ public class Superstructure {
                     m_Elevator.setStateCommand(elevatorState),
                     Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance))),
                 Commands.none(),
-                () -> !m_Elevator.atFuturePosition(elevatorState, armTolerance)),
+                () -> !m_Elevator.atFuturePosition(elevatorState, elevTolerance)),
 
             // Reposition Arm to new position
             Commands.either(
