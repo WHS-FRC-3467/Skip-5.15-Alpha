@@ -85,4 +85,12 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
                 .andThen(this.setStateCommand(State.STOW)));
     }
 
+    public Command lowerToungeCommand()
+    {
+        return Commands.sequence(
+            this.setStateCommand(State.DOWN),
+            Commands.waitUntil(this.hasLoweredTrigger),
+            this.setStateCommand(State.STOW));
+    }
+
 }
