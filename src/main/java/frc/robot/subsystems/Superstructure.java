@@ -14,8 +14,8 @@ import frc.robot.subsystems.Elevator.Elevator;
  * Management class for synchronizing Arm and Elevator movements
  */
 public class Superstructure {
-    static final double defaultArmTolerance = Units.degreesToRotations(10);
-    static final double defaultElevatorTolerance = 0.8;
+    static final double defaultArmTolerance = Units.degreesToRotations(3);
+    static final double defaultElevatorTolerance = 0.2;
 
     Arm m_Arm;
     Elevator m_Elevator;
