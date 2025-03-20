@@ -56,7 +56,6 @@ public class LEDSubsystem extends SubsystemBase {
         Climber climber,
         Vision vision,
         ClawRollerLaserCAN clawLaserCAN,
-        RampLaserCAN intakeLaserCAN,
         Trigger isCoralMode)
     {
 
@@ -67,7 +66,6 @@ public class LEDSubsystem extends SubsystemBase {
         m_Climber = climber;
         m_Vision = vision;
         m_clawLaserCAN = clawLaserCAN;
-        m_intakeLaserCAN = intakeLaserCAN;
         m_isCoralMode = isCoralMode;
 
         // Tunable numbers for testing

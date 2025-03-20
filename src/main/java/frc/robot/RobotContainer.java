@@ -77,7 +77,6 @@ public class RobotContainer {
     private final ClawRoller m_clawRoller;
     private final Tounge m_tounge;
     private final ClawRollerLaserCAN m_clawRollerLaserCAN;
-    private final RampLaserCAN m_rampLaserCAN;
     private final Superstructure m_superStruct;
 
     public final Vision m_vision;
@@ -111,7 +110,6 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
-                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIOReal());
 
                 m_vision =
                     new Vision(
@@ -123,7 +121,7 @@ public class RobotContainer {
                 if (Constants.getRobot() == RobotType.BAJA) {
                     m_LED = new LEDSubsystem(new LEDSubsystemIOCANdle(),
                         m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                        m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
+                        m_vision, m_clawRollerLaserCAN, isCoralMode);
                 } else {
                     m_LED = null;
                 }
@@ -168,7 +166,6 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
                 m_tounge = new Tounge(new ToungeIOSim(), true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOSim());
-                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIOSim());
 
                 m_vision =
                     new Vision(
@@ -178,7 +175,7 @@ public class RobotContainer {
 
                 m_LED = new LEDSubsystem(new LEDSubsystemIOWPILib(),
                     m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                    m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
+                    m_vision, m_clawRollerLaserCAN, isCoralMode);
 
                 break;
 
@@ -199,13 +196,12 @@ public class RobotContainer {
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_tounge = new Tounge(new ToungeIO() {}, true);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIO() {});
-                m_rampLaserCAN = new RampLaserCAN(new RampLaserCANIO() {});
 
                 m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
 
                 m_LED = new LEDSubsystem(new LEDSubsystemIO() {},
                     m_clawRoller, m_profiledArm, m_profiledElevator, m_profiledClimber,
-                    m_vision, m_clawRollerLaserCAN, m_rampLaserCAN, isCoralMode);
+                    m_vision, m_clawRollerLaserCAN, isCoralMode);
                 break;
         }
 
