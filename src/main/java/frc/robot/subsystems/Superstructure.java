@@ -14,9 +14,6 @@ import frc.robot.subsystems.Elevator.Elevator;
  * Management class for synchronizing Arm and Elevator movements
  */
 public class Superstructure {
-    static final double defaultArmTolerance = Units.degreesToRotations(3);
-    static final double defaultElevatorTolerance = 0.2;
-
     Arm m_Arm;
     Elevator m_Elevator;
 
@@ -46,33 +43,24 @@ public class Superstructure {
 
 
             // Always move Arm to STOW position before moving Elevator
-            Commands.either(
-                Commands.sequence(
-                    m_Arm.setStateCommand(Arm.State.STOW),
-                    Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))),
-                Commands.none(),
-                () -> !m_Arm.atFuturePosition(Arm.State.STOW, armTolerance)),
+            Commands.sequence(
+                m_Arm.setStateCommand(Arm.State.STOW),
+                Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))),
 
             // Move Elevator to new position
-            Commands.either(
-                Commands.sequence(
-                    m_Elevator.setStateCommand(elevatorState),
-                    Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance))),
-                Commands.none(),
-                () -> !m_Elevator.atFuturePosition(elevatorState, elevTolerance)),
+            Commands.sequence(
+                m_Elevator.setStateCommand(elevatorState),
+                Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance))),
 
             // Reposition Arm to new position
-            Commands.either(
-                Commands.sequence(
-                    m_Arm.setStateCommand(armState),
-                    Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))),
-                Commands.none(),
-                () -> !m_Arm.atFuturePosition(armState, armTolerance)));
+            Commands.sequence(
+                m_Arm.setStateCommand(armState),
+                Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))));
     }
 
     public Command getTransitionCommand(Arm.State armState, Elevator.State elevatorState)
     {
-        return getTransitionCommand(armState, elevatorState, defaultArmTolerance,
-            defaultElevatorTolerance);
+        return getTransitionCommand(armState, elevatorState, 0.0,
+            0.0);
     }
 }
