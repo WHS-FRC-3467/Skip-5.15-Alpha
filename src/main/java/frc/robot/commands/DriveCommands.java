@@ -208,7 +208,7 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.6,
                 0.0,
                 0,
                 20,
@@ -301,7 +301,7 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.25,
                 0.0,
                 0,
                 20,
