@@ -109,7 +109,8 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
@@ -568,7 +569,8 @@ public class RobotContainer {
         m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_driver.rumbleForTime(0.25, 1)));
 
     }
 
