@@ -24,6 +24,13 @@ public class GenericMotionProfiledSubsystemConstants {
 
     public CANcoderConfiguration kEncoderConfig = new CANcoderConfiguration();
 
+
+    // Sensor Fallback Constants
+    // Subclasses should set their own values based on the mechanism they represent.
+    public double FallbackEncoderToMechanismRatio = 1;
+    public double RotorToFallbackEncoderRatio = 1;
+    public double FallbackRotorOffset = 0;
+
     // This is the minimum tolerance that will be used by the atPosition() method.
     // Subclasses should set their own values based on the mechanism they represent.
     public double kminTolerance = 0.00;

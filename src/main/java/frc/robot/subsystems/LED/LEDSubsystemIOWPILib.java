@@ -76,6 +76,7 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
     LEDPattern m_slowFlashRed = LEDPattern.solid(Color.kRed).blink(Seconds.of(0.7));
     LEDPattern m_fastFlashRed = LEDPattern.solid(Color.kRed).blink(Seconds.of(0.3));
     LEDPattern m_medFlashYellow = LEDPattern.solid(Color.kYellow).blink(Seconds.of(0.5));
+    LEDPattern m_fastFlashOrange = LEDPattern.solid(Color.kOrange).blink(Seconds.of(0.3));
 
     // Create Rainbow Pattern - all hues at maximum saturation and half brightness
     private final LEDPattern m_rainbow = LEDPattern.rainbow(255, 128);
@@ -197,6 +198,7 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
         // - DISABLED_BOTH_OK -> Both sides Green
         // - AUTONOMOUS -> Flames
         // State:
+        // - VISION_OUT -> Orange Flash Fast
         // - INTAKING -> Red Flash Slow
         // - FEEDING -> Blue
         // - CLIMBING -> Red Flash Fast
@@ -237,6 +239,10 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
                 m_medFlashYellow.applyTo(m_FullLeft);
                 m_medFlashYellow.applyTo(m_FullRight);
                 m_solidYellow.applyTo(m_MatchTime);
+                break;
+
+            case VISION_OUT:
+                m_fastFlashOrange.applyTo(m_FullLeft);
                 break;
 
             case INTAKING:

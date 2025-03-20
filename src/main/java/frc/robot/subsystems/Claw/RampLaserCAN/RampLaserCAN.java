@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Claw.RampLaserCAN;
 
 import static edu.wpi.first.units.Units.Meter;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
@@ -12,6 +14,12 @@ import lombok.Setter;
 public class RampLaserCAN extends GenericLaserCANSubsystem<RampLaserCAN.State> {
 
     public Trigger triggered = new Trigger(() -> super.isTriggered());
+
+    private Debouncer validDebouncer = new Debouncer(2, DebounceType.kRising);
+
+    public Trigger validMeasurement =
+        new Trigger(
+            () -> validDebouncer.calculate(io.getValidStatus()));
 
     @RequiredArgsConstructor
     @Getter

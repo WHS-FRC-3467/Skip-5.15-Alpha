@@ -42,6 +42,10 @@ public class LEDSubsystem extends SubsystemBase {
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     LEDSubsystemIO m_io;
 
+    int visionOutCounter = 0;
+    double lastTimeStamp = 0.0;
+    double thisTimeStamp;
+
     protected final LEDSubsystemIOInputsAutoLogged inputs =
         new LEDSubsystemIOInputsAutoLogged();
 
@@ -78,52 +82,57 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic()
     {
-        LEDState newState;
-        GPMode newGPMode;
+        // Only loop through periodic LED checking every 0.2 seconds
+        thisTimeStamp = m_pseudoTimer.get();
+        if (thisTimeStamp - lastTimeStamp >= 0.2) {
+            lastTimeStamp = thisTimeStamp;
+            LEDState newState;
+            GPMode newGPMode;
 
-        // Determine and Set Alliance color
-        if (m_DSAlliance == AllianceColor.UNDETERMINED) {
-            if (DriverStation.getAlliance().isPresent()) {
-                if (DriverStation.getAlliance().get() == Alliance.Blue) {
-                    m_DSAlliance = AllianceColor.BLUE;
-                } else {
-                    m_DSAlliance = AllianceColor.RED;
+            // Determine and Set Alliance color
+            if (m_DSAlliance == AllianceColor.UNDETERMINED) {
+                if (DriverStation.getAlliance().isPresent()) {
+                    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                        m_DSAlliance = AllianceColor.BLUE;
+                    } else {
+                        m_DSAlliance = AllianceColor.RED;
+                    }
                 }
-            }
-            m_io.setAlliance(m_DSAlliance);
-        }
-
-        if (kTesting) {
-            // Testing Mode - change values using Tunable Numbers
-            newState = testLEDState((int) kState.get());
-            newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
-
-            if (newState == LEDState.ENABLED) {
-                runMatchTimerPattern();
-            } else if (newState == LEDState.DISABLED) {
-                this.timerDisabled();
+                m_io.setAlliance(m_DSAlliance);
             }
 
-        } else {
+            if (kTesting) {
+                // Testing Mode - change values using Tunable Numbers
+                newState = testLEDState((int) kState.get());
+                newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
 
-            // Real Robot
-            // Determine Game Piece Mode
-            if (m_isCoralMode.getAsBoolean()) {
-                newGPMode = GPMode.CORAL;
+                if (newState == LEDState.ENABLED) {
+                    runMatchTimerPattern();
+                } else if (newState == LEDState.DISABLED) {
+                    this.timerDisabled();
+                }
+
             } else {
-                newGPMode = GPMode.ALGAE;
+
+                // Real Robot
+                // Determine Game Piece Mode
+                if (m_isCoralMode.getAsBoolean()) {
+                    newGPMode = GPMode.CORAL;
+                } else {
+                    newGPMode = GPMode.ALGAE;
+                }
+                // Get latest robot state
+                newState = getRobotState();
             }
-            // Get latest robot state
-            newState = getRobotState();
+
+            // Process Changes
+            m_io.setGPMode(newGPMode);
+            m_io.setRobotState(newState);
+
+            // Do AKit logging
+            m_io.updateInputs(inputs);
+            Logger.processInputs("LED", inputs);
         }
-
-        // Process Changes
-        m_io.setGPMode(newGPMode);
-        m_io.setRobotState(newState);
-
-        // Do AKit logging
-        m_io.updateInputs(inputs);
-        Logger.processInputs("LED", inputs);
     }
 
     // Determine the current state of the robot
@@ -178,8 +187,18 @@ public class LEDSubsystem extends SubsystemBase {
             // Run MatchTimer
             runMatchTimerPattern();
 
+            // Vision Out? For 2 seconds, quickly flash the LEDs red
+            if (visionOutCounter < 10) {
+                if (!m_Vision.anyCameraConnected) {
+                    visionOutCounter++;
+                    newState = LEDState.VISION_OUT;
+                } else {
+                    // Vision is back, reset flashing counter
+                    visionOutCounter = 0;
+                }
+            }
             // Intaking Coral?
-            if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
+            else if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
                 if (m_intakeLaserCAN.isTriggered()) {
                     // Coral has entered and is being positioned
                     newState = LEDState.FEEDING;
@@ -286,20 +305,22 @@ public class LEDSubsystem extends SubsystemBase {
             case 4:
                 return LEDState.AUTONOMOUS;
             case 5:
-                return LEDState.INTAKING;
+                return LEDState.VISION_OUT;
             case 6:
-                return LEDState.FEEDING;
+                return LEDState.INTAKING;
             case 7:
-                return LEDState.CLIMBING;
+                return LEDState.FEEDING;
             case 8:
-                return LEDState.CLIMBED;
+                return LEDState.CLIMBING;
             case 9:
-                return LEDState.SUPER_MOVE;
+                return LEDState.CLIMBED;
             case 10:
-                return LEDState.ALIGNING;
+                return LEDState.SUPER_MOVE;
             case 11:
-                return LEDState.HAVE_CORAL;
+                return LEDState.ALIGNING;
             case 12:
+                return LEDState.HAVE_CORAL;
+            case 13:
                 return LEDState.ENABLED;
         }
     }
