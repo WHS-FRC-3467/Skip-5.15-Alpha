@@ -28,10 +28,10 @@ public class ClawRoller
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
-            () -> .5)),
-        SHUFFLE(new ProfileType.POSITION(() -> -0.3, 0)),
+            () -> .35)),
+        SHUFFLE(new ProfileType.POSITION(() -> 0, 0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        HOLDCORAL(new ProfileType.POSITION(() -> -0.3, 0)),
+        HOLDCORAL(new ProfileType.POSITION(() -> 0, 0)),
         ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
         ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
