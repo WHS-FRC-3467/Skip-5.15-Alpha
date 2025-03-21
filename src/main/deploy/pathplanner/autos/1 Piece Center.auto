@@ -39,6 +39,6 @@
     }
   },
   "resetOdom": false,
-  "folder": "Week1",
+  "folder": null,
   "choreoAuto": false
 }

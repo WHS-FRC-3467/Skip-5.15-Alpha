@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
+      "name": "IntakeCoral",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -47,7 +47,7 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "SuperstructureIntake"
+                      "name": "IntakeCoral"
                     }
                   }
                 ]
@@ -59,7 +59,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.3,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -71,7 +71,7 @@
     "rotation": -54.605204155013034
   },
   "reversed": false,
-  "folder": "Left Side",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -119.89890183861462

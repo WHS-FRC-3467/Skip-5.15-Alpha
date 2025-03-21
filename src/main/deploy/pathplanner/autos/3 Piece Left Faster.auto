@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-E"
+            "pathName": "Cage-J"
           }
         },
         {
@@ -32,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "E-SourceTop"
+            "pathName": "J-TopSource"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SourceTop-D"
+            "pathName": "TopSource-K"
           }
         },
         {
@@ -63,13 +63,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D-SourceTop"
+            "pathName": "K-TopSource"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SourceTop-C"
+            "pathName": "TopSource-L"
           }
         },
         {
@@ -94,13 +94,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C-TopSource"
+            "pathName": "L-TopSource"
           }
         }
       ]
     }
   },
   "resetOdom": false,
-  "folder": "Week1",
+  "folder": null,
   "choreoAuto": false
 }

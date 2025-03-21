@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
+import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType.POSITION;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -105,4 +107,5 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     {
         return io.atPosition(state.profileType, tolerance);
     }
+
 }
