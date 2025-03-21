@@ -503,18 +503,19 @@ public class RobotContainer {
         // Intake Coral
         NamedCommands.registerCommand(
             "IntakeCoral",
-            Commands.sequence(
-                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
-                m_tounge.setStateCommand(Tounge.State.RAISED),
-                m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
-                Commands.waitUntil(
-                    m_clawRollerLaserCAN.triggered
-                        .and(m_tounge.coralContactTrigger)),
-                m_clawRoller.setStateCommand(ClawRoller.State.OFF),
-                m_tounge.setStateCommand(Tounge.State.DOWN),
-                Commands.waitUntil(m_tounge.hasLoweredTrigger),
-                m_tounge.setStateCommand(Tounge.State.STOW)));;
+            Commands.either(
+                Commands.sequence(
+                    m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                    m_tounge.setStateCommand(Tounge.State.RAISED),
+                    m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+                    Commands.waitUntil(
+                        m_clawRollerLaserCAN.triggered
+                            .and(m_tounge.coralContactTrigger)),
+                    m_clawRoller.shuffleCommand(),
+                    m_tounge.lowerToungeCommand()),
+                Commands.none(),
+                m_clawRollerLaserCAN.triggered.negate()));
 
         NamedCommands.registerCommand(
             "Score",

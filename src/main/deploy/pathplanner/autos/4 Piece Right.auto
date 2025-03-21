@@ -96,31 +96,6 @@
           "data": {
             "pathName": "C-TopSource"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "TopSource-B"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Score"
-                }
-              }
-            ]
-          }
         }
       ]
     }

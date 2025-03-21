@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.998872950819672,
-        "y": 2.766290983606557
+        "x": 5.00175,
+        "y": 2.7769999999999992
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.364924667887165,
-        "y": 2.2899932797815734
+        "x": 4.367801717067493,
+        "y": 2.300702296175016
       },
       "isLocked": false,
       "linkedName": "ReefE"
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
+      "name": "IntakeCoral",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
