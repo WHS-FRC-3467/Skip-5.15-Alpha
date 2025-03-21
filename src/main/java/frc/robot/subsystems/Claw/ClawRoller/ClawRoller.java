@@ -1,10 +1,10 @@
 package frc.robot.subsystems.Claw.ClawRoller;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
-import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,20 +16,21 @@ public class ClawRoller
 
     public final Trigger stalled =
         new Trigger(
-            () -> (super.inputs.velocityRps <= 0.02 && super.inputs.supplyCurrentAmps[0] >= 1));
+            () -> (Math.abs(super.inputs.velocityRps) <= 0.02
+                && super.inputs.supplyCurrentAmps[0] >= 1));
+
+    public final Trigger stopped =
+        new Trigger(() -> (Math.abs(super.inputs.velocityRps) <= 0.02));
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         OFF(new ProfileType.DISABLED_BRAKE()),
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
-            () -> .5)),
-        GORT_INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
-            () -> 0.06)),
-        SLOW_INTAKE(
-            new ProfileType.OPEN_CURRENT(() -> 20, () -> 0.1)),
+            () -> .35)),
+        SHUFFLE(new ProfileType.POSITION(() -> 0, 0)),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        HOLDCORAL(new ProfileType.DISABLED_BRAKE()),
+        HOLDCORAL(new ProfileType.POSITION(() -> 0, 0)),
         ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.6)),
         ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.6));
 
@@ -52,5 +53,12 @@ public class ClawRoller
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    public Command shuffleCommand()
+    {
+        return Commands.sequence(
+            Commands.runOnce(() -> this.io.zeroSensors()),
+            this.setStateCommand(State.SHUFFLE));
     }
 }

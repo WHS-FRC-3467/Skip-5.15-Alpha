@@ -16,6 +16,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.Util;
 import frc.robot.util.sim.mechanisms.ArmElevComboReplay;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         LEVEL_4(4.95, 4.95),
         CLIMB(0.05, 0.05),
         ALGAE_LOW(0.5, 0.5),
+        ALGAE_LOW_P(1.903, 1.903),
         ALGAE_HIGH(2.1, 2.1),
+        ALGAE_HIGH_P(3.406, 3.406),
         ALGAE_GROUND(0.05, 0.05),
         PROCESSOR_SCORE(0.05, 0.05),
         BARGE(5.6, 5.6);
@@ -70,7 +73,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
         CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
+        ALGAE_LOW_P(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW_P.getSetpoint(), 0)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
+        ALGAE_HIGH_P(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH_P.getSetpoint(), 0)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
         PROCESSOR_SCORE(
             new ProfileType.MM_POSITION(() -> Setpoints.PROCESSOR_SCORE.getSetpoint(), 0)),
@@ -173,6 +178,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    public boolean atFuturePosition(State position, double tolerance)
+    {
+        ProfileType profileType = position.getProfileType();
+
+        if (profileType instanceof ProfileType.POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        } else if (profileType instanceof ProfileType.MM_POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.MM_POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        }
+
+        return false;
     }
 
     public Command homedAlertCommand()

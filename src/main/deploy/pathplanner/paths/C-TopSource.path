@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.56,
-        "y": 0.8659999999999991
+        "x": 1.4864754098360655,
+        "y": 0.7703381147540983
       },
       "prevControl": {
-        "x": 2.2522298491801847,
-        "y": 1.6897594886756169
+        "x": 2.17870525901625,
+        "y": 1.594097603429716
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "SuperstructureIntake"
+                "name": "IntakeCoral"
               }
             }
           ]
@@ -52,7 +52,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.3,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -64,7 +64,7 @@
     "rotation": 53.47114463301483
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right Side",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 58.67130713219583

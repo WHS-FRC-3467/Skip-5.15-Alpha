@@ -7,6 +7,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,7 +27,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         LEVEL_4(Units.degreesToRotations(101.33), Units.degreesToRotations(101.33)),
         CLIMB(Units.degreesToRotations(82.4), Units.degreesToRotations(82.4)),
         ALGAE_LOW(Units.degreesToRotations(103.3), Units.degreesToRotations(103.3)),
+        ALAGE_LOW_P(.2377, .2377),
         ALGAE_HIGH(Units.degreesToRotations(103.3), Units.degreesToRotations(103.3)),
+        ALGAE_HIGH_P(.2446, .2446),
         ALGAE_GROUND(Units.degreesToRotations(70.0), Units.degreesToRotations(70.0)),
         PROCESSOR_SCORE(Units.degreesToRotations(120.0), Units.degreesToRotations(120.0)),
         BARGE(Units.degreesToRotations(130.0), Units.degreesToRotations(130.0));
@@ -57,7 +60,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
         CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
+        ALGAE_LOW_P(new ProfileType.MM_POSITION(() -> Setpoints.ALAGE_LOW_P.getSetpoint(), 0)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
+        ALGAE_HIGH_P(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH_P.getSetpoint(), 0)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
         PROCESSOR_SCORE(
             new ProfileType.MM_POSITION(() -> Setpoints.PROCESSOR_SCORE.getSetpoint(), 0)),
@@ -101,4 +106,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         return io.atPosition(state.profileType, tolerance);
     }
 
+    public boolean atFuturePosition(State position, double tolerance)
+    {
+        ProfileType profileType = position.getProfileType();
+
+        if (profileType instanceof ProfileType.POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        } else if (profileType instanceof ProfileType.MM_POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.MM_POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        }
+
+        return false;
+    }
 }

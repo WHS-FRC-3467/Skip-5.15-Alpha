@@ -109,8 +109,7 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_left-raw",
-              "period": 0.06,
-              "rotation_turns": 0
+              "period": 0.06
             }
           },
           {
@@ -122,8 +121,7 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_right-raw",
-              "period": 0.06,
-              "rotation_turns": 0
+              "period": 0.06
             }
           },
           {
@@ -136,6 +134,60 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Alerts",
               "period": 0.06
+            }
+          },
+          {
+            "title": "LedState",
+            "x": 800.0,
+            "y": 500.0,
+            "width": 150.0,
+            "height": 100.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/LED/LedState",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "GpMode",
+            "x": 800.0,
+            "y": 400.0,
+            "width": 150.0,
+            "height": 100.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/LED/GpMode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "GamePiece",
+            "x": 950.0,
+            "y": 400.0,
+            "width": 150.0,
+            "height": 100.0,
+            "type": "Single Color View",
+            "properties": {
+              "topic": "/AdvantageKit/LED/GamePiece",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "RobotState",
+            "x": 950.0,
+            "y": 500.0,
+            "width": 150.0,
+            "height": 100.0,
+            "type": "Single Color View",
+            "properties": {
+              "topic": "/AdvantageKit/LED/RobotState",
+              "period": 0.06,
+              "data_type": "string"
             }
           }
         ]
@@ -208,8 +260,7 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_left-processed",
-              "period": 0.06,
-              "rotation_turns": 0
+              "period": 0.06
             }
           },
           {
@@ -221,8 +272,7 @@
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/front_right-processed",
-              "period": 0.06,
-              "rotation_turns": 0
+              "period": 0.06
             }
           },
           {
