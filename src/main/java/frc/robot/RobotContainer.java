@@ -514,7 +514,9 @@ public class RobotContainer {
                             .and(m_tounge.coralContactTrigger)),
                     m_clawRoller.shuffleCommand(),
                     m_tounge.lowerToungeCommand()),
-                Commands.none(),
+                Commands.sequence(
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                    m_tounge.lowerToungeCommand()),
                 m_clawRollerLaserCAN.triggered.negate()));
 
         NamedCommands.registerCommand(
