@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.56,
-        "y": 0.8659999999999991
+        "x": 1.4864754098360655,
+        "y": 0.7703381147540983
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9163330943162715,
-        "y": 1.234838960903792
+        "x": 2.2425,
+        "y": 1.3632499999999994
       },
       "isLocked": false,
       "linkedName": "SourceTop"
     },
     {
       "anchor": {
-        "x": 3.668237704918033,
-        "y": 2.9461065573770493
+        "x": 3.6855,
+        "y": 2.972
       },
       "prevControl": {
-        "x": 3.4535996845496166,
-        "y": 2.751002432749574
+        "x": 3.2152622950819674,
+        "y": 2.162350409836064
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,15 +29,29 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.836724565756828,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4",
-      "waypointRelativePos": 0.4,
+      "name": "FinishIntake",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "deadline",
         "data": {
           "commands": [
             {
@@ -45,11 +59,36 @@
               "data": {
                 "name": "IntakeCoral"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "L4",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
             {
-              "type": "named",
+              "type": "sequential",
               "data": {
-                "name": "L4Prep"
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "IntakeCoral"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "L4Prep"
+                    }
+                  }
+                ]
               }
             }
           ]
@@ -58,7 +97,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.3,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -67,10 +106,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.67130713219583
+    "rotation": 59.85861444792471
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right Side",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 53.47114463301483

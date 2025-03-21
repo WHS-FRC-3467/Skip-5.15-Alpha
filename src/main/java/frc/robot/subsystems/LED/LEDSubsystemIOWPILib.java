@@ -20,11 +20,13 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
     AddressableLED m_led;
     AddressableLEDBuffer m_ledBuffer;
 
-    LEDState m_currentState = LEDState.DISABLED;
+    LEDState m_currentState = LEDState.NOT_SET;
     GPMode m_currentGPMode = GPMode.CORAL;
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     Color m_allianceColor = Color.kBlack;
     MatchTimerState m_mtState = MatchTimerState.END;
+    String m_tipColor = "x000000";
+    String m_stateColor = "x000000";
 
     // LED Index Constants
     final int TOTAL_LEDS = 182;
@@ -73,6 +75,7 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
     LEDPattern m_solidFirstRed = LEDPattern.solid(Color.kFirstRed);
     LEDPattern m_solidFirstBlue = LEDPattern.solid(Color.kFirstBlue);
     LEDPattern m_solidAlliance = LEDPattern.solid(Color.kFirstRed);
+    LEDPattern m_fastFlashGreen = LEDPattern.solid(Color.kGreen).blink(Seconds.of(0.3));
     LEDPattern m_slowFlashRed = LEDPattern.solid(Color.kRed).blink(Seconds.of(0.7));
     LEDPattern m_fastFlashRed = LEDPattern.solid(Color.kRed).blink(Seconds.of(0.3));
     LEDPattern m_medFlashYellow = LEDPattern.solid(Color.kYellow).blink(Seconds.of(0.5));
@@ -123,6 +126,8 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
         inputs.ledState = m_currentState;
         inputs.gpMode = m_currentGPMode;
         inputs.matchTime = m_mtState;
+        inputs.GamePiece = m_tipColor;
+        inputs.RobotState = m_stateColor;
     }
 
     /** Update Alliance Color */
@@ -131,10 +136,10 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
     {
         switch (alliance) {
             case RED:
-                m_allianceColor = Color.kFirstRed;
+                m_allianceColor = Color.kRed;
                 break;
             case BLUE:
-                m_allianceColor = Color.kFirstBlue;
+                m_allianceColor = Color.kBlue;
                 break;
             case UNDETERMINED:
             default:
@@ -161,20 +166,28 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
             case DISABLED_BOTH_OK:
             case AUTONOMOUS:
                 // Mode is not displayed in these cases
-                // so just set a flag and break out
-                m_currentGPMode = GPMode.NOT_SET;
+                // so just break out
+                newGPMode = GPMode.NOT_SET;
+                m_tipColor = Color.kBlack.toHexString();
                 break;
             default:
                 if (newGPMode != m_currentGPMode) {
                     switch (newGPMode) {
+                        case PROCESSOR:
+                            m_fastFlashGreen.applyTo(m_LeftTip);
+                            m_fastFlashGreen.applyTo(m_RightTip);
+                            m_tipColor = Color.kAqua.toHexString();
+                            break;
                         case ALGAE:
                             m_solidGreen.applyTo(m_LeftTip);
                             m_solidGreen.applyTo(m_RightTip);
+                            m_tipColor = Color.kGreen.toHexString();
                             break;
                         case CORAL:
                         default:
                             m_solidWhite.applyTo(m_LeftTip);
                             m_solidWhite.applyTo(m_RightTip);
+                            m_tipColor = Color.kWhite.toHexString();
                             break;
                     }
                     m_currentGPMode = newGPMode;
@@ -206,64 +219,82 @@ public class LEDSubsystemIOWPILib implements LEDSubsystemIO {
         // - HAVE_CORAL -> Green
         // - ENABLED -> Yellow
 
+        // Don't do anything unless state has changed
+        if (m_currentState == newState) {
+            return;
+        }
+
         // Process and make changes for changed LEDState
         switch (newState) {
             case DISABLED:
                 m_scrollingRainbow.applyTo(m_FullLeft);
                 m_scrollingRainbow.applyTo(m_FullRight);
+                m_tipColor = m_allianceColor.toHexString();
+                m_stateColor = m_allianceColor.toHexString();
                 break;
 
             case DISABLED_TRANSLATION_OK:
                 m_solidGreen.applyTo(m_FullLeft);
                 m_solidAlliance.applyTo(m_FullRight);
+                m_tipColor = Color.kGreen.toHexString();
+                m_stateColor = m_allianceColor.toHexString();
                 break;
 
             case DISABLED_ROTATION_OK:
                 m_solidAlliance.applyTo(m_FullLeft);
                 m_solidGreen.applyTo(m_FullRight);
+                m_tipColor = m_allianceColor.toHexString();
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case DISABLED_BOTH_OK:
                 m_solidGreen.applyTo(m_FullLeft);
                 m_solidGreen.applyTo(m_FullRight);
+                m_tipColor = Color.kGreen.toHexString();
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case AUTONOMOUS:
                 m_medFlashYellow.applyTo(m_FullLeft);
                 m_medFlashYellow.applyTo(m_FullRight);
                 m_solidYellow.applyTo(m_MatchTime);
+                m_tipColor = Color.kOrange.toHexString();
+                m_stateColor = Color.kOrange.toHexString();
                 break;
 
             case INTAKING:
                 m_slowFlashRed.applyTo(m_State);
-                break;
-
-            case FEEDING:
-                m_solidBlue.applyTo(m_State);
+                m_stateColor = Color.kRed.toHexString();
                 break;
 
             case CLIMBING:
                 m_fastFlashRed.applyTo(m_State);
+                m_stateColor = Color.kRed.toHexString();
                 break;
 
             case CLIMBED:
                 m_solidGreen.applyTo(m_State);
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case SUPER_MOVE:
                 m_solidMagenta.applyTo(m_State);
+                m_stateColor = Color.kMagenta.toHexString();
                 break;
 
             case ALIGNING:
                 m_solidCyan.applyTo(m_State);
+                m_stateColor = Color.kCyan.toHexString();
                 break;
 
             case HAVE_CORAL:
                 m_solidGreen.applyTo(m_State);
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case ENABLED:
                 m_solidYellow.applyTo(m_State);
+                m_stateColor = Color.kYellow.toHexString();
                 break;
 
             default:

@@ -18,19 +18,20 @@ public interface LEDSubsystemIO {
         DISABLED_BOTH_OK,
         AUTONOMOUS,
         INTAKING,
-        FEEDING,
         CLIMBING,
         CLIMBED,
         SUPER_MOVE,
         ALIGNING,
         HAVE_CORAL,
-        ENABLED
+        ENABLED,
+        NOT_SET
     }
 
     // Game Piece Mode
     public static enum GPMode {
         CORAL,
         ALGAE,
+        PROCESSOR,
         NOT_SET
     }
 
@@ -57,6 +58,8 @@ public interface LEDSubsystemIO {
         public LEDState ledState;
         public GPMode gpMode;
         public MatchTimerState matchTime;
+        public String GamePiece;
+        public String RobotState;
     }
 
     default void updateInputs(LEDSubsystemIOInputs inputs)

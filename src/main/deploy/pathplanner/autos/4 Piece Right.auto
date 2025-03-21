@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-J"
+            "pathName": "Cage-E"
           }
         },
         {
@@ -32,19 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "J-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
+            "pathName": "E-SourceTop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-K"
+            "pathName": "SourceTop-D"
           }
         },
         {
@@ -69,19 +63,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "K-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
+            "pathName": "D-SourceTop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TopSource-L"
+            "pathName": "SourceTop-C"
           }
         },
         {
@@ -106,19 +94,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
+            "pathName": "C-TopSource"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
-  "folder": null,
+  "resetOdom": false,
+  "folder": "Week1",
   "choreoAuto": false
 }

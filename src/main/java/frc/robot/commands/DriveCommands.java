@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.DriveCommands.DriveMode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -208,7 +207,7 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.6,
                 0.0,
                 0,
                 20,
@@ -301,7 +300,7 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.25,
                 0.0,
                 0,
                 20,
