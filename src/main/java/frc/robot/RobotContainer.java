@@ -510,9 +510,10 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
             "Score",
-            m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
-                .andThen(Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+            Commands.sequence(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE),
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()),
+                m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
     }
 
     /**

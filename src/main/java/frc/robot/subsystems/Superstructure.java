@@ -40,7 +40,6 @@ public class Superstructure {
     {
         return Commands.sequence(
 
-
             // Always move Arm to STOW position before moving Elevator
             Commands.sequence(
                 m_Arm.setStateCommand(Arm.State.STOW),
