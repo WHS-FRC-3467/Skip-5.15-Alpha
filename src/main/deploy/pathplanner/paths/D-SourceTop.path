@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.94875,
-        "y": 2.80625
+        "x": 3.955942622950819,
+        "y": 2.7902663934426233
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.6465,
-        "y": 2.2310000000000003
+        "x": 4.242546612303553,
+        "y": 2.9088777426891848
       },
       "isLocked": false,
       "linkedName": "ReefD"
     },
     {
       "anchor": {
-        "x": 1.4864754098360655,
-        "y": 0.7703381147540983
+        "x": 1.56,
+        "y": 0.8659999999999991
       },
       "prevControl": {
-        "x": 1.2665213643553253,
-        "y": 0.610358750645023
+        "x": 1.3400459545192598,
+        "y": 0.7060206358909238
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -47,7 +47,7 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "IntakeCoral"
+                      "name": "SuperstructureIntake"
                     }
                   }
                 ]
@@ -59,7 +59,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.3,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -71,7 +71,7 @@
     "rotation": 53.47114463301483
   },
   "reversed": false,
-  "folder": "Right Side",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 60.25511870305781
