@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
+      "name": "IntakeCoral",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -47,7 +47,7 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "SuperstructureIntake"
+                      "name": "IntakeCoral"
                     }
                   }
                 ]

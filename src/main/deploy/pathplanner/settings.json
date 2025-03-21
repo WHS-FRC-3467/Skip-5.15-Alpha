@@ -7,10 +7,7 @@
     "PID Tuning",
     "Right Side"
   ],
-  "autoFolders": [
-    "Week1",
-    "PIDTesting"
-  ],
+  "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

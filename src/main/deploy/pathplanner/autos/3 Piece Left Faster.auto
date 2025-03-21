@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "TopSource-K"
@@ -73,12 +67,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "TopSource-L"
@@ -107,12 +95,6 @@
           "type": "path",
           "data": {
             "pathName": "L-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         }
       ]

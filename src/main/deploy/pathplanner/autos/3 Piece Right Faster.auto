@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "SourceTop-D"
@@ -70,12 +64,6 @@
           "type": "path",
           "data": {
             "pathName": "D-SourceTop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
           }
         },
         {
