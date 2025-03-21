@@ -311,9 +311,10 @@ public class RobotContainer {
             .onTrue(
                 m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1));
 
-        // Driver A Button and Algae mode: Send Arm and Elevator to Processor
+        // Driver A Button and Algae mode: Send Arm and Elevator to Ground Intake
         m_driver
-            .a().and(isCoralMode.negate()).and(m_clawRoller.stalled.negate())
+            .a().and(isCoralMode.negate())
+            .and(m_clawRoller.stalled.negate())
             .onTrue(
                 Commands.sequence(
                     m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
@@ -321,6 +322,18 @@ public class RobotContainer {
                     m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
                     Commands.waitUntil(m_clawRoller.stalled),
                     m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        // m_driver
+        // .a().and(isCoralMode.negate())
+        // .and(isProcessorMode)
+        // // .and(m_clawRoller.stalled.negate())
+        // .onTrue(
+        // Commands.sequence(
+        // // m_superStruct.getTransitionCommand(Arm.State.STOW,
+        // // Elevator.State.STOW),
+        // // m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+        // // Commands.waitUntil(m_clawRoller.stalled),
+        // m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver
@@ -503,7 +516,8 @@ public class RobotContainer {
         m_driver.start().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .andThen(m_driver.rumbleForTime(0.25, 1)));
 
     }
 

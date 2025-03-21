@@ -17,10 +17,11 @@ public class ClawRoller
     public final Trigger stalled =
         new Trigger(
             () -> (Math.abs(super.inputs.velocityRps) <= 0.02
-                && super.inputs.supplyCurrentAmps[0] >= 1));
+                && Math.abs(super.inputs.supplyCurrentAmps[0]) >= 1));
 
     public final Trigger stopped =
         new Trigger(() -> (Math.abs(super.inputs.velocityRps) <= 0.02));
+                && Math.abs(super.inputs.supplyCurrentAmps[0]) >= 1));
 
     @RequiredArgsConstructor
     @Getter
