@@ -32,54 +32,24 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         new LoggedTunableNumber("Elevator/HomingVoltageSP", -1);
 
     @RequiredArgsConstructor
-    public enum Setpoints {
-        STOW(0.05, 0.05),
-        CORAL_INTAKE(0.0, 0.0),
-        LEVEL_1(1.0, 1.0),
-        LEVEL_2(1.217, 1.217),
-        LEVEL_3(2.7, 2.7),
-        LEVEL_4(4.95, 4.95),
-        CLIMB(0.05, 0.05),
-        ALGAE_LOW(0.5, 0.5),
-        ALGAE_LOW_P(1.903, 1.903),
-        ALGAE_HIGH(2.1, 2.1),
-        ALGAE_HIGH_P(3.406, 3.406),
-        ALGAE_GROUND(0.05, 0.05),
-        PROCESSOR_SCORE(0.05, 0.05),
-        BARGE(5.6, 5.6);
-
-        private final double gortSetpoint;
-        private final double bajaSetpoint;
-
-        public double getSetpoint()
-        {
-            if (Constants.getRobot() == RobotType.GORT) {
-                return gortSetpoint;
-            } else {
-                return bajaSetpoint;
-            }
-        }
-    }
-
-    @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> Setpoints.STOW.getSetpoint(), 0)),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Setpoints.CORAL_INTAKE.getSetpoint(), 0)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_1.getSetpoint(), 0)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_2.getSetpoint(), 0)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_3.getSetpoint(), 0)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Setpoints.LEVEL_4.getSetpoint(), 0)),
-        CLIMB(new ProfileType.MM_POSITION(() -> Setpoints.CLIMB.getSetpoint(), 0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW.getSetpoint(), 0)),
-        ALGAE_LOW_P(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_LOW_P.getSetpoint(), 0)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH.getSetpoint(), 0)),
-        ALGAE_HIGH_P(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_HIGH_P.getSetpoint(), 0)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Setpoints.ALGAE_GROUND.getSetpoint(), 0)),
+        STOW(new ProfileType.MM_POSITION(() -> 0.05, 0)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> 0.0, 0)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> 1.0, 0)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.217, 0)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.7, 0)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> 4.95, 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> 0.0, 0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> 0.5, 0)),
+        ALGAE_LOW_P(new ProfileType.MM_POSITION(() -> 1.903, 0)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 2.1, 0)),
+        ALGAE_HIGH_P(new ProfileType.MM_POSITION(() -> 3.406, 0)),
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05, 0)),
         PROCESSOR_SCORE(
-            new ProfileType.MM_POSITION(() -> Setpoints.PROCESSOR_SCORE.getSetpoint(), 0)),
-        BARGE(new ProfileType.MM_POSITION(() -> Setpoints.BARGE.getSetpoint(), 0)),
+            new ProfileType.MM_POSITION(() -> 0.05, 0)),
+        BARGE(new ProfileType.MM_POSITION(() -> 5.6, 0)),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
         BRAKE(new ProfileType.DISABLED_BRAKE());
@@ -94,7 +64,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
 
-    /* For adjusting the Arm's static characterization velocity threshold */
+    /* For adjusting the Elevators's static characterization velocity threshold */
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
         new LoggedTunableNumber("Elevator/StaticCharacterizationVelocityThresh", 0.1);
 
@@ -106,15 +76,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
         m_Replay = ArmElevComboReplay.getInstance();
 
-    }
-
-    @Override
-    public void periodic()
-    {
-        super.periodic();
-        // Save elevator length for replay
-        // TODO: GET THIS TO UPDATE
-        m_Replay.run(io.getPosition());
     }
 
     public Command setStateCommand(State state)
@@ -178,23 +139,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
-    }
-
-    public boolean atFuturePosition(State position, double tolerance)
-    {
-        ProfileType profileType = position.getProfileType();
-
-        if (profileType instanceof ProfileType.POSITION) {
-            return Util.epsilonEquals(io.getPosition(),
-                ((ProfileType.POSITION) profileType).position().getAsDouble(),
-                tolerance);
-        } else if (profileType instanceof ProfileType.MM_POSITION) {
-            return Util.epsilonEquals(io.getPosition(),
-                ((ProfileType.MM_POSITION) profileType).position().getAsDouble(),
-                tolerance);
-        }
-
-        return false;
     }
 
     public Command homedAlertCommand()

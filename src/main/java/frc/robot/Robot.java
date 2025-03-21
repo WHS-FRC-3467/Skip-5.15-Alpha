@@ -34,12 +34,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
     private RobotContainer m_robotContainer;
@@ -53,7 +47,7 @@ public class Robot extends LoggedRobot {
 
     public Robot()
     {
-        CanBridge.runTCP();
+        CanBridge.runTCP(); // Used for configuring LaserCANs
 
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -124,14 +118,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic()
     {
-
-        // Runs the Scheduler. This is responsible for polling buttons, adding
-        // newly-scheduled commands, running already-scheduled commands, removing
-        // finished or interrupted commands, and running subsystem periodic() methods.
-        // This must be called from the robot's periodic block in order for anything in
-        // the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
@@ -139,9 +126,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit()
     {
-        Elastic.selectTab(1);
+        if (DriverStation.isFMSAttached()) {
+            Elastic.selectTab(1);
+        }
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
-        // Get currently selected command
     }
 
     /** This function is called periodically when disabled. */
@@ -187,10 +175,10 @@ public class Robot extends LoggedRobot {
             SmartDashboard.putBoolean("Alignment/Translation",
                 firstPose.getTranslation().getDistance(
                     m_robotContainer.m_drive.getPose().getTranslation()) <= Units
-                        .inchesToMeters(1.5));
+                        .inchesToMeters(4));
             SmartDashboard.putBoolean("Alignment/Rotation",
                 firstPose.getRotation().minus(m_robotContainer.m_drive.getPose().getRotation())
-                    .getDegrees() < 1);
+                    .getDegrees() < 5);
         }
     }
 
@@ -201,7 +189,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit()
     {
-        m_robotContainer.zeroTounge().schedule();
+        m_robotContainer.zeroTounge().schedule(); // Zeros the tounge on enable
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
@@ -226,8 +214,12 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Elastic.selectTab(1);
-        m_robotContainer.zeroTounge().schedule();
+
+        if (DriverStation.isFMSAttached()) {
+            Elastic.selectTab(0);
+        }
+
+        m_robotContainer.zeroTounge().schedule(); // Zeros the tounge on enable
     }
 
     /** This function is called periodically during operator control. */
