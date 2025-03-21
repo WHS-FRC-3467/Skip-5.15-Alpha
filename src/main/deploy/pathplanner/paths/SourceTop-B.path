@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4722500000000003,
-        "y": 7.2132499999999995
+        "x": 1.3260000000000003,
+        "y": 1.5289999999999997
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7052689248180992,
-        "y": 6.94633443415027
+        "x": 1.4243691232900655,
+        "y": 1.7588336693853706
       },
       "isLocked": false,
-      "linkedName": "LSourceTop"
+      "linkedName": "IntakeEnd"
     },
     {
       "anchor": {
-        "x": 3.6855,
-        "y": 5.08775
+        "x": 3.1407786885245907,
+        "y": 3.833196721311475
       },
       "prevControl": {
-        "x": 3.3431272688810987,
-        "y": 5.406171453923808
+        "x": 3.028286517640683,
+        "y": 3.6099356376228355
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ReefL"
+      "linkedName": "ReefB"
     }
   ],
   "rotationTargets": [],
@@ -33,30 +33,28 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "IntakeCoral",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeCoral"
+        }
+      }
+    },
+    {
       "name": "L4",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.35,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "IntakeCoral"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "L4Prep"
-                    }
-                  }
-                ]
+                "name": "L4Prep"
               }
             }
           ]
@@ -74,13 +72,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -60.25511870305775
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Left Side",
+  "folder": "Right Side",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -54.605204155013034
+    "velocity": 3.0,
+    "rotation": 46.3019526725789
   },
   "useDefaultConstraints": true
 }
