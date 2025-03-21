@@ -36,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitForCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "TopSource-K"
@@ -45,6 +51,12 @@
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -61,6 +73,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitForCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "TopSource-L"
@@ -70,6 +88,12 @@
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -86,34 +110,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "TopSource-A"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Score"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Home"
+            "name": "IntakeCoral"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": "Week1",
   "choreoAuto": false
 }

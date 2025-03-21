@@ -3,7 +3,6 @@ package frc.robot.subsystems.Tounge;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -73,16 +72,24 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
     // () -> atPosition(Units.degreesToRotations(5)) && Math.abs(io.getSupplyCurrent()) > 3);
 
     public Trigger coralContactTrigger = new Trigger(
-        () -> MathUtil.isNear(.29, io.getPosition(), Units.degreesToRotations(20)));
+        () -> MathUtil.isNear(.29, io.getPosition(), 0.1));
 
     public Trigger hasLoweredTrigger = new Trigger(
-        () -> MathUtil.isNear(0, io.getPosition(), Units.degreesToRotations(10)));
+        () -> MathUtil.isNear(0, io.getPosition(), 0.1));
 
     public Command homeCommand()
     {
         return this.setStateCommand(State.HOMING)
             .andThen(Commands.waitUntil(homedTrigger).andThen(this.zeroSensorCommand())
                 .andThen(this.setStateCommand(State.STOW)));
+    }
+
+    public Command lowerToungeCommand()
+    {
+        return Commands.sequence(
+            this.setStateCommand(State.DOWN),
+            Commands.waitUntil(this.hasLoweredTrigger),
+            this.setStateCommand(State.STOW));
     }
 
 }

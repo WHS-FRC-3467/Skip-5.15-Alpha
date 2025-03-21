@@ -33,7 +33,7 @@ public class VisionConstants {
             aprilTagLayout =
                 new AprilTagFieldLayout(Path
                     .of(Filesystem.getDeployDirectory().getAbsolutePath()
-                        + "/vision/andymark.json"));
+                        + "/vision/welded.json"));
             usedCustomField = true;
         } catch (Exception e) {
             aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);

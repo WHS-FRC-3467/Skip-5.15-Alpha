@@ -3,8 +3,6 @@ package frc.robot.subsystems.LED;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
-import frc.robot.subsystems.Claw.ClawRollerLaserCAN.ClawRollerLaserCAN;
-import frc.robot.subsystems.Claw.RampLaserCAN.RampLaserCAN;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.LED.LEDSubsystemIO.AllianceColor;
@@ -30,14 +28,15 @@ public class LEDSubsystem extends SubsystemBase {
     Elevator m_Elevator;
     Climber m_Climber;
     Vision m_Vision;
-    ClawRollerLaserCAN m_clawLaserCAN;
-    RampLaserCAN m_intakeLaserCAN;
+
+    Trigger m_haveCoral;
     Trigger m_isCoralMode;
+    Trigger m_isProcessorMode;
 
     // LoggedTunableNumbers for testing LED states
     private LoggedTunableNumber kMode, kState;
     // Flag for testing mode
-    boolean kTesting = true;
+    boolean kTesting = false;
 
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     LEDSubsystemIO m_io;
@@ -55,9 +54,9 @@ public class LEDSubsystem extends SubsystemBase {
         Elevator elevator,
         Climber climber,
         Vision vision,
-        ClawRollerLaserCAN clawLaserCAN,
-        RampLaserCAN intakeLaserCAN,
-        Trigger isCoralMode)
+        Trigger haveCoral,
+        Trigger isCoralMode,
+        Trigger isProcessorMode)
     {
 
         m_io = io;
@@ -66,9 +65,9 @@ public class LEDSubsystem extends SubsystemBase {
         m_Elevator = elevator;
         m_Climber = climber;
         m_Vision = vision;
-        m_clawLaserCAN = clawLaserCAN;
-        m_intakeLaserCAN = intakeLaserCAN;
+        m_haveCoral = haveCoral;
         m_isCoralMode = isCoralMode;
+        m_isProcessorMode = isProcessorMode;
 
         // Tunable numbers for testing
         kMode = new LoggedTunableNumber("LED/Mode", 0);
@@ -96,7 +95,17 @@ public class LEDSubsystem extends SubsystemBase {
         if (kTesting) {
             // Testing Mode - change values using Tunable Numbers
             newState = testLEDState((int) kState.get());
-            newGPMode = kMode.get() == 0 ? GPMode.CORAL : GPMode.ALGAE;
+            switch ((int) kMode.get()) {
+                case 1:
+                    newGPMode = GPMode.ALGAE;
+                    break;
+                case 2:
+                    newGPMode = GPMode.PROCESSOR;
+                    break;
+                default:
+                    newGPMode = GPMode.CORAL;
+                    break;
+            }
 
             if (newState == LEDState.ENABLED) {
                 runMatchTimerPattern();
@@ -110,6 +119,8 @@ public class LEDSubsystem extends SubsystemBase {
             // Determine Game Piece Mode
             if (m_isCoralMode.getAsBoolean()) {
                 newGPMode = GPMode.CORAL;
+            } else if (m_isProcessorMode.getAsBoolean()) {
+                newGPMode = GPMode.PROCESSOR;
             } else {
                 newGPMode = GPMode.ALGAE;
             }
@@ -180,10 +191,7 @@ public class LEDSubsystem extends SubsystemBase {
 
             // Intaking Coral?
             if (m_ClawRoller.getState() == ClawRoller.State.INTAKE) {
-                if (m_intakeLaserCAN.isTriggered()) {
-                    // Coral has entered and is being positioned
-                    newState = LEDState.FEEDING;
-                } else {
+                if (!m_haveCoral.getAsBoolean()) {
                     // Waiting for Coral
                     newState = LEDState.INTAKING;
                 }
@@ -211,7 +219,7 @@ public class LEDSubsystem extends SubsystemBase {
                 newState = LEDState.ALIGNING;
 
                 // Holding Coral?
-            } else if (m_ClawRoller.getState() == ClawRoller.State.OFF) {
+            } else if (m_haveCoral.getAsBoolean()) {
                 // Claw is holding Coral
                 newState = LEDState.HAVE_CORAL;
 
@@ -288,18 +296,16 @@ public class LEDSubsystem extends SubsystemBase {
             case 5:
                 return LEDState.INTAKING;
             case 6:
-                return LEDState.FEEDING;
-            case 7:
                 return LEDState.CLIMBING;
-            case 8:
+            case 7:
                 return LEDState.CLIMBED;
-            case 9:
+            case 8:
                 return LEDState.SUPER_MOVE;
-            case 10:
+            case 9:
                 return LEDState.ALIGNING;
-            case 11:
+            case 10:
                 return LEDState.HAVE_CORAL;
-            case 12:
+            case 11:
                 return LEDState.ENABLED;
         }
     }

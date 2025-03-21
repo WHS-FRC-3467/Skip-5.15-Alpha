@@ -32,6 +32,8 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
     AllianceColor m_DSAlliance = AllianceColor.UNDETERMINED;
     Color m_allianceColor = Color.kBlack;
     MatchTimerState m_mtState = MatchTimerState.END;
+    String m_tipColor = "x000000";
+    String m_stateColor = "x000000";
 
     // LED Index Constants
     final int TOTAL_LEDS = 182;
@@ -101,6 +103,8 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
         inputs.ledState = m_currentState;
         inputs.gpMode = m_currentGPMode;
         inputs.matchTime = m_mtState;
+        inputs.GamePiece = m_tipColor;
+        inputs.RobotState = m_stateColor;
     }
 
     /** Update Alliance Color */
@@ -137,20 +141,28 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
             case DISABLED_BOTH_OK:
             case AUTONOMOUS:
                 // Mode is not displayed in these cases
-                // so just set a flag and break out
-                m_currentGPMode = GPMode.NOT_SET;
+                // so just break out
+                newGPMode = GPMode.NOT_SET;
+                m_tipColor = Color.kBlack.toHexString();
                 break;
             default:
                 if (newGPMode != m_currentGPMode) {
                     switch (newGPMode) {
+                        case PROCESSOR:
+                            m_LeftTip.setAnimation(a_FastFlashGreen);
+                            m_RightTip.setAnimation(a_FastFlashGreen);
+                            m_tipColor = Color.kAqua.toHexString();
+                            break;
                         case ALGAE:
                             m_LeftTip.setColor(Color.kGreen);
                             m_RightTip.setColor(Color.kGreen);
+                            m_tipColor = Color.kGreen.toHexString();
                             break;
                         case CORAL:
                         default:
                             m_LeftTip.setColor(Color.kWhite);
                             m_RightTip.setColor(Color.kWhite);
+                            m_tipColor = Color.kWhite.toHexString();
                             break;
                     }
                     m_currentGPMode = newGPMode;
@@ -191,62 +203,75 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
             case DISABLED:
                 m_FullLeft.setColor(m_allianceColor);
                 m_FullRight.setColor(m_allianceColor);
+                m_tipColor = m_allianceColor.toHexString();
+                m_stateColor = m_allianceColor.toHexString();
                 break;
 
             case DISABLED_TRANSLATION_OK:
                 m_FullLeft.setColor(Color.kGreen);
                 m_FullRight.setColor(m_allianceColor);
+                m_tipColor = Color.kGreen.toHexString();
+                m_stateColor = m_allianceColor.toHexString();
                 break;
 
             case DISABLED_ROTATION_OK:
                 m_FullLeft.setColor(m_allianceColor);
                 m_FullRight.setColor(Color.kGreen);
+                m_tipColor = m_allianceColor.toHexString();
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case DISABLED_BOTH_OK:
                 m_FullLeft.setColor(Color.kGreen);
                 m_FullRight.setColor(Color.kGreen);
+                m_tipColor = Color.kGreen.toHexString();
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case AUTONOMOUS:
                 m_FullLeft.setAnimation(a_LeftFlame);
                 m_FullRight.setAnimation(a_RightFlame);
                 m_MatchTime.setAnimation(a_InAutonomous);
+                m_tipColor = Color.kOrange.toHexString();
+                m_stateColor = Color.kOrange.toHexString();
                 break;
 
             case INTAKING:
                 m_State.setAnimation(a_SlowFlashRed);
-                break;
-
-            case FEEDING:
-                m_State.setColor(Color.kBlue);
+                m_stateColor = Color.kRed.toHexString();
                 break;
 
             case CLIMBING:
                 m_State.setAnimation(a_FastFlashRed);
+                m_stateColor = Color.kRed.toHexString();
                 break;
 
             case CLIMBED:
                 m_State.setColor(Color.kGreen);
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case SUPER_MOVE:
                 // m_State.setAnimation(a_MedFlashMagenta);
                 m_State.setColor(Color.kMagenta);
+                m_stateColor = Color.kMagenta.toHexString();
                 break;
 
             case ALIGNING:
                 // m_State.setAnimation(a_MedFlashCyan);
                 m_State.setColor(Color.kCyan);
+                m_stateColor = Color.kCyan.toHexString();
                 break;
 
             case HAVE_CORAL:
                 m_State.setColor(Color.kGreen);
+                m_stateColor = Color.kGreen.toHexString();
                 break;
 
             case ENABLED:
                 // m_State.setAnimation(a_SingleFadeFastYellow);
                 m_State.setColor(Color.kYellow);
+                m_stateColor = Color.kYellow.toHexString();
                 break;
 
             default:
@@ -374,6 +399,10 @@ public class LEDSubsystemIOCANdle implements LEDSubsystemIO {
             m_FullLeft.startIndex);
 
     // Robot State Animations
+    // Processor
+    Animation a_FastFlashGreen =
+        new StrobeAnimation(getR(Color.kGreen), getG(Color.kGreen), getB(Color.kGreen),
+            0, 0.8, m_State.segmentSize, m_State.startIndex);
     // Intaking
     Animation a_FastFlashRed =
         new StrobeAnimation(getR(Color.kRed), getG(Color.kRed), getB(Color.kRed),

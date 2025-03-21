@@ -16,6 +16,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.Util;
 import frc.robot.util.sim.mechanisms.ArmElevComboReplay;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -177,6 +178,23 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    public boolean atFuturePosition(State position, double tolerance)
+    {
+        ProfileType profileType = position.getProfileType();
+
+        if (profileType instanceof ProfileType.POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        } else if (profileType instanceof ProfileType.MM_POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.MM_POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        }
+
+        return false;
     }
 
     public Command homedAlertCommand()

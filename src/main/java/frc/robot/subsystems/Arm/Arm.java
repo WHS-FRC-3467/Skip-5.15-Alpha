@@ -7,6 +7,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -105,4 +106,20 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         return io.atPosition(state.profileType, tolerance);
     }
 
+    public boolean atFuturePosition(State position, double tolerance)
+    {
+        ProfileType profileType = position.getProfileType();
+
+        if (profileType instanceof ProfileType.POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        } else if (profileType instanceof ProfileType.MM_POSITION) {
+            return Util.epsilonEquals(io.getPosition(),
+                ((ProfileType.MM_POSITION) profileType).position().getAsDouble(),
+                tolerance);
+        }
+
+        return false;
+    }
 }

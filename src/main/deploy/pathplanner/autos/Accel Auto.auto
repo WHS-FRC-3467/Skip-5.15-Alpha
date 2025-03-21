@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RotationPID"
+            "pathName": "Accel Path"
           }
         }
       ]
     }
   },
   "resetOdom": false,
-  "folder": "PIDTesting",
+  "folder": null,
   "choreoAuto": false
 }
