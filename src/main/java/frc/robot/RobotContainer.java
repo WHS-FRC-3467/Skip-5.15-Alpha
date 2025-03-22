@@ -544,7 +544,7 @@ public class RobotContainer {
             "L2",
             Commands.sequence(
                 Commands.waitUntil(m_clawRollerLaserCAN.triggered),
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3,
+            m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2,
                 Units.degreesToRotations(10),
                 0.8)));
 

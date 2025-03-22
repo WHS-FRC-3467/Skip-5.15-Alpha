@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Test Autos Path"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "DriveTest"
@@ -25,7 +31,7 @@
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": "Self Test",
   "choreoAuto": false
 }
