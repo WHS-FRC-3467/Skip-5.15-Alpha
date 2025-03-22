@@ -81,7 +81,7 @@ public class RobotContainer {
     private Trigger isProcessorMode = new Trigger(() -> isProcessorModeEnabled);
 
 
-    private double speedMultiplier = 0.9;
+    private double speedMultiplier = 0.83;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -99,7 +99,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIO() {}, false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_tounge = new Tounge(new ToungeIOTalonFX(), false);
                 m_clawRollerLaserCAN = new ClawRollerLaserCAN(new ClawRollerLaserCANIOReal());
@@ -364,7 +364,7 @@ public class RobotContainer {
         m_driver
             .y().and(isCoralMode.negate())
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE));
+                (m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE)));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger().and(isCoralMode)
@@ -474,15 +474,19 @@ public class RobotContainer {
         // Go to the L4 Position
         NamedCommands.registerCommand(
             "L4",
-            m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                Units.degreesToRotations(10),
-                0.8));
+            Commands.sequence(
+                m_tounge.setStateCommand(Tounge.State.DOWN),
+                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
+                    Units.degreesToRotations(10),
+                    0.8)));
 
         NamedCommands.registerCommand(
             "L4Prep",
-            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                Units.degreesToRotations(10),
-                0.8));
+            Commands.sequence(
+                m_tounge.setStateCommand(Tounge.State.DOWN),
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
+                    Units.degreesToRotations(10),
+                    0.8)));
 
         // Go to the Home Position
         NamedCommands.registerCommand(
@@ -501,10 +505,11 @@ public class RobotContainer {
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
                     Commands.waitUntil(
                         m_clawRollerLaserCAN.triggered
-                            .and(m_tounge.coralContactTrigger)),
+                            .and(m_clawRoller.stopped)),
                     m_clawRoller.shuffleCommand(),
                     m_tounge.lowerToungeCommand()),
-                m_tounge.lowerToungeCommand(),
+                m_clawRoller.setStateCommand(ClawRoller.State.OFF)
+                    .andThen(m_tounge.setStateCommand(Tounge.State.DOWN)),
                 m_clawRollerLaserCAN.triggered.negate()));
 
 

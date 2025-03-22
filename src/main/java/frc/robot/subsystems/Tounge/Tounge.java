@@ -88,7 +88,9 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
     {
         return Commands.sequence(
             this.setStateCommand(State.DOWN),
-            Commands.waitUntil(this.hasLoweredTrigger),
+            Commands.race(
+                Commands.waitUntil(this.hasLoweredTrigger),
+                Commands.waitSeconds(0.5)),
             this.setStateCommand(State.STOW));
     }
 

@@ -38,7 +38,7 @@ public final class ToungeConstants {
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 
-        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 20;
+        kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimit = 50;
         kSubSysConstants.kMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
         kSubSysConstants.kMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
