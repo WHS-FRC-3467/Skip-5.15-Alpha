@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -225,6 +226,16 @@ public class RobotContainer {
             m_drive,
             () -> m_driver.getLeftX() * speedMultiplier,
             approachPose);
+    }
+
+    private Command driveTest(double speed)
+    {
+        return DriveCommands.driveTest(m_drive, speed);
+    }
+
+    private Command steerTest(double speed)
+    {
+        return DriveCommands.steerTest(m_drive, speed);
     }
 
     public Command setCoralAlgaeModeCommand()
@@ -474,15 +485,19 @@ public class RobotContainer {
         // Go to the L4 Position
         NamedCommands.registerCommand(
             "L4",
+            Commands.sequence(
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered),
             m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
                 Units.degreesToRotations(10),
-                0.8));
+                0.8)));
 
         NamedCommands.registerCommand(
             "L4Prep",
+            Commands.sequence(
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered),
             m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
                 Units.degreesToRotations(10),
-                0.8));
+                0.8)));
 
         // Go to the Home Position
         NamedCommands.registerCommand(
@@ -514,6 +529,109 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE),
                 Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()),
                 m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+
+        // Go to the L3 Position
+        NamedCommands.registerCommand(
+            "L3",
+            Commands.sequence(
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered),
+            m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3,
+                Units.degreesToRotations(10),
+                0.8)));
+
+        // Go to the L2 Position
+        NamedCommands.registerCommand(
+            "L2",
+            Commands.sequence(
+                Commands.waitUntil(m_clawRollerLaserCAN.triggered),
+            m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3,
+                Units.degreesToRotations(10),
+                0.8)));
+
+        NamedCommands.registerCommand(    
+            "AlgaeGround",
+            Commands.sequence(
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
+                    Elevator.State.STOW),
+                m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                Commands.waitUntil(m_clawRoller.stalled),
+                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        NamedCommands.registerCommand(
+            "Processor",
+            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW,
+                Units.degreesToRotations(10), 0.8));
+
+        // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
+        NamedCommands.registerCommand(
+            "AlgaeLow",
+            Commands.sequence(
+                Commands.waitUntil(m_clawRoller.stalled.negate()),
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                    Elevator.State.ALGAE_LOW),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        NamedCommands.registerCommand(
+            "AlgaeLowProcessor",
+                Commands.sequence(
+                    Commands.waitUntil(m_clawRoller.stalled.negate()),
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW_P,
+                        Elevator.State.ALGAE_LOW_P),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        // Send Arm and Elevator to ALGAE_HIGH position
+        NamedCommands.registerCommand(
+            "AlgaeHigh",
+                Commands.sequence(
+                    Commands.waitUntil(m_clawRoller.stalled.negate()),
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                        Elevator.State.ALGAE_HIGH),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        NamedCommands.registerCommand(
+            "AlgaeHighProcessor",
+                Commands.sequence(
+                    Commands.waitUntil(m_clawRoller.stalled.negate()),
+                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH_P,
+                        Elevator.State.ALGAE_HIGH_P),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                    Commands.waitUntil(m_clawRoller.stalled),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        // Algae Barge SP
+        NamedCommands.registerCommand(
+            "AlgaeBarge",
+                Commands.sequence(
+                    m_superStruct.getTransitionCommand(Arm.State.BARGE, Elevator.State.BARGE)));
+
+        // Release Algae
+        NamedCommands.registerCommand(
+            "AlgaeScore",
+            Commands.sequence(
+                Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
+                    m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
+                    () -> m_clawRoller.getState() == ClawRoller.State.ALGAE_REVERSE),
+                Commands.waitUntil(m_clawRoller.stalled.negate()),
+                    Commands.waitSeconds(1),
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+
+        // Tells drivebase to drive at 1 meter per second, no turning
+        NamedCommands.registerCommand(
+            "DriveTest", 
+            driveTest(1.0));
+
+        // Tells drivebase to rotate at 1 radian per second, no turning
+        NamedCommands.registerCommand(
+            "SteerTest", 
+            steerTest(1.0));
+
     }
 
     /**

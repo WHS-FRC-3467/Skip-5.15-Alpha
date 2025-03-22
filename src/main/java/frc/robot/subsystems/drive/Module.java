@@ -16,12 +16,14 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -61,6 +63,9 @@ public class Module {
     {
         io.updateInputs(inputs);
         Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+
+        SmartDashboard.putBoolean("Drive/Module" + Integer.toString(index) + "/At Drive Angular Velocity?", MathUtil.isNear(1.0, inputs.driveVelocityRadPerSec, 0.05));
+        
 
         // Calculate positions for odmetry
         int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
