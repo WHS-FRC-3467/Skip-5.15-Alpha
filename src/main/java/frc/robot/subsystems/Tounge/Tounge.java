@@ -29,7 +29,6 @@ public class Tounge extends GenericMotionProfiledSubsystem<Tounge.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        // STOW(new ProfileType.OPEN_VOLTAGE(() -> -2)),
         STOW(new ProfileType.OPEN_VOLTAGE(() -> 0)),
         RAISED(new ProfileType.OPEN_VOLTAGE(() -> 1)),
         DOWN(new ProfileType.OPEN_VOLTAGE(() -> -12));

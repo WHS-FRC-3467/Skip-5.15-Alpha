@@ -29,10 +29,11 @@ public class ClawRoller
         INTAKE(new ProfileType.OPEN_CURRENT(() -> 80,
             () -> .35)),
         SHUFFLE(new ProfileType.POSITION(() -> -0.1, 0)),
-        SCORE(new ProfileType.OPEN_VOLTAGE(() -> 3.0)),
-        HOLDCORAL(new ProfileType.POSITION(() -> -0.05, 0)),
-        ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 1)),
-        ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 1));
+        L4_RETRACT(new ProfileType.POSITION(() -> -0.5, 0)),
+        SCORE(new ProfileType.OPEN_VOLTAGE(() -> 2.0)),
+        HOLDCORAL(new ProfileType.POSITION(() -> -0.1, 0)),
+        ALGAE_FORWARD(new ProfileType.OPEN_CURRENT(() -> 90, () -> 0.5)),
+        ALGAE_REVERSE(new ProfileType.OPEN_CURRENT(() -> -90, () -> 0.5));
 
         private final ProfileType profileType;
     }
@@ -60,5 +61,12 @@ public class ClawRoller
         return Commands.sequence(
             Commands.runOnce(() -> this.io.zeroSensors()),
             this.setStateCommand(State.SHUFFLE));
+    }
+
+    public Command L4ShuffleCommand()
+    {
+        return Commands.sequence(
+            Commands.runOnce(() -> this.io.zeroSensors()),
+            this.setStateCommand(State.L4_RETRACT));
     }
 }
