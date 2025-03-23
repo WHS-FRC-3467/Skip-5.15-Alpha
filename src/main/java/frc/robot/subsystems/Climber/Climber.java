@@ -21,10 +21,12 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     public enum State implements TargetState {
         // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
         // CLIMB is inwards
+        OFF(new ProfileType.DISABLED_BRAKE()),
         HOME(new ProfileType.MM_POSITION(() -> 0, 0)),
         PREP(new ProfileType.MM_POSITION(() -> -200, 0)),
-        CLIMB(new ProfileType.MM_POSITION(() -> -15, 0)),
+        CLIMB(new ProfileType.MM_POSITION(() -> -40, 0)),
         ClIMB_MORE(new ProfileType.MM_POSITION(() -> -5, 0)),
+        MANUAL_CLIMB(new ProfileType.OPEN_VOLTAGE(() -> 12)),
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> 4));
 
         private final ProfileType profileType;
@@ -70,7 +72,7 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
         return io.atPosition(state.profileType, tolerance);
     }
 
-    private Debouncer homedDebouncer = new Debouncer(0.1, DebounceType.kRising);
+    private Debouncer homedDebouncer = new Debouncer(0.2, DebounceType.kRising);
     private Debouncer stateDebouncer = new Debouncer(1, DebounceType.kRising);
 
     private Trigger homedTrigger =

@@ -10,6 +10,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -79,7 +81,7 @@ public class RobotContainer {
 
     // Trigger for algae/coral mode switching
     private boolean coralModeEnabled = true;
-    private boolean isProcessorModeEnabled = true;
+    private boolean isProcessorModeEnabled = false;
     private Trigger isCoralMode = new Trigger(() -> coralModeEnabled);
     private Trigger isProcessorMode = new Trigger(() -> isProcessorModeEnabled);
 
@@ -406,11 +408,7 @@ public class RobotContainer {
         m_driver.rightTrigger().and(isCoralMode.negate())
             .onTrue(Commands.either(m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_FORWARD),
                 m_clawRoller.setStateCommand(ClawRoller.State.ALGAE_REVERSE),
-                () -> m_clawRoller.getState() == ClawRoller.State.ALGAE_REVERSE))
-            .onFalse(Commands.waitUntil(m_clawRoller.stalled.negate())
-                .andThen(Commands.waitSeconds(0.25))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+                () -> m_clawRoller.getState() == ClawRoller.State.ALGAE_REVERSE));
 
         m_driver.leftTrigger().and(isCoralMode)
             .whileTrue(
@@ -433,10 +431,35 @@ public class RobotContainer {
                     m_tounge.lowerToungeCommand(),
                     m_driver.rumbleForTime(1, 1)));
 
-        SmartDashboard.putData("Auto Intake Command",
+        SmartDashboard.putData("Auto Intake Fast Command",
             Commands.either(
                 Commands.sequence(
-                    m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                    m_tounge.setStateCommand(Tounge.State.RAISED),
+                    m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
+                    Commands.repeatingSequence(
+                        m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                        Commands.waitUntil(m_clawRoller.stalled),
+                        m_clawRoller.shuffleCommand())
+                        .until(m_clawRollerLaserCAN.triggered
+                            .and(m_clawRoller.stopped)),
+                    m_clawRoller.shuffleCommand(),
+                    m_tounge.lowerToungeCommand()),
+                Commands.sequence(
+                    m_clawRoller.shuffleCommand(),
+                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
+                    m_tounge.setStateCommand(Tounge.State.DOWN)),
+                m_clawRollerLaserCAN.triggered.negate()));
+
+        m_driver.back().onTrue(Commands.runOnce(() -> {
+            m_profiledClimber.climbRequested = true;
+            m_profiledClimber.climbStep += 1;
+        }));
+
+        SmartDashboard.putData("Auto Intake Slow Command",
+            Commands.either(
+                Commands.sequence(
+                    m_clawRoller.setStateCommand(ClawRoller.State.AUTO_INTAKE),
                     m_tounge.setStateCommand(Tounge.State.RAISED),
                     m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
@@ -445,14 +468,11 @@ public class RobotContainer {
                             .and(m_clawRoller.stopped)),
                     m_clawRoller.shuffleCommand(),
                     m_tounge.lowerToungeCommand()),
-                m_clawRoller.setStateCommand(ClawRoller.State.OFF)
-                    .andThen(m_tounge.setStateCommand(Tounge.State.DOWN)),
+                Commands.sequence(
+                    m_clawRoller.shuffleCommand(),
+                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
+                    m_tounge.setStateCommand(Tounge.State.DOWN)),
                 m_clawRollerLaserCAN.triggered.negate()));
-
-        m_driver.back().onTrue(Commands.runOnce(() -> {
-            m_profiledClimber.climbRequested = true;
-            m_profiledClimber.climbStep += 1;
-        }));
 
         m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).onTrue(
             m_profiledArm.setStateCommand(Arm.State.CLIMB)
@@ -464,7 +484,6 @@ public class RobotContainer {
 
         m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep3()).onTrue(
             m_profiledClimber.setStateCommand(Climber.State.ClIMB_MORE));
-
 
         m_driver.povLeft().onTrue(
             Commands.sequence(
@@ -494,8 +513,11 @@ public class RobotContainer {
                 () -> -m_driver.getRightX() * 0.75));
 
         // Driver POV Down: Zero the Elevator (HOMING)
-        m_driver.povDown().onTrue(m_profiledArm.setStateCommand(Arm.State.STOW)
-            .andThen(m_profiledElevator.getHomeCommand()));
+        // m_driver.povDown().onTrue(m_profiledArm.setStateCommand(Arm.State.STOW)
+        // .andThen(m_profiledElevator.getHomeCommand()));
+        m_driver.povDown()
+            .whileTrue(m_profiledClimber.setStateCommand(Climber.State.MANUAL_CLIMB))
+            .onFalse(m_profiledClimber.setStateCommand(Climber.State.OFF));
 
         // Toggles between horn and processor mode
         m_driver.povUp().onTrue(
@@ -528,7 +550,7 @@ public class RobotContainer {
                     Units.degreesToRotations(10),
                     0.8),
                 m_clawRoller.L4ShuffleCommand(),
-                Commands.waitSeconds(0.25)));
+                Commands.waitSeconds(0.1)));
 
         NamedCommands.registerCommand(
             "L4Prep",
@@ -550,18 +572,20 @@ public class RobotContainer {
             "IntakeCoral",
             Commands.either(
                 Commands.sequence(
-                    m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
                     m_tounge.setStateCommand(Tounge.State.RAISED),
                     m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2),
-                    Commands.waitUntil(
-                        m_clawRollerLaserCAN.triggered
+                    Commands.repeatingSequence(
+                        m_clawRoller.setStateCommand(ClawRoller.State.INTAKE),
+                        Commands.waitUntil(m_clawRoller.stalled.debounce(0.2)),
+                        m_clawRoller.shuffleCommand())
+                        .until(m_clawRollerLaserCAN.triggered
                             .and(m_clawRoller.stopped)),
                     m_clawRoller.shuffleCommand(),
                     m_tounge.lowerToungeCommand()),
                 Commands.sequence(
                     m_clawRoller.shuffleCommand(),
-                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
+                    m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL),
                     m_tounge.setStateCommand(Tounge.State.DOWN)),
                 m_clawRollerLaserCAN.triggered.negate()));
 
