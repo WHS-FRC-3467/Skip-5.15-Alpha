@@ -1,6 +1,9 @@
 package frc.robot.util;
 
 import java.util.List;
+import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /** Contains basic functions that are used often. */
 public class Util {
@@ -73,5 +76,13 @@ public class Util {
             result &= epsilonEquals(value_in, value, epsilon);
         }
         return result;
+    }
+
+    public static Pose2d moveForward(Pose2d pose, double value)
+    {
+        return new Pose2d(
+            pose.getTranslation()
+                .plus(new Translation2d(value, 0).rotateBy(pose.getRotation())),
+            pose.getRotation());
     }
 }

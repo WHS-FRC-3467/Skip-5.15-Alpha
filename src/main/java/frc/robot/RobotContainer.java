@@ -48,6 +48,7 @@ import frc.robot.subsystems.Tounge.ToungeIOSim;
 import frc.robot.subsystems.Tounge.ToungeIOTalonFX;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
+import frc.robot.util.Util;
 import frc.robot.util.WindupXboxController;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -456,6 +457,11 @@ public class RobotContainer {
             m_profiledClimber.climbStep += 1;
         }));
 
+        m_driver.back().onTrue(Commands.runOnce(() -> {
+            m_profiledClimber.climbRequested = true;
+            m_profiledClimber.climbStep += 1;
+        }));
+
         SmartDashboard.putData("Auto Intake Slow Command",
             Commands.either(
                 Commands.sequence(
@@ -604,6 +610,16 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE),
                 Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()),
                 m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+
+        NamedCommands.registerCommand("driveToLeftBranch",
+            DriveCommands.driveToPose(m_drive, () -> Util.moveForward(FieldConstants
+                .getNearestReefBranch(m_drive.getPose(), FieldConstants.ReefSide.LEFT),
+                Units.inchesToMeters(16))));
+
+        NamedCommands.registerCommand("driveToRightBranch",
+            DriveCommands.driveToPose(m_drive, () -> Util.moveForward(FieldConstants
+                .getNearestReefBranch(m_drive.getPose(), FieldConstants.ReefSide.RIGHT),
+                Units.inchesToMeters(16))));
     }
 
     /**

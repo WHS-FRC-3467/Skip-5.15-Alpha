@@ -379,6 +379,85 @@ public class DriveCommands {
     }
 
     /**
+     * Robot relative drive command using joystick for linear control towards the approach target,
+     * PID for aligning with the target laterally, and PID for angular control. Used for approaching
+     * a known target, usually from a short distance. The approachSupplier must supply a Pose2d with
+     * a rotation facing away from the target
+     */
+    public static Command driveToPose(
+        Drive drive,
+        Supplier<Pose2d> poseSupplier)
+    {
+
+        // Create PID controller
+        TuneableProfiledPID angleController =
+            new TuneableProfiledPID(
+                "angleController",
+                ANGLE_KP,
+                0.0,
+                ANGLE_KD,
+                ANGLE_MAX_VELOCITY,
+                ANGLE_MAX_ACCELERATION);
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+        TuneableProfiledPID alignController =
+            new TuneableProfiledPID(
+                "alignController",
+                1,
+                0.0,
+                0,
+                20,
+                8);
+        alignController.setGoal(0);
+
+        // Construct command
+        return Commands.run(
+            () -> {
+                currentDriveMode = DriveMode.dmApproach;
+
+                // Name Constants
+                Translation2d currentTranslation = drive.getPose().getTranslation();
+                Translation2d goalTranslation = poseSupplier.get().getTranslation();
+                Rotation2d goalRotation = poseSupplier.get().getRotation();
+
+                Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
+                double distanceToGoal =
+                    Math.hypot(robotToGoal.getX(), robotToGoal.getY());
+
+                // Calculate linear velocity
+                Translation2d linearVelocity =
+                    new Translation2d(alignController.calculate(distanceToGoal), 0)
+                        .rotateBy(robotToGoal.getAngle());
+
+                Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+
+                SmartDashboard.putData(alignController);
+                Logger.recordOutput("AlignDebug/approachTarget", goalTranslation);
+
+                // Calculate angular speed
+                double omega =
+                    angleController.calculate(
+                        drive.getRotation().getRadians(), goalRotation
+                            .rotateBy(Rotation2d.k180deg).getRadians());
+
+                // Convert to field relative speeds & send command
+                ChassisSpeeds speeds =
+                    new ChassisSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                        omega);
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        drive.getRotation()));
+            },
+            drive)
+
+            // Reset PID controller when command starts
+            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+    }
+
+    /**
      * Measures the velocity feedforward constants for the drive motors.
      *
      * <p>
