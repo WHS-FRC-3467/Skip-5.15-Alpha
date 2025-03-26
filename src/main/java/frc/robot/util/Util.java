@@ -80,6 +80,10 @@ public class Util {
 
     public static Pose2d moveForward(Pose2d pose, double value)
     {
+        Logger.recordOutput("test", new Pose2d(
+            pose.getTranslation()
+                .plus(new Translation2d(value, 0).rotateBy(pose.getRotation())),
+            pose.getRotation()));
         return new Pose2d(
             pose.getTranslation()
                 .plus(new Translation2d(value, 0).rotateBy(pose.getRotation())),

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
+import frc.robot.util.Util;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -386,7 +387,9 @@ public class DriveCommands {
      */
     public static Command driveToPose(
         Drive drive,
-        Supplier<Pose2d> poseSupplier)
+        Supplier<Pose2d> poseSupplier,
+        double angleTolerance,
+        double positionTolerance)
     {
 
         // Create PID controller
@@ -399,6 +402,7 @@ public class DriveCommands {
                 ANGLE_MAX_VELOCITY,
                 ANGLE_MAX_ACCELERATION);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
+        angleController.setTolerance(angleTolerance);
 
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
@@ -409,6 +413,7 @@ public class DriveCommands {
                 20,
                 8);
         alignController.setGoal(0);
+        alignController.setTolerance(positionTolerance);
 
         // Construct command
         return Commands.run(
@@ -454,7 +459,8 @@ public class DriveCommands {
             drive)
 
             // Reset PID controller when command starts
-            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()))
+            .until(() -> (alignController.atGoal() && angleController.atGoal()));
     }
 
     /**

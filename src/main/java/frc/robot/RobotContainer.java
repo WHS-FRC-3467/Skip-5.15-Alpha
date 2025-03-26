@@ -539,6 +539,10 @@ public class RobotContainer {
                 .andThen(m_tounge.lowerToungeCommand())
                 .andThen(m_driver.rumbleForTime(0.25, 1)));
 
+        SmartDashboard.putData("Test Drive To Branch",
+            DriveCommands.driveToPose(m_drive, () -> Util.moveForward(FieldConstants
+                .getNearestReefBranch(m_drive.getPose(), FieldConstants.ReefSide.RIGHT),
+                Units.inchesToMeters(16)), Units.inchesToMeters(1), Units.degreesToRadians(5)));
     }
 
     /**
@@ -603,7 +607,6 @@ public class RobotContainer {
                 m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                     Elevator.State.CORAL_INTAKE, Units.degreesToRotations(10), .2)));
 
-
         NamedCommands.registerCommand(
             "Score",
             Commands.sequence(
@@ -611,15 +614,15 @@ public class RobotContainer {
                 Commands.waitUntil(m_clawRollerLaserCAN.triggered.negate()),
                 m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
-        NamedCommands.registerCommand("driveToLeftBranch",
+        NamedCommands.registerCommand("DriveToLeftBranch",
             DriveCommands.driveToPose(m_drive, () -> Util.moveForward(FieldConstants
                 .getNearestReefBranch(m_drive.getPose(), FieldConstants.ReefSide.LEFT),
-                Units.inchesToMeters(16))));
+                Units.inchesToMeters(16)), Units.inchesToMeters(1), Units.degreesToRadians(5)));
 
-        NamedCommands.registerCommand("driveToRightBranch",
+        NamedCommands.registerCommand("DriveToRightBranch",
             DriveCommands.driveToPose(m_drive, () -> Util.moveForward(FieldConstants
                 .getNearestReefBranch(m_drive.getPose(), FieldConstants.ReefSide.RIGHT),
-                Units.inchesToMeters(16))));
+                Units.inchesToMeters(16)), Units.inchesToMeters(1), Units.degreesToRadians(5)));
     }
 
     /**
